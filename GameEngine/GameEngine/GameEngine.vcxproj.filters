@@ -1,0 +1,823 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{894e1b16-45a3-407d-9089-ff5ca42c528c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{7030ae6b-c486-4f5a-92d4-3c9950df2fb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\AI">
+      <UniqueIdentifier>{91a4e29d-400c-442e-ad18-682b7044e7e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\EventSystem">
+      <UniqueIdentifier>{c7ae104f-ee1f-43cc-8322-d2ca5e1e1f18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Renderer">
+      <UniqueIdentifier>{4c5c3ad4-8616-4b12-954e-ec8f444d0593}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Time">
+      <UniqueIdentifier>{66f9e96e-c229-4e88-b44c-8579ad4b8e14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Utils">
+      <UniqueIdentifier>{6f35b834-489c-4d3c-af93-82a5800b5b85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Utils\pugi">
+      <UniqueIdentifier>{9bf3d934-280f-4b40-be76-1fa1aaf7bec4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Renderer\Shader">
+      <UniqueIdentifier>{513fb22e-c06b-40f6-939b-dbb56a419b15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Renderer\Texture">
+      <UniqueIdentifier>{22985534-b4e9-4901-a7e2-a9405269eddb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Threads">
+      <UniqueIdentifier>{a3772054-cebd-4b33-9553-79571cbfb2f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Threads\Tiny">
+      <UniqueIdentifier>{3823b707-6681-46bc-a75a-8b6a5a674518}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Input">
+      <UniqueIdentifier>{4d6184f1-276c-406b-a1ed-1a1f3aa145ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Utils\Memory">
+      <UniqueIdentifier>{3ee62635-c8ad-419a-aa0c-fe1f38ec167f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Math">
+      <UniqueIdentifier>{756a054e-2ec6-4557-892f-ffc5e730a0d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Camera">
+      <UniqueIdentifier>{ee5649b7-a79d-4356-93fc-32777d5128ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Renderer\Geometry">
+      <UniqueIdentifier>{c03c5546-41ee-4ae5-a0ad-490bdc6980a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Renderer\Model">
+      <UniqueIdentifier>{17af8abe-c3fb-465b-b6f5-90ed4c034644}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Collision">
+      <UniqueIdentifier>{6c55041f-69ad-4963-b628-934be919463f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Collision\BoundingVolumes">
+      <UniqueIdentifier>{9357d55e-56f8-4462-be41-f477caa0615c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Objects">
+      <UniqueIdentifier>{53e6adcb-dced-4b71-8367-f0664e49d6b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Renderer\Lights">
+      <UniqueIdentifier>{be15c630-b22d-4098-9080-75e4d05fec66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Renderer\Font">
+      <UniqueIdentifier>{2b00b951-368b-40a9-a3b9-9e1190d8ef5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Renderer\Font\freetype-gl">
+      <UniqueIdentifier>{51a3f8ed-742a-4c64-9738-b0d1c700a579}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Console">
+      <UniqueIdentifier>{346cf3db-6078-4242-9a67-0b3249149fbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Physics">
+      <UniqueIdentifier>{b98b9fa5-354c-4a90-bd46-862ccc9c9b54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Physics\Primitive">
+      <UniqueIdentifier>{ee71db26-a173-4ed9-82b3-b1a9c1a240f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Physics\ForceGenerators">
+      <UniqueIdentifier>{5503fe1f-8101-40dc-a62d-c0191ff63e63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Console\Containers">
+      <UniqueIdentifier>{9a3576d3-b2eb-4462-a44e-4a48faa1c197}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Renderer\Debug">
+      <UniqueIdentifier>{a3f29b18-5fd1-45ca-bccc-55f6cb1a733f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Renderer\Cuda">
+      <UniqueIdentifier>{f4d96af0-d968-4ea3-874b-bd200ee63c70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Renderer\Cuda\Helpers">
+      <UniqueIdentifier>{97589b5f-357e-48e8-b139-e81ee6cb9e65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Renderer\Cuda\chag">
+      <UniqueIdentifier>{70ba121e-45ff-4102-9d43-f040cdba016f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\common\Utils\WindowsUtils.cpp">
+      <Filter>common\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Utils\XMLLoader.cpp">
+      <Filter>common\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Time\Time.cpp">
+      <Filter>common\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Time\Timer.cpp">
+      <Filter>common\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Utils\pugixml\pugixml.cpp">
+      <Filter>common\Utils\pugi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Color.cpp">
+      <Filter>common\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\MatrixStack.cpp">
+      <Filter>common\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Math\Math.cpp">
+      <Filter>common\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Math\Matrix2D.cpp">
+      <Filter>common\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Math\Vector2D.cpp">
+      <Filter>common\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Math\Vector3D.cpp">
+      <Filter>common\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Math\Vector4D.cpp">
+      <Filter>common\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Input\InputListener.cpp">
+      <Filter>common\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Input\InputSystem.cpp">
+      <Filter>common\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\EventSystem\EventSystem.cpp">
+      <Filter>common\EventSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Time\Clock.cpp">
+      <Filter>common\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\EventSystem\NamedProperties.cpp">
+      <Filter>common\EventSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Math\Rectangle.cpp">
+      <Filter>common\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Camera\Camera.cpp">
+      <Filter>common\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Threads\JobManager.cpp">
+      <Filter>common\Threads</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Threads\ThreadJob.cpp">
+      <Filter>common\Threads</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Threads\ThreadMutex.cpp">
+      <Filter>common\Threads</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Threads\tinythread.cpp">
+      <Filter>common\Threads\Tiny</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Threads\Thread.cpp">
+      <Filter>common\Threads</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Utils\Commandlets.cpp">
+      <Filter>common\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Utils\Utils.cpp">
+      <Filter>common\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Utils\Memory\MemoryManager.cpp">
+      <Filter>common\Utils\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Utils\Memory\MemoryOverride.cpp">
+      <Filter>common\Utils\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Shader\GLProgram.cpp">
+      <Filter>common\Renderer\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Geometry\Cube.cpp">
+      <Filter>common\Renderer\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Geometry.cpp">
+      <Filter>common\Renderer\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\VertexBufferObject.cpp">
+      <Filter>common\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\IndexBufferObject.cpp">
+      <Filter>common\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\FrameBufferObject.cpp">
+      <Filter>common\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Geometry\Triangle3D.cpp">
+      <Filter>common\Renderer\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Texture\GLTexture.cpp">
+      <Filter>common\Renderer\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Geometry\Mesh.cpp">
+      <Filter>common\Renderer\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Model\Model.cpp">
+      <Filter>common\Renderer\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Model\Model_Node.cpp">
+      <Filter>common\Renderer\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Model\Model_Node_Mesh.cpp">
+      <Filter>common\Renderer\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Model\Model_Material.cpp">
+      <Filter>common\Renderer\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Collision\CollisionListener.cpp">
+      <Filter>common\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Collision\BoundingVolumes\AABoundingBox.cpp">
+      <Filter>common\Collision\BoundingVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Collision\CollisionSystem.cpp">
+      <Filter>common\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\DeferredRenderer.cpp">
+      <Filter>common\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Lights\DeferredLight.cpp">
+      <Filter>common\Renderer\Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Lights\DeferredLight_Point.cpp">
+      <Filter>common\Renderer\Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Lights\ForwardRenderLights.cpp">
+      <Filter>common\Renderer\Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Font\Font.cpp">
+      <Filter>common\Renderer\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Font\freetype-gl\texture-atlas.c">
+      <Filter>common\Renderer\Font\freetype-gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Font\freetype-gl\vector.c">
+      <Filter>common\Renderer\Font\freetype-gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Font\freetype-gl\texture-font.c">
+      <Filter>common\Renderer\Font\freetype-gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Font\freetype-gl\platform.c">
+      <Filter>common\Renderer\Font\freetype-gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Font\freetype-gl\vertex-buffer.c">
+      <Filter>common\Renderer\Font\freetype-gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Font\freetype-gl\vertex-attribute.c">
+      <Filter>common\Renderer\Font\freetype-gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Time\ProfilingSection.cpp">
+      <Filter>common\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Time\ProfilingSystem.cpp">
+      <Filter>common\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Texture\GLTextureManager.cpp">
+      <Filter>common\Renderer\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CLCore.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Utils\CLFileImporter.cpp">
+      <Filter>common\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Utils\CLLogger.cpp">
+      <Filter>common\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Time\FPSCalc.cpp">
+      <Filter>common\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Objects\Object.cpp">
+      <Filter>common\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Objects\Object2D.cpp">
+      <Filter>common\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Console\CLConsole.cpp">
+      <Filter>common\Console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Math\Quaternion.cpp">
+      <Filter>common\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Physics\RigidBody.cpp">
+      <Filter>common\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Geometry\Sphere.cpp">
+      <Filter>common\Renderer\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Collision\BoundingVolumes\BoundingSphere.cpp">
+      <Filter>common\Collision\BoundingVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Collision\CollisionFunctions.cpp">
+      <Filter>common\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Physics\Contact.cpp">
+      <Filter>common\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Physics\ContactResolver.cpp">
+      <Filter>common\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Math\Matrix4D.cpp">
+      <Filter>common\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Math\Matrix3D.cpp">
+      <Filter>common\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Geometry\Cuboid.cpp">
+      <Filter>common\Renderer\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Physics\PhysicsSystem.cpp">
+      <Filter>common\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Collision\StaticCuboid.cpp">
+      <Filter>common\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Collision\StaticPlane.cpp">
+      <Filter>common\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Lights\DeferredLight_Ambient.cpp">
+      <Filter>common\Renderer\Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Lights\DeferredLight_Directional.cpp">
+      <Filter>common\Renderer\Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Geometry\Cone.cpp">
+      <Filter>common\Renderer\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Lights\DeferredLight_Spot.cpp">
+      <Filter>common\Renderer\Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\RendererUtils.cpp">
+      <Filter>common\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Collision\CollisionStatic.cpp">
+      <Filter>common\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Collision\CollisionPhysicsObject.cpp">
+      <Filter>common\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Utils\DebugUIWidget.cpp">
+      <Filter>common\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Debug\DebugGrid.cpp">
+      <Filter>common\Renderer\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Math\Transformation.cpp">
+      <Filter>common\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Collision\CollisionMovable.cpp">
+      <Filter>common\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\ClusteredRenderer.cpp">
+      <Filter>common\Renderer</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\common\Utils\UtilDebug.h">
+      <Filter>common\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Utils\UtilMacros.h">
+      <Filter>common\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Utils\Utils.h">
+      <Filter>common\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Utils\WindowsUtils.h">
+      <Filter>common\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Utils\XMLLoader.h">
+      <Filter>common\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Time\Time.h">
+      <Filter>common\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Time\Timer.h">
+      <Filter>common\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Utils\pugixml\pugiconfig.hpp">
+      <Filter>common\Utils\pugi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Utils\pugixml\pugixml.hpp">
+      <Filter>common\Utils\pugi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Color.h">
+      <Filter>common\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\MatrixStack.h">
+      <Filter>common\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Math\Math.h">
+      <Filter>common\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Math\Matrix2D.h">
+      <Filter>common\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Math\Matrix3D.h">
+      <Filter>common\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Math\Matrix4D.h">
+      <Filter>common\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Math\Quaternion.h">
+      <Filter>common\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Math\Vector2D.h">
+      <Filter>common\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Math\Vector3D.h">
+      <Filter>common\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Math\Vector4D.h">
+      <Filter>common\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Input\InputListener.h">
+      <Filter>common\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Input\InputSystem.h">
+      <Filter>common\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\EventSystem\EventSubscriber.h">
+      <Filter>common\EventSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\EventSystem\EventSubscriberBase.h">
+      <Filter>common\EventSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\EventSystem\EventSystem.h">
+      <Filter>common\EventSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\EventSystem\NamedProperties.h">
+      <Filter>common\EventSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\AI\StateMachine.h">
+      <Filter>common\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\AI\State.h">
+      <Filter>common\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Time\Clock.h">
+      <Filter>common\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Math\Rectangle.h">
+      <Filter>common\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Camera\Camera.h">
+      <Filter>common\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Threads\ThreadJob.h">
+      <Filter>common\Threads</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Threads\JobManager.h">
+      <Filter>common\Threads</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Threads\ThreadMutex.h">
+      <Filter>common\Threads</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Threads\tinythread.h">
+      <Filter>common\Threads\Tiny</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Threads\fast_mutex.h">
+      <Filter>common\Threads\Tiny</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Threads\Thread.h">
+      <Filter>common\Threads</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Containers\BinaryHeap.h">
+      <Filter>common\Console\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Utils\Commandlets.h">
+      <Filter>common\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Utils\Memory\MemoryManager.h">
+      <Filter>common\Utils\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Utils\Memory\MemoryOverride.h">
+      <Filter>common\Utils\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Utils\CommonIncludes.h">
+      <Filter>common\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Shader\GLProgram.h">
+      <Filter>common\Renderer\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Geometry.h">
+      <Filter>common\Renderer\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Geometry\Cube.h">
+      <Filter>common\Renderer\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\IndexBufferObject.h">
+      <Filter>common\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\FrameBufferObject.h">
+      <Filter>common\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Geometry\Triangle3D.h">
+      <Filter>common\Renderer\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Texture\GLTexture.h">
+      <Filter>common\Renderer\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Geometry\Mesh.h">
+      <Filter>common\Renderer\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Model\Model.h">
+      <Filter>common\Renderer\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Model\Model_Node.h">
+      <Filter>common\Renderer\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Model\Model_Node_Mesh.h">
+      <Filter>common\Renderer\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Model\Model_Material.h">
+      <Filter>common\Renderer\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Collision\CollisionListener.h">
+      <Filter>common\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Collision\BoundingVolumes\AABoundingBox.h">
+      <Filter>common\Collision\BoundingVolumes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Objects\Object.h">
+      <Filter>common\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Lights\DeferredLight.h">
+      <Filter>common\Renderer\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Lights\DeferredLight_Point.h">
+      <Filter>common\Renderer\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Lights\ForwardRenderLights.h">
+      <Filter>common\Renderer\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Font\Font.h">
+      <Filter>common\Renderer\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Font\freetype-gl\vec234.h">
+      <Filter>common\Renderer\Font\freetype-gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Font\freetype-gl\texture-atlas.h">
+      <Filter>common\Renderer\Font\freetype-gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Font\freetype-gl\vector.h">
+      <Filter>common\Renderer\Font\freetype-gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Font\freetype-gl\texture-font.h">
+      <Filter>common\Renderer\Font\freetype-gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Font\freetype-gl\freetype-gl.h">
+      <Filter>common\Renderer\Font\freetype-gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Font\freetype-gl\platform.h">
+      <Filter>common\Renderer\Font\freetype-gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Font\freetype-gl\vertex-buffer.h">
+      <Filter>common\Renderer\Font\freetype-gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Font\freetype-gl\vertex-attribute.h">
+      <Filter>common\Renderer\Font\freetype-gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Time\ProfilingSection.h">
+      <Filter>common\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Time\ProfilingSystem.h">
+      <Filter>common\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Texture\GLTextureManager.h">
+      <Filter>common\Renderer\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CLCore.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Utils\CLFileImporter.h">
+      <Filter>common\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Utils\CLLogger.h">
+      <Filter>common\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Time\FPSCalc.h">
+      <Filter>common\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Objects\Object2D.h">
+      <Filter>common\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Console\CLConsole.h">
+      <Filter>common\Console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Console\CLConsole_Interface.h">
+      <Filter>common\Console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Console\CLConsole_NULL.h">
+      <Filter>common\Console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Physics\RigidBody.h">
+      <Filter>common\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Collision\BoundingVolumes\BoundingVolume.h">
+      <Filter>common\Collision\BoundingVolumes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Geometry\Sphere.h">
+      <Filter>common\Renderer\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Collision\BoundingVolumes\BoundingSphere.h">
+      <Filter>common\Collision\BoundingVolumes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Physics\Primitives\Primitive.h">
+      <Filter>common\Physics\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Physics\Primitives\Primitive_Sphere.h">
+      <Filter>common\Physics\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Collision\CollisionFunctions.h">
+      <Filter>common\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Physics\Primitives\Primitive_Plane.h">
+      <Filter>common\Physics\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Physics\Primitives\Primitive_Box.h">
+      <Filter>common\Physics\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Physics\Contact.h">
+      <Filter>common\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Physics\ContactResolver.h">
+      <Filter>common\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Collision\CollisionSystem.h">
+      <Filter>common\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Geometry\Cuboid.h">
+      <Filter>common\Renderer\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Physics\PhysicsSystem.h">
+      <Filter>common\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Physics\ForceGenerators\ForceGenerator.h">
+      <Filter>common\Physics\ForceGenerators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Physics\ForceGenerators\GravityGenerator.h">
+      <Filter>common\Physics\ForceGenerators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Physics\ForceGenerators\Spring.h">
+      <Filter>common\Physics\ForceGenerators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Physics\ForceGenerators\ExplosionGenerator.h">
+      <Filter>common\Physics\ForceGenerators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Collision\StaticCuboid.h">
+      <Filter>common\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Collision\StaticPlane.h">
+      <Filter>common\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Lights\DeferredLight_Ambient.h">
+      <Filter>common\Renderer\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Lights\DeferredLight_Directional.h">
+      <Filter>common\Renderer\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Geometry\Cone.h">
+      <Filter>common\Renderer\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Lights\DeferredLight_Spot.h">
+      <Filter>common\Renderer\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\RendererUtils.h">
+      <Filter>common\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Collision\CollisionStatic.h">
+      <Filter>common\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Collision\CollisionPhysicsObject.h">
+      <Filter>common\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Math\Transformation.h">
+      <Filter>common\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Utils\DebugUIWidget.h">
+      <Filter>common\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Utils\TypedData.h">
+      <Filter>common\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Utils\TypedDataBase.h">
+      <Filter>common\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\EasyDrawable.h">
+      <Filter>common\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\DeferredRenderer.h">
+      <Filter>common\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Debug\DebugGrid.h">
+      <Filter>common\Renderer\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Collision\CollisionMovable.h">
+      <Filter>common\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\CUDA\chag\pp\detail\nta.hpp">
+      <Filter>common\Renderer\Cuda\chag</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\CUDA\CudaHelpers\helper_cuda.h">
+      <Filter>common\Renderer\Cuda\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\CUDA\CudaHelpers\helper_cuda_drvapi.h">
+      <Filter>common\Renderer\Cuda\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\CUDA\CudaHelpers\helper_cuda_gl.h">
+      <Filter>common\Renderer\Cuda\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\CUDA\CudaHelpers\helper_functions.h">
+      <Filter>common\Renderer\Cuda\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\CUDA\CudaHelpers\helper_image.h">
+      <Filter>common\Renderer\Cuda\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\CUDA\CudaHelpers\helper_math.h">
+      <Filter>common\Renderer\Cuda\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\CUDA\CudaHelpers\helper_string.h">
+      <Filter>common\Renderer\Cuda\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\CUDA\CudaHelpers\helper_timer.h">
+      <Filter>common\Renderer\Cuda\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\ClusteredRenderer.h">
+      <Filter>common\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\CUDA\Cuda_Clustered.h">
+      <Filter>common\Renderer\Cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\CUDA\CUDA_Utils.h">
+      <Filter>common\Renderer\Cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\VertexBufferObject.h">
+      <Filter>common\Threads</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\common\Math\Math.inl">
+      <Filter>common\Math</Filter>
+    </None>
+    <None Include="..\common\Math\Matrix2D.inl">
+      <Filter>common\Math</Filter>
+    </None>
+    <None Include="..\common\Math\Vector2D.inl">
+      <Filter>common\Math</Filter>
+    </None>
+    <None Include="..\common\Math\Vector3D.inl">
+      <Filter>common\Math</Filter>
+    </None>
+    <None Include="..\common\Math\Vector4D.inl">
+      <Filter>common\Math</Filter>
+    </None>
+    <None Include="..\common\Math\Matrix3D.inl">
+      <Filter>common\Math</Filter>
+    </None>
+    <None Include="..\common\Math\Matrix4D.inl">
+      <Filter>common\Math</Filter>
+    </None>
+    <None Include="..\common\Renderer\CUDA\chag\pp\detail\compact.cu.inl">
+      <Filter>common\Renderer\Cuda\chag</Filter>
+    </None>
+    <None Include="..\common\Renderer\CUDA\chag\pp\detail\prefix.cu.inl">
+      <Filter>common\Renderer\Cuda\chag</Filter>
+    </None>
+    <None Include="..\common\Renderer\CUDA\chag\pp\detail\reduce.cu.inl">
+      <Filter>common\Renderer\Cuda\chag</Filter>
+    </None>
+    <None Include="..\common\Renderer\CUDA\chag\pp\detail\sort.cu.inl">
+      <Filter>common\Renderer\Cuda\chag</Filter>
+    </None>
+    <None Include="..\common\Renderer\CUDA\chag\pp\detail\split.cu.inl">
+      <Filter>common\Renderer\Cuda\chag</Filter>
+    </None>
+    <None Include="..\common\Renderer\CUDA\chag\pp\ext\detail\common.cu.inl">
+      <Filter>common\Renderer\Cuda\chag</Filter>
+    </None>
+    <None Include="..\common\Renderer\CUDA\chag\pp\ext\detail\range.cu.inl">
+      <Filter>common\Renderer\Cuda\chag</Filter>
+    </None>
+    <None Include="..\common\Renderer\CUDA\chag\pp\ext\detail\setup.cu.inl">
+      <Filter>common\Renderer\Cuda\chag</Filter>
+    </None>
+    <None Include="..\common\Renderer\CUDA\chag\pp\ext\detail\shared.cu.inl">
+      <Filter>common\Renderer\Cuda\chag</Filter>
+    </None>
+    <None Include="..\common\Renderer\CUDA\chag\pp\ext\detail\unit.cu.inl">
+      <Filter>common\Renderer\Cuda\chag</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="..\common\Renderer\CUDA\CUDA_Clustered.cu">
+      <Filter>common\Renderer\Cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\common\Renderer\CUDA\CUDA_Utils.cu">
+      <Filter>common\Renderer\Cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\common\Renderer\CUDA\CUDA_Clustered_Kernels.cu">
+      <Filter>common\Renderer\Cuda</Filter>
+    </CudaCompile>
+  </ItemGroup>
+</Project>
