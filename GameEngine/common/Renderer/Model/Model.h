@@ -34,6 +34,7 @@
 #include "Renderer/Model/Model_Material.h"
 #include "Renderer/Color.h"
 #include "Renderer/RendererUtils.h"
+#include "Collision/BoundingVolumes/AABoundingBox.h"
 
 #include <Utils/CommonIncludes.h>
 
@@ -63,6 +64,8 @@ namespace CaptainLucha
 
 		const std::string& GetName() const {return m_name;}
 
+		const AABoundingBox& GetAABB() const {return m_AABB;}
+
 	protected:
 		void LoadMaterials(std::stringstream& ss);
 		void LoadNodes(std::stringstream& ss);
@@ -73,11 +76,15 @@ namespace CaptainLucha
 		float LoadFloat(std::stringstream& ss);
 
 		void RemoveQuotes(std::string& word);
+
+		void CalculateAABB();
 		
 	private:
 		Model_Node* m_root;
 
 		Vector3Df m_baseTranslation;
+
+		AABoundingBox m_AABB;
 
 		std::vector<Model_Material> m_materials;
 		int m_numNodes;

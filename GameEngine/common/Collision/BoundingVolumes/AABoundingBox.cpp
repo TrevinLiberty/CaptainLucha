@@ -92,6 +92,15 @@ namespace CaptainLucha
 		return true;
 	}
 
+	bool AABoundingBox::PointInBB(const Vector3Df& point) const
+	{
+		if(point.x > m_max.x || point.x < m_min.x) return false;
+		if(point.y > m_max.y || point.y < m_min.y) return false;
+		if(point.z > m_max.z || point.z < m_min.z) return false;
+
+		return true;
+	}
+
 	void AABoundingBox::Update(const Quaternion& orientation, const Vector3D<Real>& trans)
 	{
 		Matrix3D<Real> rot = orientation.GetMatrix();
@@ -170,6 +179,29 @@ namespace CaptainLucha
 		m_max.z = max(lhs.m_max.z, rhs.m_max.z);
 	}
 
+	void AABoundingBox::Transform(const Matrix4Df& transform)
+	{
+		m_min = transform.TransformPosition(m_min);
+		m_max = transform.TransformPosition(m_max);
+	}
+
+	void AABoundingBox::Transform(const Vector3Df& pos)
+	{
+		m_min += pos;
+		m_max += pos;
+	}
+
+	Vector3Df AABoundingBox::GetRandomPosInside() const
+	{
+		return Vector3Df(RandInRange(m_min.x, m_max.x), RandInRange(m_min.y, m_max.y), RandInRange(m_min.z, m_max.z));
+	}
+
+	void AABoundingBox::ResetBV()
+	{
+		m_min = m_baseMin;
+		m_max = m_baseMax;
+	}
+
 	Real AABoundingBox::SurfaceArea() const
 	{
 		Vector3D<Real> size = m_max - m_min;
@@ -181,7 +213,6 @@ namespace CaptainLucha
 		SetColor(Color::White);
 		GetCurrentProgram()->SetUniform("emissive", 1.0f);
 
-		g_MVPMatrix->LoadIdentity();
 		DrawBegin(CL_LINES);
 		clVertex3(m_min.x, m_min.y, m_min.z);
 		clVertex3(m_min.x, m_min.y, m_max.z);

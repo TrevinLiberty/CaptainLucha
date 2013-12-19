@@ -23,6 +23,7 @@
  *	@author Trevin Liberty
  *	@file	SpringGenerator.h
  *	@brief	
+ *  @attention Significant resource for implementation: http://procyclone.com/
  *
 /****************************************************************************/
 

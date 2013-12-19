@@ -60,4 +60,10 @@ namespace CaptainLucha
 		if(m_parent)
 			m_parent->m_children.push_back(this);
 	}
+
+	void Model_Node::GetAABB(AABoundingBox& currentBB)
+	{
+		for(int i = 0; i < m_children.size(); ++i)
+			m_children[i]->GetAABB(currentBB);
+	}
 }

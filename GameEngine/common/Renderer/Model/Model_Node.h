@@ -35,6 +35,7 @@
 
 namespace CaptainLucha
 {
+	class AABoundingBox;
 	class GLProgram;
 	class Model;
 
@@ -48,6 +49,8 @@ namespace CaptainLucha
 
 		Model_Node* GetParent() {return m_parent;}
 		void SetParent(Model_Node* parent);
+
+		virtual void GetAABB(AABoundingBox& currentBB);
 
 	protected:
 		Model_Node* m_parent;

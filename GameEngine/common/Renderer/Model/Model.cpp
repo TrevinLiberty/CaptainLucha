@@ -53,6 +53,8 @@ namespace CaptainLucha
 
 		LoadMaterials(ss);
 		LoadNodes(ss);
+
+		CalculateAABB();
 	}
 
 	Model::~Model()
@@ -272,5 +274,11 @@ namespace CaptainLucha
 	{
 		if(!quotedName.empty())
 			quotedName = quotedName.substr(1, quotedName.size() - 2);
+	}
+
+	void Model::CalculateAABB()
+	{
+		m_root->GetAABB(m_AABB);
+		m_AABB.Transform(m_baseTranslation);
 	}
 }

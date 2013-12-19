@@ -23,6 +23,7 @@
  *	@author Trevin Liberty
  *	@file	CollisionFunctions.h
  *	@brief	Utility function used for generic BoundingVolume collision detection and primitive contact generation.
+ *  @attention Significant resource for implementation: http://procyclone.com/
  *
 /****************************************************************************/
 

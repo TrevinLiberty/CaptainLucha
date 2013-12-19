@@ -77,6 +77,8 @@ namespace CaptainLucha
 		 */
 		bool BoundingBoxCollision(const AABoundingBox& otherBox) const;
 
+		bool PointInBB(const Vector3Df& point) const;
+
 		/**
 		 * @brief     Updates the AABB to a new position. 
 		 *Updates the AABB size to encapsulate the oriented bounding box created from rot.
@@ -110,6 +112,13 @@ namespace CaptainLucha
 		void CombineAABB(const AABoundingBox& lhs, const AABoundingBox& rhs);
 
 		virtual AABoundingBox ConvertToAABB() const {return *this;}
+
+		void Transform(const Matrix4Df& transform);
+		void Transform(const Vector3Df& pos);
+
+		Vector3Df GetRandomPosInside() const;
+
+		void ResetBV();
 
 		/**
 		 * @brief     Returns the surface area of the AABB

@@ -48,6 +48,8 @@ namespace CaptainLucha
 
 		void Draw(GLProgram& glProgram);
 
+		AABoundingBox GetAABB();
+
 	protected:
 
 	private:

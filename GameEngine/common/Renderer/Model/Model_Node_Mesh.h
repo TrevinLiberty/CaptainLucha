@@ -33,6 +33,7 @@
 
 namespace CaptainLucha
 {
+	class AABoundingBox;
 	class Mesh;
 
 	class Model_Node_Mesh : public Model_Node
@@ -47,6 +48,8 @@ namespace CaptainLucha
 
 		void RemoveMesh(Mesh* mesh);
 		void RemoveMesh(int index);
+
+		void GetAABB(AABoundingBox& currentBB);
 
 	protected:
 		std::vector<std::pair<Mesh*, int> > m_meshes;

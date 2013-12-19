@@ -51,8 +51,10 @@ namespace CaptainLucha
 	void Mesh::Draw(GLProgram& glProgram)
 	{
 		m_ibo->Draw(glProgram);
-
-		//m_bbox.DebugDraw();
 	}
 
+	AABoundingBox Mesh::GetAABB()
+	{
+		return AABoundingBox(m_verts);
+	}
 }

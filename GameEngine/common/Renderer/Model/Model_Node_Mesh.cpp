@@ -57,6 +57,10 @@ namespace CaptainLucha
 			{
 				owner->m_materials[m_meshes[i].second].ApplyMaterial(glProgram);
 				m_meshes[i].first->Draw(glProgram);
+
+				//SetGLProgram(&glProgram);
+				//m_meshes[i].first->GetAABB().DebugDraw();
+				//SetGLProgram(NULL);
 			}
 		}
 
@@ -112,4 +116,12 @@ namespace CaptainLucha
 		}
 	}
 
+	void Model_Node_Mesh::GetAABB(AABoundingBox& AABB)
+	{
+		for(int i = 0; i< m_meshes.size(); ++i)
+		{
+			AABoundingBox meshAABB(m_meshes[i].first->GetAABB());
+			AABB.CombineAABB(AABB, meshAABB);
+		}
+	}
 }

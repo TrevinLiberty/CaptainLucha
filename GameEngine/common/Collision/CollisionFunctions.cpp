@@ -23,6 +23,7 @@
  *	@author Trevin Liberty
  *	@file	
  *	@brief	
+ *  @attention Significant resource for implementation: http://procyclone.com/
  *
 /****************************************************************************/
 
