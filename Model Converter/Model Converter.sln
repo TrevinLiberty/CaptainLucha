@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Model Converter", "Model Converter.vcxproj", "{CC89A14B-12DD-4FF7-8335-127D613E1BF3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		DebugInline|Win32 = DebugInline|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CC89A14B-12DD-4FF7-8335-127D613E1BF3}.DebugInline|Win32.ActiveCfg = DebugInline|Win32
+		{CC89A14B-12DD-4FF7-8335-127D613E1BF3}.DebugInline|Win32.Build.0 = DebugInline|Win32
+		{CC89A14B-12DD-4FF7-8335-127D613E1BF3}.Release|Win32.ActiveCfg = Release|Win32
+		{CC89A14B-12DD-4FF7-8335-127D613E1BF3}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

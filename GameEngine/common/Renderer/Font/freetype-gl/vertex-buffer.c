@@ -47,6 +47,9 @@
 #define DIRTY  (1)
 #define FROZEN (2)
 
+#pragma warning(push)
+#pragma warning(disable:4028)
+
 
 // ----------------------------------------------------------------------------
 vertex_buffer_t *
@@ -619,3 +622,4 @@ vertex_buffer_erase( vertex_buffer_t * self,
     vector_erase( self->items, index );
     self->state = DIRTY;
 }
+#pragma warning(pop)

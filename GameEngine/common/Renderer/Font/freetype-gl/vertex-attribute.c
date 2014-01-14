@@ -39,7 +39,8 @@
 #include "platform.h"
 #include "vertex-attribute.h"
 
-
+#pragma warning(push)
+#pragma warning(disable:4245)
 
 // ----------------------------------------------------------------------------
 vertex_attribute_t *
@@ -166,3 +167,4 @@ vertex_attribute_enable( vertex_attribute_t *attr )
     glVertexAttribPointer( attr->index, attr->size, attr->type,
                            attr->normalized, attr->stride, attr->pointer );
 }
+#pragma warning(pop)

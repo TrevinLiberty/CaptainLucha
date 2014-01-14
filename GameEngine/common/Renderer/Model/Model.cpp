@@ -231,10 +231,8 @@ namespace CaptainLucha
 			verts.resize(numVerts);
 			indices.resize(numIndices);
 
-			//ss >> std::skipws;
 			ss.read((char*)verts.data(), numVerts * sizeof(TangentSpaceVertex));
 			ss.read((char*)indices.data(), numIndices * sizeof(int));
-			//ss >> std::skipws;
 
 			Mesh* newMesh = new Mesh(verts, indices);
 			outMeshs.push_back(std::pair<Mesh*, int>(newMesh, materialIndex));

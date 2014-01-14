@@ -5,15 +5,18 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameEngine", "GameEngine.vc
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Win32 = Debug|Win32
+		DebugInline_CUDA|Win32 = DebugInline_CUDA|Win32
 		DebugInline|Win32 = DebugInline|Win32
+		Release_CUDA|Win32 = Release_CUDA|Win32
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B16A13D6-B052-45E8-8EB7-86F8DA5AEEC4}.Debug|Win32.ActiveCfg = Debug|Win32
-		{B16A13D6-B052-45E8-8EB7-86F8DA5AEEC4}.Debug|Win32.Build.0 = Debug|Win32
+		{B16A13D6-B052-45E8-8EB7-86F8DA5AEEC4}.DebugInline_CUDA|Win32.ActiveCfg = DebugInline_CUDA|Win32
+		{B16A13D6-B052-45E8-8EB7-86F8DA5AEEC4}.DebugInline_CUDA|Win32.Build.0 = DebugInline_CUDA|Win32
 		{B16A13D6-B052-45E8-8EB7-86F8DA5AEEC4}.DebugInline|Win32.ActiveCfg = DebugInline|Win32
 		{B16A13D6-B052-45E8-8EB7-86F8DA5AEEC4}.DebugInline|Win32.Build.0 = DebugInline|Win32
+		{B16A13D6-B052-45E8-8EB7-86F8DA5AEEC4}.Release_CUDA|Win32.ActiveCfg = Release_CUDA|Win32
+		{B16A13D6-B052-45E8-8EB7-86F8DA5AEEC4}.Release_CUDA|Win32.Build.0 = Release_CUDA|Win32
 		{B16A13D6-B052-45E8-8EB7-86F8DA5AEEC4}.Release|Win32.ActiveCfg = Release|Win32
 		{B16A13D6-B052-45E8-8EB7-86F8DA5AEEC4}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection

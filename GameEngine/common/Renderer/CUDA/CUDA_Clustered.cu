@@ -281,7 +281,7 @@ namespace CaptainLucha
 			const int CURRENT_BRANCHING_FACTOR = LightBVH::BRANCHING_FACTOR;//todo update this when factor can change
 			dim3 threadsPerBlock = dim3(CURRENT_BRANCHING_FACTOR, 6, 1);
 			dim3 blocks = dim3(std::ceil(numLights / (float)CURRENT_BRANCHING_FACTOR), 1, 1);
-			SetLeafsAndCalculateParentNodes<<<blocks, threadsPerBlock>>>(m_dlightPosRadData.get(), m_lightBVH, m_dlightIndices.get());
+			//SetLeafsAndCalculateParentNodes<<<blocks, threadsPerBlock>>>(m_dlightPosRadData.get(), m_lightBVH, m_dlightIndices.get());
 
 			//float4* temp = new float4[m_lightBVH->GetNumNonLeafNodes()];
 			//cudaMemcpy(temp, m_lightBVH->m_minAABBNodes.get(), m_lightBVH->GetNumNonLeafNodes() * sizeof(float4), cudaMemcpyDeviceToHost);
