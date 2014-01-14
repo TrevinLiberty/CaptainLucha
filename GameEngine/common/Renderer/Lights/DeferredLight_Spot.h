@@ -29,14 +29,15 @@
 #ifndef DEFERREDLIGHT_SPOT_H_CL
 #define DEFERREDLIGHT_SPOT_H_CL
 
-#include "Renderer/Lights/DeferredLight.h"
+#include "Light_Spot.h"
+#include "DeferredLight.h"
 
 namespace CaptainLucha
 {
 	class GLProgram;
 	class GLTexture;
 
-	class DeferredLight_Spot : public DeferredLight
+	class DeferredLight_Spot : public DeferredLight, public Light_Spot
 	{
 	public:
 		DeferredLight_Spot();
@@ -45,30 +46,10 @@ namespace CaptainLucha
 		void ApplyLight(const Vector3Df& cameraPos, GLTexture* renderTarget0, GLTexture* renderTarget1, GLTexture* renderTarget2, GLTexture* renderTarget3);
 		void StencilPass();
 
-		void SetRadius(float radius) {m_radius = radius;}
-		float GetRadius() const {return m_radius;}
-
-		void SetLookAt(const Vector3Df& lookAt);
-
-		const float GetInnerConeAngle() const {return m_innerConeAngle;}
-		void SetInnerConeAngle(const float& degrees) {m_innerConeAngle = DegreesToRadians(degrees);}
-
-		const float GetOuterConeAngle() const {return m_outerConeAngle;}
-		void SetOuterConeAngle(const float& degrees) {m_outerConeAngle = DegreesToRadians(degrees);}
-
-		const Vector3Df& GetLightDir() const {return m_lightDir;}
-		void SetLightDir(const Vector3Df& val) {m_lightDir = val;}
-
 	protected:
+		void DrawCone();
 
 	private:
-		float m_radius;
-
-		float m_innerConeAngle;
-		float m_outerConeAngle;
-
-		Vector3Df m_lightDir;
-
 		static GLProgram* m_glProgram;
 	};
 }

@@ -25,11 +25,14 @@
  *	@brief	Deferred renderer responsible for drawing all objects added by DeferredRenderer::AddObjectToRender(Object* object),
  *				and applying all DeferredLight.
  *  @see	DeferredLight
+ *	@todo	Need a better setup for lights.
  *
 /****************************************************************************/
 
 #ifndef DEFERREDRENDERER_H_CL
 #define DEFERREDRENDERER_H_CL
+
+#include "Renderer.h"
 
 #include <Math/Vector3D.h>
 #include <Math/Matrix4D.h>
@@ -52,7 +55,7 @@ namespace CaptainLucha
 	/**
 	* @brief     Draw the whole scene.
 	*/
-	class DeferredRenderer
+	class DeferredRenderer : public Renderer
 	{
 	public:
 		DeferredRenderer();
@@ -63,50 +66,23 @@ namespace CaptainLucha
 		 */
 		virtual void Draw();
 
-		/**
-		 * @brief     Adds object to the renderer to enable drawing.
-		 * @param	  Object * object
-		 */
-		void AddObjectToRender(Object* object);
-
-		/**
-		 * @brief     Removes the object from renderer.
-		 * @param	  Object * object
-		 */
-		void RemoveObject(Object* object);
-
-		/**
-		 * @brief     Sets the view matrix for the next call to DeferredRenderer:Draw();
-		 * @param	  const Matrix4Df & view
-		 */
-		void SetViewMatrix(const Matrix4Df& view) {m_viewMatrix = view;}
-
-		/**
-		 * @brief     Sets the current position of the camera. Used for specular shading
-		 * @param	  const Vector3Df & camPos
-		 */
-		void SetCameraPos(const Vector3Df& camPos) {m_cameraPos = camPos;}
-
-		DeferredLight_Point* CreateNewPointLight();
-		DeferredLight_Ambient* CreateNewAmbientLight();
-		DeferredLight_Directional* CreateNewDirectionalLight();
-		DeferredLight_Spot* CreateNewSpotLight();
-
+		virtual Light* CreateNewPointLight();
+		virtual Light* CreateNewAmbientLight();
+		virtual Light_Directional* CreateNewDirectionalLight();
+		virtual Light_Spot* CreateNewSpotLight();
 
 		/**
 		 * @brief		Removes a light created for the renderer.
 		 * @param		DeferredLight * light
 		 * @attention	This deletes the light if found.
 		 */
-		void RemoveLight(DeferredLight* light);
+		virtual void RemoveLight(Light* light);
 
 		/**
 		 * @brief     Samples the last drawn scene to find the objectID of the center of the screen. The object ID is unique for every Object.
 		 * @see		  Object.h
 		 */
 		int GetObjectIDFromRT() const;
-
-		void SetDebugDrawing(bool t) {m_debugDraw = t;}
 
 	protected:
 		/**
@@ -122,16 +98,9 @@ namespace CaptainLucha
 		void AddNewFullscreenLight(DeferredLight* newLight);
 
 		/**
-		 * @brief     Iterates through all added objects and draws them.
-		 * @param	  GLProgram & program
-		 */
-		void DrawScene(GLProgram& program);
-
-		/**
 		 * @brief     DrawScene onto the render targets 0 - 4. 
 		 */
 		void PopulateGBuffers();
-
 
 		/**
 		 * @brief     Draws the final shaded scene to the screen. This include material color, diffuse light, and specular light.
@@ -171,24 +140,12 @@ namespace CaptainLucha
 		 */
 		void InitRenderer();
 
-		/**
-		 * @brief     Renders a full screen quad with texture coordinates.
-		 */
-		void FullScreenPass();
-
 		void DebugRenderGBuffer();
 
 		///////////////////////////////////////////////////////
 		// Variables
-		std::vector<Object*> m_renderableObjects;
-
-		std::vector<DeferredLight*> m_lights;
+		std::vector<DeferredLight*> m_deferredLights;
 		std::vector<DeferredLight*> m_fullscreenLights;
-
-		bool m_debugDraw;
-
-		Matrix4Df m_viewMatrix;
-		Vector3Df m_cameraPos;
 
 		//Deferred Shading
 		unsigned int m_fbo0;

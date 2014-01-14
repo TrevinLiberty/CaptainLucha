@@ -129,8 +129,6 @@ namespace CaptainLucha
 		g_MVPMatrix->Othographic(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, 1, -1);
 		g_MVPMatrix->Perspective(45.0f, WINDOW_ASPECT_RATIO, 0.1f, 10000.0f);
 
-		//g_DeferredRenderer = new DeferredRenderer();
-
 		g_DebugFont = new Font("Data/Font/Anonymous Pro.ttf", DEBUG_FONT_HEIGHT);
 
 		g_CurrentColor = Vector4Df(1.0f, 1.0f, 1.0f, 1.0f);
@@ -501,7 +499,7 @@ namespace CaptainLucha
 	{
 		IsRendererInitialized();
 
-		g_CurrentProgram->SetModelViewProjection();
+ 		g_CurrentProgram->SetModelViewProjection();
 		g_CurrentProgram->SetUniform("color", g_CurrentColor);
 
 		if(!g_DrawVertices->empty() && g_HasDrawBegun)
@@ -548,6 +546,11 @@ namespace CaptainLucha
 		g_CurrentColor = color;
 	}
 
+	void SetColor(const Color& color, float alphaOverride)
+	{
+		g_CurrentColor = Color(color.r, color.g, color.b, alphaOverride);
+	}
+
 	void clSetPointSize(float size)
 	{
 		g_PointSize = size;
@@ -560,6 +563,16 @@ namespace CaptainLucha
 			g_DrawVertices->push_back(x);
 			g_DrawVertices->push_back(y);
 			g_DrawVertices->push_back(z);
+		}
+	}
+
+	void clVertex3f(const Vector3Df& vert)
+	{
+		if(g_HasDrawBegun)
+		{
+			g_DrawVertices->push_back(vert.x);
+			g_DrawVertices->push_back(vert.y);
+			g_DrawVertices->push_back(vert.z);
 		}
 	}
 
@@ -596,6 +609,28 @@ namespace CaptainLucha
 	void clColor4(const Color& color)
 	{
 		clColor4(color.r, color.g, color.b, color.a);
+	}
+
+	void FullScreenPass()
+	{
+		g_MVPMatrix->PushMatrix();
+		g_MVPMatrix->LoadIdentity();
+		g_MVPMatrix->SetProjectionMode(CL_ORTHOGRAPHIC);
+		DrawBegin(CL_QUADS);
+		{
+			clVertex3(0.0f, 0.0f, 0.0f);
+			clVertex3(WINDOW_WIDTHf, 0.0f, 0.0f);
+			clVertex3(WINDOW_WIDTHf, WINDOW_HEIGHTf, 0.0f);
+			clVertex3(0.0f, WINDOW_HEIGHTf, 0.0f);
+
+			clTexCoord(0, 0);
+			clTexCoord(1, 0);
+			clTexCoord(1, 1);
+			clTexCoord(0, 1);
+		}
+		DrawEnd();
+		g_MVPMatrix->SetProjectionMode(CL_PROJECTION);
+		g_MVPMatrix->PopMatrix();
 	}
 
 	void DrawPlus(const Vector3Df& pos, float size)
@@ -958,6 +993,42 @@ namespace CaptainLucha
 		}
 
 		return CL_CENTER;
+	}
+
+	void AddQuadCubeToArray(std::vector<Vector3Df>& verts, const Vector3Df& min, const Vector3Df& max)
+	{
+		//x
+		verts.push_back(Vector3Df(min.x, max.y, max.z));
+		verts.push_back(Vector3Df(min.x, max.y, min.z));
+		verts.push_back(Vector3Df(min.x, min.y, min.z));
+		verts.push_back(Vector3Df(min.x, min.y, max.z));
+
+		verts.push_back(Vector3Df(max.x, min.y, max.z));
+		verts.push_back(Vector3Df(max.x, min.y, min.z));
+		verts.push_back(Vector3Df(max.x, max.y, min.z));
+		verts.push_back(Vector3Df(max.x, max.y, max.z));
+
+ 		//y
+ 		verts.push_back(Vector3Df(max.x, min.y, min.z));
+ 		verts.push_back(Vector3Df(max.x, min.y, max.z));
+ 		verts.push_back(Vector3Df(min.x, min.y, max.z));
+ 		verts.push_back(Vector3Df(min.x, min.y, min.z));
+ 
+		verts.push_back(Vector3Df(max.x, max.y, max.z));
+		verts.push_back(Vector3Df(max.x, max.y, min.z));
+		verts.push_back(Vector3Df(min.x, max.y, min.z));
+		verts.push_back(Vector3Df(min.x, max.y, max.z));
+ 
+ 		//z
+		verts.push_back(Vector3Df(max.x, max.y, min.z));
+		verts.push_back(Vector3Df(max.x, min.y, min.z));
+		verts.push_back(Vector3Df(min.x, min.y, min.z));
+		verts.push_back(Vector3Df(min.x, max.y, min.z));
+ 
+		verts.push_back(Vector3Df(min.x, max.y, max.z));
+		verts.push_back(Vector3Df(min.x, min.y, max.z));
+		verts.push_back(Vector3Df(max.x, min.y, max.z));
+		verts.push_back(Vector3Df(max.x, max.y, max.z));
 	}
 
 	Vertex& Vertex::operator= (const TangentSpaceVertex& rhs)

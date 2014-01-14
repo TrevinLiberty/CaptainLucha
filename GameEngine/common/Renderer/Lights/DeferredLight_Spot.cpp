@@ -35,7 +35,6 @@
 namespace CaptainLucha
 {
 	DeferredLight_Spot::DeferredLight_Spot()
-		: DeferredLight(CL_POINT_LIGHT)
 	{
 		if(!m_glProgram)
 		{
@@ -65,6 +64,29 @@ namespace CaptainLucha
 		m_glProgram->SetUniform("innerAngle", cos(m_innerConeAngle));
 		m_glProgram->SetUniform("outerAngle", cos(m_outerConeAngle));
 
+		DrawCone();
+	}
+
+	void DeferredLight_Spot::StencilPass()
+	{
+		glEnable(GL_DEPTH_TEST);
+		glDisable(GL_CULL_FACE);
+
+		glClear(GL_STENCIL_BUFFER_BIT);
+		glStencilFunc(GL_ALWAYS, 0, 0);
+		glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP);
+		glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
+
+		DrawCone();
+
+		glEnable(GL_CULL_FACE);
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	//	Protected
+	//////////////////////////////////////////////////////////////////////////
+	void DeferredLight_Spot::DrawCone()
+	{
 		g_MVPMatrix->PushMatrix();
 		g_MVPMatrix->LoadIdentity();
 
@@ -81,16 +103,8 @@ namespace CaptainLucha
 		g_MVPMatrix->PopMatrix();
 	}
 
-	void DeferredLight_Spot::StencilPass()
-	{
-
-	}
-
-	void DeferredLight_Spot::SetLookAt(const Vector3Df& lookAt)
-	{
-		m_lightDir = lookAt - GetPosition();
-		m_lightDir.Normalize();
-	}
-
+	//////////////////////////////////////////////////////////////////////////
+	//	Private
+	//////////////////////////////////////////////////////////////////////////
 	GLProgram* DeferredLight_Spot::m_glProgram = NULL;
 }

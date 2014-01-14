@@ -39,6 +39,7 @@ namespace CaptainLucha
 	public:
 		Vector4D() : x((Real)0.0), y((Real)0.0), z((Real)0.0), w((Real)0.0) {};
 		Vector4D(Real x, Real y, Real z, Real w) : x(x), y(y), z(z), w(w) {};
+		Vector4D(const Vector3D<Real>& vect, Real w) : x(vect.x), y(vect.y), z(vect.z), w(w) {};
 		Vector4D(const Vector4D<Real>& vect) : x(vect.x), y(vect.y), z(vect.z), w(vect.w) {};
 
 		Real x;

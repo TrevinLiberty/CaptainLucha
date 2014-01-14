@@ -30,10 +30,7 @@
 
 namespace CaptainLucha
 {
-	DeferredLight::DeferredLight(LightType type) 
-		: m_color(Color::White),
-		  m_type(type),
-		  m_intensity(1.0f)
+	DeferredLight::DeferredLight()
 	{
 		if(!m_nullProgram)
 			m_nullProgram = new GLProgram("Data/Shaders/DepthShader.vert", "Data/Shaders/DepthShader.frag");

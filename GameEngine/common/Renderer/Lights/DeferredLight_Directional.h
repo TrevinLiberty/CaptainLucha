@@ -29,14 +29,15 @@
 #ifndef DEFERREDLIGHT_DIRECTIONAL_H_CL
 #define DEFERREDLIGHT_DIRECTIONAL_H_CL
 
-#include "Renderer/Lights/DeferredLight.h"
+#include "Light_Directional.h"
+#include "DeferredLight.h"
 
 namespace CaptainLucha
 {
 	class GLProgram;
 	class GLTexture;
 
-	class DeferredLight_Directional : public DeferredLight
+	class DeferredLight_Directional : public DeferredLight, public Light_Directional
 	{
 	public:
 		DeferredLight_Directional();
@@ -44,15 +45,10 @@ namespace CaptainLucha
 
 		void ApplyLight(const Vector3Df& cameraPos, GLTexture* renderTarget0, GLTexture* renderTarget1, GLTexture* renderTarget2, GLTexture* renderTarget3);
 
-		const Vector3Df& GetLightDir() const {return m_lightDir;}
-		void SetLightDir(const Vector3Df& val) {m_lightDir = val;}
-
 	protected:
 
 	private:
 		static GLProgram* m_glProgram;
-
-		Vector3Df m_lightDir;
 	};
 }
 

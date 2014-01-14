@@ -154,29 +154,29 @@ Vector3D<Real> Vector3D<Real>::CrossProduct(const Vector3D& rhs) const
 		z * rhs.x - x * rhs.z,
 		x * rhs.y - y * rhs.x);
 }
-
-template<class Real>
-Vector3D<Real>::operator Vector3D<int>() const
-{
-	return Vector3D<int>
-		(static_cast<int>(x), 
-		static_cast<int>(y), 
-		static_cast<int>(z));
-}
-
-template<class Real>
-Vector3D<Real>::operator Vector3D<float>() const
-{
-	return Vector3D<float>(static_cast<float>(x), 
-		static_cast<float>(y), 
-		static_cast<float>(z));
-}
-
-template<class Real>
-Vector3D<Real>::operator Vector3D<double>() const
-{
-	return Vector3D<double>
-		(static_cast<double>(x), 
-		static_cast<double>(y), 
-		static_cast<double>(z));
-}
+//
+//template<class Real>
+//Vector3D<Real>::operator Vector3D<int>() const
+//{
+//	return Vector3D<int>
+//		(static_cast<int>(x), 
+//		static_cast<int>(y), 
+//		static_cast<int>(z));
+//}
+//
+//template<class Real>
+//Vector3D<Real>::operator Vector3D<float>() const
+//{
+//	return Vector3D<float>(static_cast<float>(x), 
+//		static_cast<float>(y), 
+//		static_cast<float>(z));
+//}
+//
+//template<class Real>
+//Vector3D<Real>::operator Vector3D<double>() const
+//{
+//	return Vector3D<double>
+//		(static_cast<double>(x), 
+//		static_cast<double>(y), 
+//		static_cast<double>(z));
+//}

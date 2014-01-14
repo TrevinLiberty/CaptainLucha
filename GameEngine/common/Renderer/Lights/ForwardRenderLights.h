@@ -26,8 +26,8 @@
  *
 /****************************************************************************/
 
-#ifndef LIGHT_H_CL
-#define LIGHT_H_CL
+#ifndef FORWARD_LIGHT_H_CL
+#define FORWARD_LIGHT_H_CL
 
 #include "Math/Vector2D.h"
 #include "Math/Vector3D.h"

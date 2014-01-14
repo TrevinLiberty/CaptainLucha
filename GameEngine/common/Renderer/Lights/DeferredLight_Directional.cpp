@@ -34,7 +34,6 @@
 namespace CaptainLucha
 {
 	DeferredLight_Directional::DeferredLight_Directional()
-		: DeferredLight(CL_AMBIENT_LIGHT)
 	{
 		if(!m_glProgram)
 			m_glProgram = new GLProgram("Data/Shaders/DeferredVertShader.vert", "Data/Shaders/DeferredDirectionLight.frag");

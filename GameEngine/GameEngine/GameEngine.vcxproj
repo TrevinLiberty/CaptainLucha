@@ -86,6 +86,7 @@
     <ClCompile Include="..\common\Renderer\Model\Model_Material.cpp" />
     <ClCompile Include="..\common\Renderer\Model\Model_Node.cpp" />
     <ClCompile Include="..\common\Renderer\Model\Model_Node_Mesh.cpp" />
+    <ClCompile Include="..\common\Renderer\Renderer.cpp" />
     <ClCompile Include="..\common\Renderer\RendererUtils.cpp" />
     <ClCompile Include="..\common\Renderer\Shader\GLProgram.cpp" />
     <ClCompile Include="..\common\Renderer\Texture\GLTextureManager.cpp" />
@@ -203,11 +204,15 @@
     <ClInclude Include="..\common\Renderer\Lights\DeferredLight_Point.h" />
     <ClInclude Include="..\common\Renderer\Lights\DeferredLight_Spot.h" />
     <ClInclude Include="..\common\Renderer\Lights\ForwardRenderLights.h" />
+    <ClInclude Include="..\common\Renderer\Lights\Light.h" />
+    <ClInclude Include="..\common\Renderer\Lights\Light_Directional.h" />
+    <ClInclude Include="..\common\Renderer\Lights\Light_Spot.h" />
     <ClInclude Include="..\common\Renderer\MatrixStack.h" />
     <ClInclude Include="..\common\Renderer\Model\Model.h" />
     <ClInclude Include="..\common\Renderer\Model\Model_Material.h" />
     <ClInclude Include="..\common\Renderer\Model\Model_Node.h" />
     <ClInclude Include="..\common\Renderer\Model\Model_Node_Mesh.h" />
+    <ClInclude Include="..\common\Renderer\Renderer.h" />
     <ClInclude Include="..\common\Renderer\RendererUtils.h" />
     <ClInclude Include="..\common\Renderer\Shader\GLProgram.h" />
     <ClInclude Include="..\common\Renderer\Texture\GLTextureManager.h" />
@@ -229,6 +234,7 @@
     <ClInclude Include="..\common\Utils\Commandlets.h" />
     <ClInclude Include="..\common\Utils\CommonIncludes.h" />
     <ClInclude Include="..\common\Utils\CLFileImporter.h" />
+    <ClInclude Include="..\common\Utils\CoolStuff.h" />
     <ClInclude Include="..\common\Utils\DebugUIWidget.h" />
     <ClInclude Include="..\common\Utils\Memory\MemoryManager.h" />
     <ClInclude Include="..\common\Utils\Memory\MemoryOverride.h" />
@@ -251,6 +257,7 @@
     <None Include="..\common\Math\Vector2D.inl" />
     <None Include="..\common\Math\Vector3D.inl" />
     <None Include="..\common\Math\Vector4D.inl" />
+    <None Include="..\common\Renderer\CUDA\chag\pp\compact.cuh" />
     <None Include="..\common\Renderer\CUDA\chag\pp\detail\compact.cu.inl" />
     <None Include="..\common\Renderer\CUDA\chag\pp\detail\prefix.cu.inl" />
     <None Include="..\common\Renderer\CUDA\chag\pp\detail\reduce.cu.inl" />
@@ -261,10 +268,19 @@
     <None Include="..\common\Renderer\CUDA\chag\pp\ext\detail\setup.cu.inl" />
     <None Include="..\common\Renderer\CUDA\chag\pp\ext\detail\shared.cu.inl" />
     <None Include="..\common\Renderer\CUDA\chag\pp\ext\detail\unit.cu.inl" />
+    <None Include="..\common\Renderer\CUDA\chag\pp\prefix.cuh" />
+    <None Include="..\common\Renderer\CUDA\chag\pp\reduce.cuh" />
+    <None Include="..\common\Renderer\CUDA\chag\pp\sort.cuh" />
+    <None Include="..\common\Renderer\CUDA\chag\pp\split.cuh" />
+    <None Include="..\common\Renderer\CUDA\CUDA_Clustered_Kernels.cuh" />
+    <ClInclude Include="..\common\Renderer\CUDA\CUDA_Lights.cuh">
+      <FileType>Document</FileType>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="..\common\Renderer\CUDA\CUDA_Clustered.cu" />
     <CudaCompile Include="..\common\Renderer\CUDA\CUDA_Clustered_Kernels.cu" />
+    <CudaCompile Include="..\common\Renderer\CUDA\CUDA_Lights.cu" />
     <CudaCompile Include="..\common\Renderer\CUDA\CUDA_Utils.cu" />
   </ItemGroup>
   <ItemGroup>
@@ -388,6 +404,13 @@
       <AdditionalDependencies>cudart.lib;glu32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(CUDA_PATH)\lib\Win32\;</AdditionalLibraryDirectories>
     </Lib>
+    <CudaLink>
+      <GPUDebugInfo>true</GPUDebugInfo>
+    </CudaLink>
+    <CudaCompile>
+      <Warning>W3</Warning>
+      <CodeGeneration>compute_20,sm_20</CodeGeneration>
+    </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Server|Win32'">
     <ClCompile>
@@ -455,7 +478,11 @@
     <CudaCompile>
       <CudaRuntime>Shared</CudaRuntime>
       <Runtime>MD</Runtime>
+      <Warning>W3</Warning>
     </CudaCompile>
+    <CudaLink>
+      <GPUDebugInfo>false</GPUDebugInfo>
+    </CudaLink>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

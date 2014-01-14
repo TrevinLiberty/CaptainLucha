@@ -29,11 +29,55 @@
 #ifndef CUDA_UTILS_H_CL
 #define CUDA_UTILS_H_CL
 
+#include "vector_types.h"
+
 namespace CaptainLucha
 {
+	static const int DEFAULT_THREADS_PER_BLOCK = 192;
+
 	void InitCuda();
 
 	bool IsCudaInit();
+
+	inline int GetReqNumBlocks(int numElements, int numThreadsPerBlock = DEFAULT_THREADS_PER_BLOCK)
+	{
+		return (int)std::ceil(numElements / (float)numThreadsPerBlock);
+	}
+
+	//Found at http://www.cse.chalmers.se/~olaolss/main_frame.php?contents=publication&id=clustered_shading Jan 7th 2014. ClusteredForwardDemo
+	template <int BITS>
+	__host__ __device__ inline 
+		unsigned int spreadBits(unsigned int value, unsigned int stride, unsigned int offset)
+	{
+		unsigned int x = (unsigned int(1) << BITS) - 1;
+		unsigned int v = value & x;
+		unsigned int mask = 1;
+		unsigned int result = 0;
+		for (unsigned int i = 0; i < BITS; ++i)
+		{
+			result |= mask & v;
+			v = v << (stride - 1);
+			mask = mask << stride;
+		}
+		return result << offset;
+	}
+
+	//Found at http://www.cse.chalmers.se/~olaolss/main_frame.php?contents=publication&id=clustered_shading Jan 7th 2014. ClusteredForwardDemo
+	template <int BITS>
+	__host__ __device__ inline 
+		unsigned int unspreadBits(unsigned int value, unsigned int stride, unsigned int offset)
+	{
+		unsigned int v = value >> offset;
+		unsigned int mask = 1;
+		unsigned int result = 0;
+		for (unsigned int i = 0; i < BITS; ++i)
+		{
+			result |= mask & v;
+			v = v >> (stride - 1);
+			mask = mask << 1;
+		}
+		return result;
+	}
 }
 
 #endif

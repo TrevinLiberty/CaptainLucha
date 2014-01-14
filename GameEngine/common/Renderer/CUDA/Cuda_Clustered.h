@@ -35,18 +35,19 @@ namespace CaptainLucha
 	{
 	public:
 		virtual void Init(
-			unsigned int clusterFlagBuffer, 
-			unsigned int NumClustersX, 
-			unsigned int NumClustersY, 
-			unsigned int NumClustersZ) = 0;
+			unsigned int clusterAssignmentBuffer, 
+			unsigned int numClustersX, 
+			unsigned int numClustersY, 
+			unsigned int numClustersZ) = 0;
 
 		virtual void FindUniqueClusters() = 0;
+		virtual void CreateLightBVH(int numLights, float* lightPosRadData) = 0;
 
 		virtual unsigned int GetNumUsedClusters() const = 0;
+		
+		virtual const unsigned int* GetUniqueIndices() const = 0;
 
 		static Cuda_Clustered* CreateRenderer();
-
-		virtual const unsigned int* GetUniqueIndices() const = 0;
 	};
 }
 

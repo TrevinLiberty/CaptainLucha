@@ -57,16 +57,45 @@ namespace CaptainLucha
 			DebugRenderGBuffer();
 	}
 
+	Light* ClusteredRenderer::CreateNewPointLight()
+	{
+		Light* newLight = DeferredRenderer::CreateNewPointLight();
+		m_lights.push_back(newLight);
+		return newLight;
+	}
+
+	Light_Spot* ClusteredRenderer::CreateNewSpotLight()
+	{
+		Light_Spot* newLight = DeferredRenderer::CreateNewSpotLight();
+		m_lights.push_back(newLight);
+		return newLight;
+	}
+
+	void ClusteredRenderer::RemoveLight(Light* light)
+	{
+		DeferredRenderer::RemoveLight(light);
+		
+		for(auto it = m_lights.begin(); it != m_lights.end(); ++it)
+		{
+			if((*it) == light)
+			{
+				m_lights.erase(it);
+				return;
+			}
+		}
+	}
+
 	void ClusteredRenderer::UpdateScreenDimensions()
 	{
 		m_numTilesX = (WINDOW_WIDTH + TILE_SIZE_X - 1) / TILE_SIZE_X;
 		m_numTilesY = (WINDOW_HEIGHT + TILE_SIZE_Y - 1) / TILE_SIZE_Y;
-		m_numTilesZ = 256;
+
+		float sD = 2.0f * tanf(DegreesToRadians(45.0f) * 0.5f) / float(m_numTilesY);
 
 		m_invNear = 1.0f / 0.1f;
+		m_invFarFunc = 1.0f / logf(sD + 1.0f);
 
-		m_invFarFunc = 2.0f * tanf(DegreesToRadians(45.0f) * 0.5f) / float(m_numTilesY);
-		m_invFarFunc = 1.0f / logf(m_invFarFunc + 1);
+		m_numTilesZ = (int)(logf(10000.0f / 0.1f) / logf(1.0f + sD));
 	}
 
 	int ClusteredRenderer::GetNumberOfUsedClusters() const
@@ -76,19 +105,32 @@ namespace CaptainLucha
 
 	void ClusteredRenderer::DebugDraw()
 	{
-		g_MVPMatrix->SetProjectionMode(CL_PROJECTION);
 		SetGLProgram(NULL);
-		SetColor(Color::White);
 		SetUniform("useAlpha", false);
 		SetUniform("useTexture", false);
 		glDepthMask(GL_FALSE);
 		glDisable(GL_DEPTH_TEST);
-		DrawBegin(CL_POINTS);
-		for(int i = 0; i < m_debugPoints.size(); ++i)
-			clVertex3f(m_debugPoints[i].x, m_debugPoints[i].y, m_debugPoints[i].z);
+
+		g_MVPMatrix->SetProjectionMode(CL_PROJECTION);
+		g_MVPMatrix->PushMatrix();
+
+		Matrix4Df toWorldSpace1 = (m_debugView * g_MVPMatrix->GetProjectionMatrix()).GetInverse();
+
+		SetColor(Color::White, 0.1f);
+		SetUniform("useAlpha", true);
+		g_MVPMatrix->LoadIdentity();
+		g_MVPMatrix->LoadMatrix(toWorldSpace1);
+		DrawBegin(CL_QUADS);
+		for(size_t i = 0; i < m_debugQuadVerts.size(); ++i)//todo. slow
+		{
+			clVertex3f(m_debugQuadVerts[i]);
+		}
 		DrawEnd();
+
 		glEnable(GL_DEPTH_TEST);
 		glDepthMask(GL_TRUE);
+		SetUniform("useAlpha", false);
+		g_MVPMatrix->PopMatrix();
 	}
 
 	void ClusteredRenderer::SetAssigmentUniforms()
@@ -148,16 +190,9 @@ namespace CaptainLucha
 		m_isClusterInit = true;
 
 		m_cudaClustered = Cuda_Clustered::CreateRenderer();
-		m_cudaClustered->Init(m_clusterFlagBuffer, m_numTilesX, m_numTilesY, m_numTilesZ);
-
-		//std::vector<float> temp;
-		//temp.reserve(10000);
-		//for(float i = 0.0; i <= 1.0; i += 0.001)
-		//{
-		//	float d = i * 10000.0f + 0.1f;
-		//	int t = log(d * m_invNear) * m_invFarFunc;
-		//	temp.push_back(t);
-		//}
+		m_cudaClustered->Init(
+			m_clusterFlagBuffer,
+			m_numTilesX, m_numTilesY, m_numTilesZ);
 	}
 
 	void ClusteredRenderer::AssignClusters()
@@ -187,36 +222,81 @@ namespace CaptainLucha
 
 		m_cudaClustered->FindUniqueClusters();
 
+		FillLightBuffers();//Place for performance improvement
+
 		if(InputSystem::GetInstance()->IsKeyDown(GLFW_KEY_MINUS) && m_debugTime <= 0.0f)
 		{
-			const unsigned int* UNIQUE_CLUSTER_INDICES = m_cudaClustered->GetUniqueIndices();
-			const unsigned int NUM_UNIQUE_CLUSTERS = m_cudaClustered->GetNumUsedClusters();
-
-			m_debugPoints.clear();
-			m_debugPoints.reserve(NUM_UNIQUE_CLUSTERS);
-
-			std::stringstream ss;
-			for(int i = 0; i < NUM_UNIQUE_CLUSTERS; ++i)
-			{
-				const unsigned int INDEX = UNIQUE_CLUSTER_INDICES[i];
-				Vector3Df ClusterIndex;
-				ClusterIndex.x = INDEX % m_numTilesX;
-				ClusterIndex.y = (INDEX / m_numTilesX) % m_numTilesY;
-				ClusterIndex.z = INDEX / (m_numTilesX * m_numTilesY);
-
-				m_debugPoints.push_back(Vector3Df());
-				Vector3Df& newPoint = m_debugPoints.back();
-
-				newPoint.x = ClusterIndex.x;
-				newPoint.y = ClusterIndex.y;
-				newPoint.z = ClusterIndex.z;//powf(10, ClusterIndex.z / m_invFarFunc) / m_invNear;
-
-				ss << newPoint.z << " ";
-			}
-			trace(ss.str())
-
-			m_debugTime = 2.5f;
+			TakeDebugSnapshot();
+			m_debugTime = 0.05f;
 		}
+	}
+
+	void ClusteredRenderer::FillLightBuffers()
+	{
+		std::vector<float> lightPosRad;
+		lightPosRad.resize(m_lights.size() * 4);
+
+		for(size_t i = 0; i < m_lights.size(); ++i)
+		{
+			const int INDEX = i * 4;
+			Vector3Df pos = m_viewMatrix.TransformPosition(m_lights[i]->GetPosition());
+			lightPosRad[INDEX]	   = pos.x;
+			lightPosRad[INDEX + 1] = pos.y;
+			lightPosRad[INDEX + 2] = pos.z;
+			lightPosRad[INDEX + 3] = m_lights[i]->GetRadius();
+		}
+
+		m_cudaClustered->CreateLightBVH(m_lights.size(), lightPosRad.data());
+	}
+
+	void ClusteredRenderer::TakeDebugSnapshot()
+	{
+		const unsigned int* UNIQUE_CLUSTER_INDICES = m_cudaClustered->GetUniqueIndices();
+		const unsigned int NUM_UNIQUE_CLUSTERS = m_cudaClustered->GetNumUsedClusters();
+
+		m_debugQuadVerts.clear();
+		m_debugQuadVerts.reserve(NUM_UNIQUE_CLUSTERS * 24);
+
+		//todo change
+		const float sD = 2.0f * tanf(DegreesToRadians(45.0f) * 0.5f) / float(m_numTilesY);
+
+		for(size_t i = 0; i < NUM_UNIQUE_CLUSTERS; ++i)
+		{
+			const unsigned int INDEX = UNIQUE_CLUSTER_INDICES[i];
+			Vector3Df ClusterIndex;
+			ClusterIndex.z = std::floor((float)(INDEX / (m_numTilesX * m_numTilesY)));
+			ClusterIndex.y = std::floor((float)((INDEX % (m_numTilesX * m_numTilesY)) / m_numTilesX));
+			ClusterIndex.x = std::floor((float)(INDEX - ClusterIndex.y * m_numTilesX - ClusterIndex.z * m_numTilesX * m_numTilesY));			
+
+			float clipDimX = 2.0f * (TILE_SIZE_X) / WINDOW_WIDTHf;
+			float clipDimY = 2.0f * (TILE_SIZE_Y) / WINDOW_HEIGHTf;
+
+			//Min
+			//
+			Vector3Df min;
+			min.x = (ClusterIndex.x * clipDimX) - 1.0f;
+			min.y = (ClusterIndex.y * clipDimY) - 1.0f;
+			min.z = 0.1f * powf(1.0f + sD, float(ClusterIndex.z));
+			Vector4Df temp = g_MVPMatrix->GetProjectionMatrix() * Vector4Df(0.0f, 0.0f, -min.z, 1.0f);
+			min.z = temp.z / temp.w;
+
+			//Max
+			Vector3Df max;
+			max.x = min.x + clipDimX;
+			max.y = min.y + clipDimY;
+			max.z = 0.1f * powf(1.0f + sD, float(ClusterIndex.z + 1));
+			temp = g_MVPMatrix->GetProjectionMatrix() * Vector4Df(0.0f, 0.0f, -max.z, 1.0f);
+			max.z = temp.z / temp.w;
+
+			SaveDebugCubeVerts(min, max);
+		}
+
+		m_debugView = m_viewMatrix;
+	}
+
+	void ClusteredRenderer::SaveDebugCubeVerts(const Vector3Df& min, const Vector3Df& max)
+	{
+		AddQuadCubeToArray(m_debugQuadVerts, min, max);
 	}
 }
 

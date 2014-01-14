@@ -46,7 +46,7 @@ Camera::Camera()
 	: m_rotation(0.0f, 0.0f, 0.0f),
 	  m_position(0.0f, 0.0f, 0.0f),
 	  m_drag(.1f),
-	  CAMERA_IMPULSE(.025f),
+	  CAMERA_IMPULSE(.050f),
 	  m_enableKeyboard(true),
 	  m_enableMouse(true)
 {}
@@ -117,7 +117,7 @@ void Camera::MouseMove(float x, float y)
 
 void Camera::UpdateKeyboard()
 {
-	const float SPEED_INC_MULT = 25.0f;
+	const float SPEED_INC_MULT = 50.0f;
 
 	if(m_enableKeyboard)
 	{

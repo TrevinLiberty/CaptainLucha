@@ -29,41 +29,26 @@
 #ifndef DEFERREDLIGHT_H_CL
 #define DEFERREDLIGHT_H_CL
 
+#include "Light.h"
 #include "Objects/Object.h"
 #include "Renderer/Color.h"
 #include "Utils/CommonIncludes.h"
 
 namespace CaptainLucha
 {
-	enum LightType
-	{
-		CL_AMBIENT_LIGHT,
-		CL_POINT_LIGHT
-	};
-
-	class DeferredLight : public Object
+	class DeferredLight
 	{
 	public:
-		DeferredLight(LightType type);
-		~DeferredLight() {};
+		DeferredLight();
+		virtual ~DeferredLight() {};
 
 		virtual void ApplyLight(const Vector3Df& cameraPos, GLTexture* renderTarget0, GLTexture* renderTarget1, GLTexture* renderTarget2, GLTexture* renderTarget3) = 0;
 		virtual void StencilPass() {}
 
-		void SetObjectColor(const Color& c) {m_color = c;}
-		void SetIntensity(float intensity) {m_intensity = intensity;}
-
-		LightType GetType() const {return m_type;}
-
 	protected:
-		Color m_color;
-		float m_intensity;
-
 		static GLProgram* m_nullProgram;
 
 	private:
-
-		LightType m_type;
 	};
 }
 

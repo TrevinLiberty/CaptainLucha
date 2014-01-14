@@ -88,10 +88,11 @@ namespace CaptainLucha
 		return r + min;
 	}
 
-	inline float RandInRange(float min, float max)
+	template <typename T>
+	inline T RandInRange(T min, T max)
 	{
-		const float r = rand() / (float)RAND_MAX;
-		return min + (max - min) * r;
+		const double r = rand() / (double)((T)RAND_MAX);
+		return (T)(min + (max - min) * r);
 	}
 
 	inline int RandNeg() 

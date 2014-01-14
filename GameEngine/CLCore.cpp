@@ -57,8 +57,10 @@ namespace CaptainLucha
 	{
 		UNUSED(argc) UNUSED(argv)
 		ASSERT_MSG(InitRenderer(false), "Unable to Init GLFW!")
-		FreeConsole();
 
+#ifndef _DEBUG
+		FreeConsole();
+#endif
 		InitTime();
 		InitWidgets();
 		SetScreenSizeForWidgets(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -84,6 +86,21 @@ namespace CaptainLucha
 	void CLCore::StartMainLoop()
 	{
 		MainLoop();
+	}
+
+	void CLCore::SetRenderer(Renderer* newRenderer)
+	{
+		REQUIRES(newRenderer)
+
+		delete m_renderer;
+		m_renderer = newRenderer;
+	}
+
+	Renderer* CLCore::SwitchRenderer(Renderer* newRenderer)
+	{
+		Renderer* oldRenderer = m_renderer;
+		m_renderer = newRenderer;
+		return oldRenderer;
 	}
 
 	void CLCore::ToggleProfilingInfo(NamedProperties& np)
@@ -120,7 +137,8 @@ namespace CaptainLucha
 		  m_outputMemoryInfo(false),
 		  m_serverMode(false),
 		  m_enableFrameLimiting(true),
-		  m_console(new CLConsole())
+		  m_console(new CLConsole()),
+		  m_renderer(NULL)
 	{
 		UNUSED(argc) UNUSED(argv)
 
@@ -259,7 +277,12 @@ namespace CaptainLucha
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		Draw();
+		PreDraw();
+
+		if(m_renderer)
+			m_renderer->Draw();
+
+		PostDraw();
 	}
 
 	void CLCore::EngineDrawHUD()

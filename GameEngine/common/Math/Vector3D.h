@@ -73,9 +73,18 @@ namespace CaptainLucha
 		template<typename J>
 		friend std::ostream& operator<<(std::ostream& out, const Vector3D<J>& vect);
 
-		operator Vector3D<int>() const;
-		operator Vector3D<float>() const;
-		operator Vector3D<double>() const;
+		//operator Vector3D<int>() const;
+	//	operator Vector3D<float>() const;
+		//operator Vector3D<double>() const;
+
+		template <typename T>
+		operator Vector3D<T>() const
+		{
+			return Vector3D<T>
+				(static_cast<T>(x), 
+				static_cast<T>(y), 
+				static_cast<T>(z));
+		}
 
 		Real Length() const;
 		Real SquaredLength() const;

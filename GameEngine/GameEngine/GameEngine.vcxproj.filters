@@ -97,8 +97,8 @@
     <Filter Include="common\Renderer\Cuda\Helpers">
       <UniqueIdentifier>{97589b5f-357e-48e8-b139-e81ee6cb9e65}</UniqueIdentifier>
     </Filter>
-    <Filter Include="common\Renderer\Cuda\chag">
-      <UniqueIdentifier>{70ba121e-45ff-4102-9d43-f040cdba016f}</UniqueIdentifier>
+    <Filter Include="common\Renderer\Cuda\chag::pp">
+      <UniqueIdentifier>{47412f17-8939-4be1-a07b-df64dee6fdee}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -370,6 +370,9 @@
       <Filter>common\Collision</Filter>
     </ClCompile>
     <ClCompile Include="..\common\Renderer\ClusteredRenderer.cpp">
+      <Filter>common\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\Renderer\Renderer.cpp">
       <Filter>common\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
@@ -716,9 +719,6 @@
     <ClInclude Include="..\common\Collision\CollisionMovable.h">
       <Filter>common\Collision</Filter>
     </ClInclude>
-    <ClInclude Include="..\common\Renderer\CUDA\chag\pp\detail\nta.hpp">
-      <Filter>common\Renderer\Cuda\chag</Filter>
-    </ClInclude>
     <ClInclude Include="..\common\Renderer\CUDA\CudaHelpers\helper_cuda.h">
       <Filter>common\Renderer\Cuda\Helpers</Filter>
     </ClInclude>
@@ -755,6 +755,27 @@
     <ClInclude Include="..\common\Renderer\VertexBufferObject.h">
       <Filter>common\Threads</Filter>
     </ClInclude>
+    <ClInclude Include="..\common\Renderer\Lights\Light.h">
+      <Filter>common\Renderer\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Renderer.h">
+      <Filter>common\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Lights\Light_Spot.h">
+      <Filter>common\Renderer\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\Lights\Light_Directional.h">
+      <Filter>common\Renderer\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Utils\CoolStuff.h">
+      <Filter>common\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\CUDA\chag\pp\detail\nta.hpp">
+      <Filter>common\Renderer\Cuda\chag::pp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\CUDA\CUDA_Lights.cuh">
+      <Filter>common\Renderer\Cuda</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\common\Math\Math.inl">
@@ -779,34 +800,52 @@
       <Filter>common\Math</Filter>
     </None>
     <None Include="..\common\Renderer\CUDA\chag\pp\detail\compact.cu.inl">
-      <Filter>common\Renderer\Cuda\chag</Filter>
+      <Filter>common\Renderer\Cuda\chag::pp</Filter>
     </None>
     <None Include="..\common\Renderer\CUDA\chag\pp\detail\prefix.cu.inl">
-      <Filter>common\Renderer\Cuda\chag</Filter>
+      <Filter>common\Renderer\Cuda\chag::pp</Filter>
     </None>
     <None Include="..\common\Renderer\CUDA\chag\pp\detail\reduce.cu.inl">
-      <Filter>common\Renderer\Cuda\chag</Filter>
+      <Filter>common\Renderer\Cuda\chag::pp</Filter>
     </None>
     <None Include="..\common\Renderer\CUDA\chag\pp\detail\sort.cu.inl">
-      <Filter>common\Renderer\Cuda\chag</Filter>
+      <Filter>common\Renderer\Cuda\chag::pp</Filter>
     </None>
     <None Include="..\common\Renderer\CUDA\chag\pp\detail\split.cu.inl">
-      <Filter>common\Renderer\Cuda\chag</Filter>
+      <Filter>common\Renderer\Cuda\chag::pp</Filter>
     </None>
     <None Include="..\common\Renderer\CUDA\chag\pp\ext\detail\common.cu.inl">
-      <Filter>common\Renderer\Cuda\chag</Filter>
+      <Filter>common\Renderer\Cuda\chag::pp</Filter>
     </None>
     <None Include="..\common\Renderer\CUDA\chag\pp\ext\detail\range.cu.inl">
-      <Filter>common\Renderer\Cuda\chag</Filter>
+      <Filter>common\Renderer\Cuda\chag::pp</Filter>
     </None>
     <None Include="..\common\Renderer\CUDA\chag\pp\ext\detail\setup.cu.inl">
-      <Filter>common\Renderer\Cuda\chag</Filter>
+      <Filter>common\Renderer\Cuda\chag::pp</Filter>
     </None>
     <None Include="..\common\Renderer\CUDA\chag\pp\ext\detail\shared.cu.inl">
-      <Filter>common\Renderer\Cuda\chag</Filter>
+      <Filter>common\Renderer\Cuda\chag::pp</Filter>
     </None>
     <None Include="..\common\Renderer\CUDA\chag\pp\ext\detail\unit.cu.inl">
-      <Filter>common\Renderer\Cuda\chag</Filter>
+      <Filter>common\Renderer\Cuda\chag::pp</Filter>
+    </None>
+    <None Include="..\common\Renderer\CUDA\chag\pp\compact.cuh">
+      <Filter>common\Renderer\Cuda\chag::pp</Filter>
+    </None>
+    <None Include="..\common\Renderer\CUDA\chag\pp\prefix.cuh">
+      <Filter>common\Renderer\Cuda\chag::pp</Filter>
+    </None>
+    <None Include="..\common\Renderer\CUDA\chag\pp\reduce.cuh">
+      <Filter>common\Renderer\Cuda\chag::pp</Filter>
+    </None>
+    <None Include="..\common\Renderer\CUDA\chag\pp\sort.cuh">
+      <Filter>common\Renderer\Cuda\chag::pp</Filter>
+    </None>
+    <None Include="..\common\Renderer\CUDA\chag\pp\split.cuh">
+      <Filter>common\Renderer\Cuda\chag::pp</Filter>
+    </None>
+    <None Include="..\common\Renderer\CUDA\CUDA_Clustered_Kernels.cuh">
+      <Filter>common\Renderer\Cuda</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -817,6 +856,9 @@
       <Filter>common\Renderer\Cuda</Filter>
     </CudaCompile>
     <CudaCompile Include="..\common\Renderer\CUDA\CUDA_Clustered_Kernels.cu">
+      <Filter>common\Renderer\Cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\common\Renderer\CUDA\CUDA_Lights.cu">
       <Filter>common\Renderer\Cuda</Filter>
     </CudaCompile>
   </ItemGroup>

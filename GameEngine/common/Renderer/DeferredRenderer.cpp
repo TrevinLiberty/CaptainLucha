@@ -41,7 +41,6 @@
 namespace CaptainLucha
 {
 	DeferredRenderer::DeferredRenderer()
-		: m_debugDraw(false)
 	{
 		InitRenderer();
 	}
@@ -64,46 +63,28 @@ namespace CaptainLucha
 			DebugRenderGBuffer();
 	}
 
-	void DeferredRenderer::AddObjectToRender(Object* object)
-	{
-		REQUIRES(object)
-		m_renderableObjects.push_back(object);
-	}
-
-	void DeferredRenderer::RemoveObject(Object* object)
-	{
-		for(auto it = m_renderableObjects.begin(); it != m_renderableObjects.end(); ++it)
-		{
-			if((*it) == object)
-			{
-				m_renderableObjects.erase(it);
-				return;
-			}
-		}
-	}
-
-	DeferredLight_Point* DeferredRenderer::CreateNewPointLight() 
+	Light* DeferredRenderer::CreateNewPointLight() 
 	{
 		DeferredLight_Point* newLight = new DeferredLight_Point();
 		AddNewLight(newLight);
 		return newLight;
 	}
 
-	DeferredLight_Ambient* DeferredRenderer::CreateNewAmbientLight()
+	Light* DeferredRenderer::CreateNewAmbientLight()
 	{
 		DeferredLight_Ambient* newLight = new DeferredLight_Ambient();
 		AddNewFullscreenLight(newLight);
 		return newLight;
 	}
 
-	DeferredLight_Directional* DeferredRenderer::CreateNewDirectionalLight()
+	Light_Directional* DeferredRenderer::CreateNewDirectionalLight()
 	{
 		DeferredLight_Directional* newLight = new DeferredLight_Directional();
 		AddNewFullscreenLight(newLight);
 		return newLight;
 	}
 
-	DeferredLight_Spot* DeferredRenderer::CreateNewSpotLight()
+	Light_Spot* DeferredRenderer::CreateNewSpotLight()
 	{
 		DeferredLight_Spot* newLight = new DeferredLight_Spot();
 		AddNewLight(newLight);
@@ -125,23 +106,26 @@ namespace CaptainLucha
 		return objectID[0];
 	}
 
-	void DeferredRenderer::RemoveLight(DeferredLight* light)
+	void DeferredRenderer::RemoveLight(Light* light)
 	{
 		REQUIRES(light)
 
-		for(size_t i = 0; i < m_lights.size(); ++i)
+		DeferredLight* removeLight = dynamic_cast<DeferredLight*>(light);
+		REQUIRES(removeLight && "Light NOT Deferred")
+
+		for(size_t i = 0; i < m_deferredLights.size(); ++i)
 		{
-			if(light == m_lights[i])
+			if(removeLight == m_deferredLights[i])
 			{
-				delete m_lights[i];
-				m_lights[i] = NULL;
+				delete m_deferredLights[i];
+				m_deferredLights[i] = NULL;
 				return;
 			}
 		}
 
 		for(size_t i = 0; i < m_fullscreenLights.size(); ++i)
 		{
-			if(light == m_fullscreenLights[i])
+			if(removeLight == m_fullscreenLights[i])
 			{
 				delete m_fullscreenLights[i];
 				m_fullscreenLights[i] = NULL;
@@ -154,16 +138,16 @@ namespace CaptainLucha
 	{
 		REQUIRES(newLight)
 
-		for(size_t i = 0; i < m_lights.size(); ++i)
+		for(size_t i = 0; i < m_deferredLights.size(); ++i)
 		{
-			if(m_lights[i] == NULL)
+			if(m_deferredLights[i] == NULL)
 			{
-				m_lights[i] = newLight;
+				m_deferredLights[i] = newLight;
 				return;
 			}
 		}
 
-		m_lights.push_back(newLight);
+		m_deferredLights.push_back(newLight);
 	}
 
 	void DeferredRenderer::AddNewFullscreenLight(DeferredLight* newLight)
@@ -180,18 +164,6 @@ namespace CaptainLucha
 		}
 
 		m_fullscreenLights.push_back(newLight);
-	}
-
-	void DeferredRenderer::DrawScene(GLProgram& program)
-	{		
-		for(size_t i = 0; i < m_renderableObjects.size(); ++i)
-		{
-			if(m_renderableObjects[i]->IsVisible())
-			{
-				program.SetUniform("ObjectID", m_renderableObjects[i]->GetID());
-				m_renderableObjects[i]->Draw(program);
-			}
-		}
 	}
 
 	void DeferredRenderer::PopulateGBuffers()
@@ -226,9 +198,6 @@ namespace CaptainLucha
 		SetTexture("accumulatorSpecular", m_accumSpecularLightTexture);
 
 		FullScreenPass();
-
-		//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, 0);
-
 		SetGLProgram(NULL);
 
 		g_MVPMatrix->SetProjectionMode(CL_PROJECTION);
@@ -244,10 +213,10 @@ namespace CaptainLucha
 			ClearFBO();
 
 			glEnable(GL_STENCIL_TEST);
-			for(size_t i = 0; i < m_lights.size(); ++i)
+			for(size_t i = 0; i < m_deferredLights.size(); ++i)
 			{
-				m_lights[i]->StencilPass();
-				m_lights[i]->ApplyLight(m_cameraPos, m_rt0, m_rt1, m_rt2, m_rt3);
+				m_deferredLights[i]->StencilPass();
+				m_deferredLights[i]->ApplyLight(m_cameraPos, m_rt0, m_rt1, m_rt2, m_rt3);
 			}
 			glDisable(GL_STENCIL_TEST);
 
@@ -412,25 +381,6 @@ namespace CaptainLucha
 		m_finalPassProgram = new GLProgram("Data/Shaders/SimpleShader.vert", "Data/Shaders/DeferredFinalPass.frag");
 	
 		ValidateFBO();
-	}
-
-	void DeferredRenderer::FullScreenPass()
-	{
-		g_MVPMatrix->SetProjectionMode(CL_ORTHOGRAPHIC);
-		DrawBegin(CL_QUADS);
-		{
-			clVertex3(0.0f, 0.0f, 0.0f);
-			clVertex3(WINDOW_WIDTHf, 0.0f, 0.0f);
-			clVertex3(WINDOW_WIDTHf, WINDOW_HEIGHTf, 0.0f);
-			clVertex3(0.0f, WINDOW_HEIGHTf, 0.0f);
-
-			clTexCoord(0, 0);
-			clTexCoord(1, 0);
-			clTexCoord(1, 1);
-			clTexCoord(0, 1);
-		}
-		DrawEnd();
-		g_MVPMatrix->SetProjectionMode(CL_PROJECTION);
 	}
 
 	void DeferredRenderer::DebugRenderGBuffer()

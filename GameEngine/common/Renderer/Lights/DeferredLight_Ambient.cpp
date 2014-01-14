@@ -34,7 +34,7 @@
 namespace CaptainLucha
 {
 	DeferredLight_Ambient::DeferredLight_Ambient()
-		: DeferredLight(CL_AMBIENT_LIGHT)
+		: Light(CL_AMBIENT_LIGHT)
 	{
 		if(!m_glProgram)
 			m_glProgram = new GLProgram("Data/Shaders/DeferredVertShader.vert", "Data/Shaders/DeferredAmbientLightShader.frag");
@@ -61,21 +61,15 @@ namespace CaptainLucha
 		SetTexture("renderTarget1", renderTarget1);
 		SetTexture("renderTarget2", renderTarget2);
 
-		SetColor(m_color);
+		SetUniform("lightColor", m_color);
+		SetUniform("intensity", m_intensity);
 
-		m_glProgram->SetUniform("intensity", m_intensity);
-		
 		DrawBegin(CL_QUADS);
 		{
-			clVertex3(0.0f,					0.0f,				 0.0f);
-			clVertex3((float)WINDOW_WIDTH,	0.0f,				 0.0f);
-			clVertex3((float)WINDOW_WIDTH, (float)WINDOW_HEIGHT, 0.0f);
-			clVertex3(0.0f,				   (float)WINDOW_HEIGHT, 0.0f);
-
-			//clTexCoord(0, 0);
-			//clTexCoord(1, 0);
-			//clTexCoord(1, 1);
-			//clTexCoord(0, 1);
+			clVertex3(0.0f,			 0.0f,		     0.0f);
+			clVertex3(WINDOW_WIDTHf, 0.0f,		     0.0f);
+			clVertex3(WINDOW_WIDTHf, WINDOW_HEIGHTf, 0.0f);
+			clVertex3(0.0f,		     WINDOW_HEIGHTf, 0.0f);
 		}
 		DrawEnd();
 

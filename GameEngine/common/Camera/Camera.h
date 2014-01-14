@@ -23,6 +23,7 @@
  *	@author Trevin Liberty
  *	@file	Camera.h
  *	@brief	
+ *	@todo	Allow changing of speed
  *
 /****************************************************************************/
 

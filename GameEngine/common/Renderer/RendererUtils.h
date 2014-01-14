@@ -90,9 +90,11 @@ namespace CaptainLucha
 	void SetColor(float r, float g, float b, float a);
 	void SetColor(const Vector4Df& color);
 	void SetColor(const Color& color);
+	void SetColor(const Color& color, float alphaOverride);
 	void clSetPointSize(float size);
 
 	void clVertex3f(float x, float y, float z);
+	void clVertex3f(const Vector3Df& vert);
 
 	template<typename Tx, typename Ty, typename Tz>
 	void clVertex3(Tx x, Ty y, Tz z)
@@ -104,6 +106,8 @@ namespace CaptainLucha
 	void clTexCoord(float u, float v);
 	void clColor4(float r, float g, float b, float a);
 	void clColor4(const Color& color);
+
+	void FullScreenPass();
 
 	void DrawPlus(const Vector3Df& pos, float size);
 	void DrawPlus(float x, float y, float z, float size);
@@ -149,6 +153,8 @@ namespace CaptainLucha
 	//////////////////////////////////////////////////////////////////////////
 	Justification GetJustEnumFromString(const std::string& just);
 
+	void AddQuadCubeToArray(std::vector<Vector3Df>& verts, const Vector3Df& min, const Vector3Df& max);
+
 	/**
 	 * @brief     Pushes x and y to back of vect. Extra types added to avoid having to cast stuff.
 	 * @param	  std::vector<Tv> & vect
@@ -157,7 +163,7 @@ namespace CaptainLucha
 	 * @return    void
 	 */
 	template <typename Tv, typename Tx, typename Ty>
-	void AddToVector(std::vector<Tv>& vect, const Tx& x, const Ty& y)
+	inline void AddToVector(std::vector<Tv>& vect, const Tx& x, const Ty& y)
 	{
 		vect.push_back((Tv)x);
 		vect.push_back((Tv)y);
@@ -172,7 +178,7 @@ namespace CaptainLucha
 	 * @return    void
 	 */
 	template <typename Tv, typename Tx, typename Ty, typename Tz>
-	void AddToVector(std::vector<Tv>& vect, const Tx& x, const Ty& y, const Tz& z)
+	inline void AddToVector(std::vector<Tv>& vect, const Tx& x, const Ty& y, const Tz& z)
 	{
 		vect.push_back((Tv)x);
 		vect.push_back((Tv)y);
@@ -189,7 +195,7 @@ namespace CaptainLucha
 	 * @return    void
 	 */
 	template <typename Tv, typename Tx, typename Ty, typename Tz, typename Tw>
-	void AddToVector(std::vector<Tv>& vect, const Tx& x, const Ty& y, const Tz& z, const Tw& w)
+	inline void AddToVector(std::vector<Tv>& vect, const Tx& x, const Ty& y, const Tz& z, const Tw& w)
 	{
 		vect.push_back((Tv)x);
 		vect.push_back((Tv)y);

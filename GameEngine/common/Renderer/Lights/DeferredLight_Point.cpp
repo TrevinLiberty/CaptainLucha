@@ -35,7 +35,7 @@
 namespace CaptainLucha
 {
 	DeferredLight_Point::DeferredLight_Point()
-		: DeferredLight(CL_POINT_LIGHT)
+		: Light(CL_POINT_LIGHT)
 	{
 		if(!m_glProgram)
 		{
@@ -61,10 +61,7 @@ namespace CaptainLucha
 		m_glProgram->SetUniform("color", m_color);
 
 		m_glProgram->SetUniform("camPos", cameraPos);
-		m_glProgram->SetUniform("lightPos", (Vector3Df)GetPosition());
-		m_glProgram->SetUniform("constantAttenuation", m_constantAttenuation);
-		m_glProgram->SetUniform("linearAttenuation", m_linearAttenuation);
-		m_glProgram->SetUniform("quadraticAttenuation", m_quadraticAttenuation);
+		m_glProgram->SetUniform("lightPos", m_position);
 
 		m_glProgram->SetUniform("intensity", m_intensity);
 		m_glProgram->SetUniform("radius", m_radius);

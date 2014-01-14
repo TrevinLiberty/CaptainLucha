@@ -63,7 +63,7 @@ namespace CaptainLucha
 
 	void Model_Node::GetAABB(AABoundingBox& currentBB)
 	{
-		for(int i = 0; i < m_children.size(); ++i)
+		for(size_t i = 0; i < m_children.size(); ++i)
 			m_children[i]->GetAABB(currentBB);
 	}
 }

@@ -118,7 +118,7 @@ namespace CaptainLucha
 
 	void Model_Node_Mesh::GetAABB(AABoundingBox& AABB)
 	{
-		for(int i = 0; i< m_meshes.size(); ++i)
+		for(size_t i = 0; i< m_meshes.size(); ++i)
 		{
 			AABoundingBox meshAABB(m_meshes[i].first->GetAABB());
 			AABB.CombineAABB(AABB, meshAABB);

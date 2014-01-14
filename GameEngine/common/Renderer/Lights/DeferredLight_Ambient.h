@@ -29,14 +29,15 @@
 #ifndef DEFERREDLIGHT_AMBIENT_H_CL
 #define DEFERREDLIGHT_AMBIENT_H_CL
 
-#include "Renderer/Lights/DeferredLight.h"
+#include "Light.h"
+#include "DeferredLight.h"
 
 namespace CaptainLucha
 {
 	class GLProgram;
 	class GLTexture;
 
-	class DeferredLight_Ambient : public DeferredLight
+	class DeferredLight_Ambient : public DeferredLight, public Light
 	{
 	public:
 		DeferredLight_Ambient();

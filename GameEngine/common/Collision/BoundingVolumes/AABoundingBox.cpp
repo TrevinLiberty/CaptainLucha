@@ -193,7 +193,10 @@ namespace CaptainLucha
 
 	Vector3Df AABoundingBox::GetRandomPosInside() const
 	{
-		return Vector3Df(RandInRange(m_min.x, m_max.x), RandInRange(m_min.y, m_max.y), RandInRange(m_min.z, m_max.z));
+		return Vector3Df(
+			(float)RandInRange(m_min.x, m_max.x), 
+			(float)RandInRange(m_min.y, m_max.y), 
+			(float)RandInRange(m_min.z, m_max.z));
 	}
 
 	void AABoundingBox::ResetBV()

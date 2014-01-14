@@ -35,6 +35,7 @@
 #include "Input/InputListener.h"
 #include "Utils/CLLogger.h"
 #include "Renderer/RendererUtils.h"
+#include "Renderer/Renderer.h"
 #include "Renderer/Texture/GLTextureManager.h"
 #include "Time/Clock.h"
 #include "Time/FPSCalc.h"
@@ -76,6 +77,10 @@ namespace CaptainLucha
 		 * @see		  CLCore::SetGameOver
 		 */
 		void StartMainLoop();
+
+		Renderer&	GetRenderer() {return *m_renderer;}
+		void		SetRenderer(Renderer* newRenderer);
+		Renderer*	SwitchRenderer(Renderer* newRenderer);
 
 		/**
 		 * @brief     Returns textures cached for use by the engine. 
@@ -177,7 +182,14 @@ namespace CaptainLucha
 		 * @pure
 
 		 */
-		virtual void Draw() = 0;
+		virtual void PreDraw() = 0;
+
+		/**
+		 * @brief     Draw
+		 * @pure
+
+		 */
+		virtual void PostDraw() = 0;
 
 		/**
 		 * @brief     DrawHUD
@@ -208,10 +220,12 @@ namespace CaptainLucha
 		Timer* m_memoryDebugTimer;
 
 		CLConsole_Interface* m_console;
-		Commandlets m_commandlets;
+		Commandlets			 m_commandlets;
 
-		GLTextureManager m_engineTextures;
-		GLTextureManager m_levelTextures;
+		Renderer*			 m_renderer;
+
+		GLTextureManager	 m_engineTextures;
+		GLTextureManager	 m_levelTextures;
 
 		PREVENT_COPYING(CLCore)
 	};

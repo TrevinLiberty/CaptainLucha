@@ -29,7 +29,8 @@
 #ifndef DEFERREDLIGHT_POINT_H_CL
 #define DEFERREDLIGHT_POINT_H_CL
 
-#include "Renderer/Lights/DeferredLight.h"
+#include "Light.h"
+#include "DeferredLight.h"
 
 namespace CaptainLucha
 {
@@ -37,7 +38,7 @@ namespace CaptainLucha
 	class GLTexture;
 	class Sphere;
 
-	class DeferredLight_Point : public DeferredLight
+	class DeferredLight_Point : public DeferredLight, public Light
 	{
 	public:
 		DeferredLight_Point();
@@ -46,28 +47,10 @@ namespace CaptainLucha
 		void ApplyLight(const Vector3Df& cameraPos, GLTexture* renderTarget0, GLTexture* renderTarget1, GLTexture* renderTarget2, GLTexture* renderTarget3);
 		void StencilPass();
 
-		void SetRadius(float radius) {m_radius = radius;}
-		float GetRadius() const {return m_radius;}
-
-		float GetConstantAttenuation() const {return m_constantAttenuation;}
-		void SetConstantAttenuation(float val) {m_constantAttenuation = val;}
-
-		float GetLinearAttenuation() const {return m_linearAttenuation;}
-		void SetLinearAttenuation(float val) {m_linearAttenuation = val;}
-
-		float GetQuadraticAttenuation() const {return m_quadraticAttenuation;}
-		void SetQuadraticAttenuation(float val) {m_quadraticAttenuation = val;}
-
 	protected:
 		void DrawBSphere(GLProgram& glProgram);
 
 	private:
-		float m_radius;
-
-		float m_constantAttenuation;
-		float m_linearAttenuation;
-		float m_quadraticAttenuation;
-
 		static GLProgram* m_glProgram;
 		static GLProgram* m_nullProgram;
 		static Sphere* m_sphere;

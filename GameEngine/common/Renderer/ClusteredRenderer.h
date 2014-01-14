@@ -30,6 +30,7 @@
 #define CLUSTEREDRENDERER_H_CL
 
 #include "DeferredRenderer.h"
+#include "Lights/Light.h"
 
 namespace CaptainLucha
 {
@@ -42,6 +43,11 @@ namespace CaptainLucha
 		~ClusteredRenderer();
 
 		void Draw();
+
+		virtual Light* CreateNewPointLight();
+		virtual Light_Spot* CreateNewSpotLight();
+
+		virtual void RemoveLight(Light* light);
 
 		//TODO. Need to update when FOV changes.
 		void UpdateScreenDimensions();
@@ -66,6 +72,12 @@ namespace CaptainLucha
 		void AssignClusters();
 		void ResetFlagBuffer();
 
+		//slow? possibly have lights prepacked?
+		void FillLightBuffers();
+
+		void TakeDebugSnapshot();
+		void SaveDebugCubeVerts(const Vector3Df& min, const Vector3Df& max);
+
 	private:
 		float m_invNear;
 		float m_invFarFunc;
@@ -81,16 +93,16 @@ namespace CaptainLucha
 		GLProgram* m_clusterAssignment;
 
 		GLTexture* m_clusterFlagTexture;
-		GLTexture* m_clusterGridTexture;
-		GLTexture* m_clusterLightTexture;
 
 		unsigned int m_clusterFlagBuffer;
-		unsigned int m_clusterGridBuffer;
-		unsigned int m_clusterLightBuffer;
 
 		unsigned int m_clusterBufferSize;
 
-		std::vector<Vector3Df> m_debugPoints;
+		//I don't like this since deferred already has a list of all lights.
+		std::vector<Light*>	   m_lights;
+		std::vector<Vector3Df> m_debugQuadVerts;
+
+		Matrix4Df m_debugView;
 	};
 }
 

@@ -31,7 +31,14 @@
 #include "CUDA_Utils.h"
 #include "CudaHelpers\helper_cuda.h"
 
-#include "CUDA_Clustered_Kernels.cu"
+#include <thrust/sort.h>
+#include <thrust/device_ptr.h>
+#include <thrust/device_malloc.h>
+#include <thrust/device_free.h>
+#include <thrust/device_new.h>
+
+#include "CUDA_Clustered_Kernels.cuh"
+#include "CUDA_Lights.cuh"
 
 #include <cuda.h>
 #include <cuda_runtime_api.h>
@@ -47,57 +54,81 @@ namespace CaptainLucha
 	public:
 		Cuda_Clustered_Implementation()
 			: m_hIsInitialized(false),
+			  m_hUniqueIndices(NULL),
 			  m_hnumUsedCluters(0),
-		      m_uniqueClusterSize(360),
-			  m_hUniqueIndices(NULL) {};
-		~Cuda_Clustered_Implementation() {};
+		      m_uniqueClusterSize(0),
+			  m_lightKeyBufferSize(0) {};
+		~Cuda_Clustered_Implementation();
 
 		void Init(
-			unsigned int clusterFlagBuffer, 
+			unsigned int clusterAssignmentBuffer, 
 			unsigned int numClustersX, 
 			unsigned int numClustersY, 
 			unsigned int numClustersZ);
 
 		void FindUniqueClusters();
+		void CreateLightBVH(int numLights, float* lightPosRadData);
 
 		unsigned int GetNumUsedClusters() const {return m_hnumUsedCluters;}
-
 		const unsigned int* GetUniqueIndices() const {return m_hUniqueIndices;}
 
 	protected:
 		void SetUniqueBuffersSize(unsigned int size);
+		void SetLightsBufferSize(unsigned int size);
 
 	private:
 		//Host Variables
+		//
 		bool m_hIsInitialized;
 
 		int m_hmaxNumClusters;
+
 		unsigned int m_hnumUsedCluters;
+		unsigned int* m_hUniqueIndices;
 
 		unsigned int m_numClustersX;
 		unsigned int m_numClustersY;
 		unsigned int m_numClustersZ;
 
-		unsigned int* m_hUniqueIndices;
-
 		//Device Variables
+		//
 		cudaGraphicsResource* m_dflagResource;
-		cudaGraphicsResource* m_dclusterGridResource;
 
-		unsigned int m_uniqueClusterSize;
-		unsigned int* m_dUniqueIndices;
-		unsigned int* m_dUniqueKeys;
+		//Find Unique Clusters
+		unsigned int  m_uniqueClusterSize;
+		thrust::device_ptr<unsigned int> m_dUniqueIndices;
+		thrust::device_ptr<unsigned int> m_dUniqueKeys;
 		
-		unsigned int* m_dprefixResource;
-		unsigned int* m_dnumUsedClusters;
+		thrust::device_ptr<unsigned int> m_dprefixResource;
+		thrust::device_ptr<unsigned int> m_dnumUsedClusters;
+
+		//Assign Lights to Clusters
+		thrust::device_ptr<float4>		 m_dminAABB;
+		thrust::device_ptr<float4>		 m_dmaxAABB;
+
+		unsigned int  m_lightKeyBufferSize;
+
+		thrust::device_ptr<float4>		 m_dlightPosRadData;
+		thrust::device_ptr<unsigned int> m_dmortonLightKeys;
+		thrust::device_ptr<unsigned int> m_dlightIndices;
+
+		//Light BVH
+		LightBVH* m_lightBVH;
 	};
+
+	Cuda_Clustered_Implementation::~Cuda_Clustered_Implementation()
+	{
+
+	}
 
 	template<typename T>
 	void GetDeviceMappedPointer(cudaGraphicsResource* resource, T** outMappedPointer)
 	{
+		cudaGraphicsMapResources(1, &resource);
+
 		void* result = NULL;
 		unsigned int bufferSize = 0;
-		cudaGraphicsResourceGetMappedPointer(&result, &bufferSize, resource);
+		checkCudaErrors(cudaGraphicsResourceGetMappedPointer(&result, &bufferSize, resource));
 		*outMappedPointer = reinterpret_cast<T*>(result);
 	}
 
@@ -127,12 +158,18 @@ namespace CaptainLucha
 		m_hmaxNumClusters = m_numClustersX * m_numClustersY * m_numClustersZ;
 
 		checkCudaErrors(cudaGraphicsGLRegisterBuffer(&m_dflagResource, clusterAssignmentBuffer, cudaGraphicsRegisterFlagsNone));
-		
-		checkCudaErrors(cudaMalloc((void**)&m_dprefixResource, m_hmaxNumClusters * sizeof(unsigned int)));
-		checkCudaErrors(cudaMalloc((void**)&m_dnumUsedClusters, 1 * sizeof(unsigned int)));
 
-		checkCudaErrors(cudaMalloc((void**)&m_dUniqueIndices, (m_uniqueClusterSize * sizeof(unsigned int))));
-		checkCudaErrors(cudaMalloc((void**)&m_dUniqueKeys,    (m_uniqueClusterSize * sizeof(unsigned int))));
+		m_dprefixResource  = thrust::device_malloc<unsigned int>(m_hmaxNumClusters * sizeof(unsigned int));
+		m_dnumUsedClusters = thrust::device_malloc<unsigned int>(sizeof(unsigned int));
+
+		m_dminAABB = thrust::device_malloc<float4>(sizeof(float4));
+		m_dmaxAABB = thrust::device_malloc<float4>(sizeof(float4));
+
+		SetUniqueBuffersSize(1024);
+		SetLightsBufferSize(128);
+
+		m_lightBVH = new LightBVH();
+		m_lightBVH->SetNumberOfLights(128);
 
 		m_hIsInitialized = true;
 	}
@@ -141,13 +178,29 @@ namespace CaptainLucha
 	{
 		if(size > m_uniqueClusterSize)
 		{
-			checkCudaErrors(cudaFree((void*)m_dUniqueIndices));
-			checkCudaErrors(cudaFree((void*)m_dUniqueKeys));
+			m_uniqueClusterSize = size + 128;
 
-			checkCudaErrors(cudaMalloc((void**)&m_dUniqueIndices, (size * sizeof(unsigned int))));
-			checkCudaErrors(cudaMalloc((void**)&m_dUniqueKeys,    (size * sizeof(unsigned int))));
+			thrust::device_free(m_dUniqueIndices);
+			thrust::device_free(m_dUniqueKeys);
 
-			m_uniqueClusterSize = size;
+			m_dUniqueIndices = thrust::device_malloc<unsigned int>(m_uniqueClusterSize * sizeof(unsigned int));
+			m_dUniqueKeys    = thrust::device_malloc<unsigned int>(m_uniqueClusterSize * sizeof(unsigned int));
+		}
+	}
+
+	void Cuda_Clustered_Implementation::SetLightsBufferSize(unsigned int size)
+	{
+		if(size > m_lightKeyBufferSize)
+		{
+			m_lightKeyBufferSize = size + 128;
+			
+			thrust::device_free(m_dlightPosRadData);
+			thrust::device_free(m_dmortonLightKeys);
+			thrust::device_free(m_dlightIndices);
+
+			m_dlightPosRadData = thrust::device_malloc<float4>(m_lightKeyBufferSize * sizeof(float4));
+			m_dmortonLightKeys = thrust::device_malloc<unsigned int>(m_lightKeyBufferSize * sizeof(unsigned int));
+			m_dlightIndices    = thrust::device_malloc<unsigned int>(m_lightKeyBufferSize * sizeof(unsigned int));;
 		}
 	}
 
@@ -161,36 +214,80 @@ namespace CaptainLucha
 	////////////////////////////////////////////////////////////
 	void Cuda_Clustered_Implementation::FindUniqueClusters()
 	{
-		cudaGraphicsMapResources(1, &m_dflagResource);
-
 		unsigned int* flagPointer = NULL;
 		GetDeviceMappedPointer(m_dflagResource, &flagPointer);
 
-		chag::pp::prefix(flagPointer, flagPointer + m_hmaxNumClusters, m_dprefixResource, m_dnumUsedClusters);
+		chag::pp::prefix(flagPointer, flagPointer + m_hmaxNumClusters, m_dprefixResource.get(), m_dnumUsedClusters.get());
 
-		cudaMemcpy(&m_hnumUsedCluters, m_dnumUsedClusters, sizeof(unsigned int), cudaMemcpyDeviceToHost);
+		cudaMemcpy(&m_hnumUsedCluters, m_dnumUsedClusters.get(), sizeof(unsigned int), cudaMemcpyDeviceToHost);
 
 		if(m_hnumUsedCluters)
 		{
 			SetUniqueBuffersSize(m_hnumUsedCluters);
 
-			cudaMemset(m_dUniqueIndices, 0, m_hnumUsedCluters * sizeof(unsigned int));
+			cudaMemset(m_dUniqueIndices.get(), 0, m_hnumUsedCluters * sizeof(unsigned int));
 
-			const int NUM_THREADS_PER_BLOCK = 192;
-			const int NUM_BLOCKS = std::ceil(m_hmaxNumClusters / float(NUM_THREADS_PER_BLOCK));
-			GetUniqueClusters<<<NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(
+			const int NUM_BLOCKS = GetReqNumBlocks(m_hmaxNumClusters);
+			GetUniqueClusters<<<NUM_BLOCKS, DEFAULT_THREADS_PER_BLOCK>>>(
 				m_hmaxNumClusters, 
 				m_numClustersX, m_numClustersY, m_numClustersZ,
-				flagPointer, m_dprefixResource, m_dUniqueIndices);
+				flagPointer, m_dprefixResource.get(), m_dUniqueIndices.get());
 
 			delete m_hUniqueIndices;
-			m_hUniqueIndices = new unsigned int[m_hmaxNumClusters];
-			cudaMemcpy(m_hUniqueIndices, m_dUniqueIndices, m_hnumUsedCluters * sizeof(unsigned int), cudaMemcpyDeviceToHost);
+			m_hUniqueIndices = new unsigned int[m_hnumUsedCluters];
+			cudaMemcpy(m_hUniqueIndices, m_dUniqueIndices.get(), m_hnumUsedCluters * sizeof(unsigned int), cudaMemcpyDeviceToHost);
 		}
 
 		//Reset flag buffer
 		cudaMemset(flagPointer, 0, m_hmaxNumClusters * sizeof(unsigned int));
 
 		UnmapDevicePointer(m_dflagResource);
+	}
+
+	void Cuda_Clustered_Implementation::CreateLightBVH(int numLights, float* lightPosRadData)
+	{
+		//Increase buffer sizes if needed
+		SetLightsBufferSize(numLights);
+
+		//copy light data to device
+		cudaMemcpy(m_dlightPosRadData.get(), lightPosRadData, numLights * sizeof(float4), cudaMemcpyHostToDevice);
+
+		if(numLights)
+		{
+			//Update BVH tp support numLights
+			m_lightBVH->SetNumberOfLights(numLights);
+
+			/**********************************/
+			//Create BVH Leaf Nodes
+			/**********************************/
+			//Compute the AABB the encompasses all lights
+			ComputeLightAABB(
+				m_dlightPosRadData.get(), m_dlightPosRadData.get() + numLights, 
+				m_dminAABB.get(), m_dmaxAABB.get());
+		
+			//Using the AABB, calculate the Morton Code for all lights.
+			//	- allows us to quickly sort the lights based on position. Getting ready to create the BVH
+			ComputeLightMortonCodes(
+				m_dlightPosRadData.get(), m_dminAABB.get(), m_dmaxAABB.get(), 
+				numLights, m_dmortonLightKeys.get(), m_dlightIndices.get());
+
+			//Sort the Lights based on their Morton Code.
+			//	- Put in "Morton Order"
+			thrust::stable_sort_by_key(m_dmortonLightKeys, m_dmortonLightKeys + numLights, m_dlightIndices);
+
+			/**********************************/
+			//Create Rest of BVH
+			/**********************************/
+			const int CURRENT_BRANCHING_FACTOR = LightBVH::BRANCHING_FACTOR;//todo update this when factor can change
+			dim3 threadsPerBlock = dim3(CURRENT_BRANCHING_FACTOR, 6, 1);
+			dim3 blocks = dim3(std::ceil(numLights / (float)CURRENT_BRANCHING_FACTOR), 1, 1);
+			SetLeafsAndCalculateParentNodes<<<blocks, threadsPerBlock>>>(m_dlightPosRadData.get(), m_lightBVH, m_dlightIndices.get());
+
+			//float4* temp = new float4[m_lightBVH->GetNumNonLeafNodes()];
+			//cudaMemcpy(temp, m_lightBVH->m_minAABBNodes.get(), m_lightBVH->GetNumNonLeafNodes() * sizeof(float4), cudaMemcpyDeviceToHost);
+			//delete temp;
+
+			float k = 4;
+		}
 	}
 }

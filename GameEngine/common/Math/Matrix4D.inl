@@ -482,7 +482,7 @@ Matrix4D<Real> Matrix4D<Real>::GetInverse() const
 	for (i = 0; i < 16; i++)
 		reuslt[i] = inv[i] * det;
 
-	return reuslt.GetTranspose();
+	return reuslt;
 }
 
 template<class Real>
