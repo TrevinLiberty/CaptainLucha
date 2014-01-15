@@ -3,8 +3,8 @@
 #include "Convert.h"
 #include "WindowsUtils.h"
 
-static const char* g_IMPORT_PATH = "Data\\Import\\";
-static const char* g_EXPORT_PATH = "Data\\Export\\";
+static const char* g_IMPORT_PATH = "Data/Import/";
+static const char* g_EXPORT_PATH = "Data/Export/";
 
 void OutputErrorAndExit(const char* errorMsg);
 bool HasValidExtension(std::string path);
@@ -19,7 +19,7 @@ int main()
 
 	for(size_t  i = 0; i < allDirectories.size(); ++i)
 	{
-		ConvertFilesInDirectory(g_IMPORT_PATH + allDirectories[i] + "\\*");
+		ConvertFilesInDirectory(g_IMPORT_PATH + allDirectories[i] + "/*");
 	}
 }	
 

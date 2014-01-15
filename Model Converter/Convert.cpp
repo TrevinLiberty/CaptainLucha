@@ -113,11 +113,11 @@ namespace CaptainLucha
 		std::string directoryName = fileName;
 
 		directoryName[0] = (char)toupper(directoryName[0]);
-		exportFileName.append(directoryName + "\\");
+		exportFileName.append(directoryName + "/");
 		CreateDirectory(exportFileName.c_str(), NULL);
 
 		std::string textureDirectory = exportFileName;
-		textureDirectory.append("Textures\\");
+		textureDirectory.append("Textures/");
 		CreateDirectory(textureDirectory.c_str(), NULL);
 
 		exportFileName.append(fileName);
@@ -366,7 +366,7 @@ namespace CaptainLucha
 		GetFileNameFromPath(texturePathWithoutSpaces, textureName);
 
 		std::string relativeExpPath = exportPath;
-		relativeExpPath.append("\\Textures\\");
+		relativeExpPath.append("/Textures/");
 		relativeExpPath.append(textureName);
 
 		if(path.length > 0)
@@ -376,7 +376,7 @@ namespace CaptainLucha
 			std::string actualImportPath = importPath;
 			actualImportPath.append(texturePath);
 
-			std::string actualExportPath = "Data\\Export\\";
+			std::string actualExportPath = "Data/Export/";
 			actualExportPath.append(relativeExpPath);
 
 			CopyFile(actualImportPath.c_str(), actualExportPath.c_str(), false);

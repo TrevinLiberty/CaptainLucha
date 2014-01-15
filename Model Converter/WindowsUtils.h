@@ -14,7 +14,7 @@ inline void GetSubDirs(std::vector<std::string>& output, const std::string& path
 	GetFullPathName(path.c_str(), MAX_PATH, fullpath, 0);
 	std::string fp(fullpath);
 
-	hFind = FindFirstFile((LPCSTR)(fp + "\\*").c_str(), &findfiledata);
+	hFind = FindFirstFile((LPCSTR)(fp + "/*").c_str(), &findfiledata);
 	if (hFind != INVALID_HANDLE_VALUE)
 	{
 		do 
@@ -40,8 +40,8 @@ inline void GetSubDirsRecursive(std::vector<std::string>& output,
 	{
 		output.push_back(prependStr + *i);
 		GetSubDirsRecursive(output, 
-			path + std::string("\\") + *i + std::string("\\"),
-			prependStr + *i + std::string("\\"));
+			path + std::string("/") + *i + std::string("/"),
+			prependStr + *i + std::string("/"));
 	}
 }
 
