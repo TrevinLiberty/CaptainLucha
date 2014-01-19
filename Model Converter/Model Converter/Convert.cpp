@@ -14,12 +14,33 @@
 
 namespace CaptainLucha
 {
-	void ExportMaterials(const aiScene* SCENE, const char* fullPath, const char* exportPath, std::ofstream& file);
-	void ExportNodeData(const aiScene* SCENE, int numNodes, std::ofstream& file);
+	void ExportMaterials(
+		const aiScene* SCENE, 
+		const char* fullPath, 
+		const char* exportPath, 
+		std::ofstream& file);
 
-	void ExportFloat(std::ofstream& file, const char* title, float val);
-	void ExportColor(std::ofstream& file, const char* title, const aiColor3D& color);
-	void ExportTexture(std::ofstream& file, const char* title, const aiString& path, const char* importPath, const char* exportPath);
+	void ExportNodeData(
+		const aiScene* SCENE, 
+		int numNodes, 
+		std::ofstream& file);
+
+	void ExportFloat(
+		std::ofstream& file, 
+		const char* title, 
+		float val);
+
+	void ExportColor(
+		std::ofstream& file, 
+		const char* title, 
+		const aiColor3D& color);
+
+	void ExportTexture(
+		std::ofstream& file, 
+		const char* title, 
+		const aiString& path, 
+		const char* importPath,
+		const char* exportPath);
 
 	int GetNumberOfNodes(const aiScene* SCENE);
 
@@ -34,7 +55,9 @@ namespace CaptainLucha
 		outName.append(ext);
 	}
 
-	void GetFilePathWithoutFile(const std::string& fullPath, std::string& outPath)
+	void GetFilePathWithoutFile(
+		const std::string& fullPath, 
+		std::string& outPath)
 	{
 		char temp[MAX_PATH];
 		char fileName[MAX_PATH];
@@ -56,7 +79,9 @@ namespace CaptainLucha
 				str[i] = '_';
 	}
 
-	void ConvertAndExportFile(const char* filePath, const char* exportDirectory)
+	void ConvertAndExportFile(
+		const char* filePath, 
+		const char* exportDirectory)
 	{
 		char unused[MAX_PATH];
 		char fullPath[MAX_PATH];
@@ -76,7 +101,8 @@ namespace CaptainLucha
 			aiPrimitiveType_POINT | aiPrimitiveType_LINE);
 		importer.SetPropertyInteger(AI_CONFIG_PP_GSN_MAX_SMOOTHING_ANGLE, 80);
 
-		//These settings optimize the mesh tree into one node. To support skinning, the tree must still exsist. 
+		//These settings optimize the mesh tree into one node.
+		//	To support skinning, the tree must still exsist. 
 		//	todo skinning.
 		const aiScene* SCENE = importer.ReadFile(filePath, 
 			aiProcess_CalcTangentSpace |
@@ -122,7 +148,9 @@ namespace CaptainLucha
 
 		exportFileName.append(fileName);
 		exportFileName.append(".lm");
-		std::ofstream outfile(exportFileName, std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
+		std::ofstream outfile(
+			exportFileName, 
+			std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
 		int numNodes = GetNumberOfNodes(SCENE);
 
 		outfile << fileName << " " << SCENE->HasAnimations() << "\n";
@@ -137,7 +165,11 @@ namespace CaptainLucha
 		return;
 	}
 
-	void ExportMaterials(const aiScene* SCENE, const char* fullPath, const char* exportPath, std::ofstream& file)
+	void ExportMaterials(
+		const aiScene* SCENE, 
+		const char* fullPath, 
+		const char* exportPath, 
+		std::ofstream& file)
 	{
 		file << "Materials " << SCENE->mNumMaterials << "\n";
 		for(unsigned int i = 0; i < SCENE->mNumMaterials; ++i)
@@ -156,11 +188,13 @@ namespace CaptainLucha
 			float opacity;
 			float shininess;
 
+			//Bug with assimp. 
+			//Sometimes normal map is in height or bump map slots.
 			material.Get(AI_MATKEY_NAME, name);
 			material.GetTexture(aiTextureType_DIFFUSE, 0, &diffusePath);
 			material.GetTexture(aiTextureType_SPECULAR, 0, &specularPath);
 			material.GetTexture(aiTextureType_EMISSIVE, 0, &emissivePath);
-			material.GetTexture(aiTextureType_HEIGHT, 0, &normalPath);		//Bug with assimp. Sometimes normal map is in height or bump map slots. todo FIX
+			material.GetTexture(aiTextureType_HEIGHT, 0, &normalPath);
 			material.GetTexture(aiTextureType_OPACITY, 0, &maskPath);
 
 			material.Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor);
@@ -236,10 +270,19 @@ namespace CaptainLucha
 	}
 
 	static int ttt = 0;
-	void ExportNode(const aiScene* SCENE, const aiNode* node, std::ofstream& file, aiMatrix4x4 accTransform, int treeDepth)
+	void ExportNode(
+		const aiScene* SCENE, 
+		const aiNode* node, 
+		std::ofstream& file, 
+		aiMatrix4x4 accTransform, 
+		int treeDepth)
 	{
-		file << "N \"" << node->mName.C_Str() << "\" " << node->mNumMeshes << " " << treeDepth;
-		std::cout << "N \"" << ++ttt << " "  << node->mName.C_Str() << "\" " << node->mNumMeshes << " " << treeDepth;	
+		file << "N \"" << node->mName.C_Str() 
+			 << "\" " << node->mNumMeshes << " " << treeDepth;
+
+		std::cout << "N \"" << ++ttt << " "  
+			      << node->mName.C_Str() << "\" " << node->mNumMeshes 
+				  << " " << treeDepth;	
 
 		//Write worldspace Transformation for current node
 		file.write((char*)&(accTransform.Transpose()), 16 * 4);
@@ -257,9 +300,11 @@ namespace CaptainLucha
 				verts.push_back(Vert(
 					mesh.mVertices[vi],
 					mesh.mNormals[vi],
-					mesh.mBitangents[vi],
-					mesh.mTangents[vi],
-					mesh.mTextureCoords ? GetUVCoords(mesh.mTextureCoords[0], vi) : aiVector2D()));
+					mesh.mBitangents ? mesh.mBitangents[vi] : aiVector3D(),
+					mesh.mTangents ? mesh.mTangents[vi] : aiVector3D(),
+					mesh.mTextureCoords ? 
+						  GetUVCoords(mesh.mTextureCoords[0], vi)
+						: aiVector2D()));
 			}
 
 			for(size_t ini = 0; ini != mesh.mNumFaces; ++ini)
@@ -276,9 +321,11 @@ namespace CaptainLucha
 
 			std::cout << "\tMesh " << i << std::endl;
 			std::cout << "\t\tnv: " << verts.size() << std::endl;
-			std::cout << "\t\tni: " << indices.size() << std::endl << std::endl;
+			std::cout << "\t\tni: " << indices.size() 
+				      << std::endl << std::endl;
 
-			file << "M " << mesh.mMaterialIndex << " " << verts.size() << " " << indices.size() << " V";
+			file << "M " << mesh.mMaterialIndex << " " << verts.size() 
+				 << " " << indices.size() << " V";
 
 			file.write((char*)&verts[0], verts.size() * sizeof(Vert));
 			file.write((char*)&indices[0], indices.size() * sizeof(int));
@@ -288,16 +335,29 @@ namespace CaptainLucha
 		}
 	}
 
-	void ParseNodeChildren(const aiScene* SCENE, const aiNode* node, std::ofstream& file, aiMatrix4x4 accTransform, int treeDepth = 0)
+	void ParseNodeChildren(
+		const aiScene* SCENE, 
+		const aiNode* node, 
+		std::ofstream& file, 
+		aiMatrix4x4 accTransform, 
+		int treeDepth = 0)
 	{
 		aiMatrix4x4 newTransform = node->mTransformation * accTransform;
 		ExportNode(SCENE, node, file, newTransform, treeDepth);
 
 		for(size_t i = 0; i < node->mNumChildren; ++i)
-			ParseNodeChildren(SCENE, node->mChildren[i], file, newTransform, treeDepth + 1);
+		    ParseNodeChildren(
+				SCENE, 
+				node->mChildren[i], 
+				file, 
+				newTransform, 
+				treeDepth + 1);
 	}
 
-	void ExportNodeData(const aiScene* SCENE, int numNodes, std::ofstream& file)
+	void ExportNodeData(
+        const aiScene* SCENE, 
+        int numNodes, 
+        std::ofstream& file)
 	{
 		file << "NodeData " << numNodes << "\n";
 		std::cout << std::endl;
@@ -305,18 +365,26 @@ namespace CaptainLucha
 		ParseNodeChildren(SCENE, SCENE->mRootNode, file, aiMatrix4x4());
 	}
 
-	void ExportFloat(std::ofstream& file, const char* title, float val)
+	void ExportFloat(
+        std::ofstream& file, 
+        const char* title, 
+        float val)
 	{
 		file << title << val << "\n";
 	}
 
-	void ExportColor(std::ofstream& file, const char* title, const aiColor3D& color)
+	void ExportColor(
+        std::ofstream& file, 
+        const char* title, 
+        const aiColor3D& color)
 	{
 		file << title << color.r << " " << color.g << " " << color.b << "\n";
 	}
 
-	//Hacky. Some textures, mainly normal map, would have -bm 0.0200 prepended to the path.
-	//	This specifically removes that from the path, leaving you with only the path to the texture.
+	//Hacky. Some textures, mainly normal map, would have -bm 0.0200 
+    //  prepended to the path.
+	//	This specifically removes that from the path, 
+    //      leaving you with only the path to the texture.
 	//	Assimp adds this to the path.
 	void RemoveAnyModifiers(std::string& path)
 	{
@@ -353,9 +421,16 @@ namespace CaptainLucha
 		}
 	}
 
-	//Copies the texture at path (if the texture exists) to a new folder "Textures"
-	//	Also writes to file a new line. "title""relativePath" or "title"na if the texture doesn't exist.
-	void ExportTexture(std::ofstream& file, const char* title, const aiString& path, const char* importPath, const char* exportPath)
+	//Copies the texture at path (if the texture exists) to a new folder 
+    //  "Textures"
+	//	Also writes to file a new line. "title""relativePath" or 
+    //      "title"na if the texture doesn't exist.
+	void ExportTexture(
+		std::ofstream& file, 
+		const char* title, 
+		const aiString& path, 
+		const char* importPath, 
+		const char* exportPath)
 	{
 		std::string texturePath = path.C_Str();
 		RemoveAnyModifiers(texturePath);
@@ -379,7 +454,16 @@ namespace CaptainLucha
 			std::string actualExportPath = "Data/Export/";
 			actualExportPath.append(relativeExpPath);
 
-			CopyFile(actualImportPath.c_str(), actualExportPath.c_str(), false);
+			if(!CopyFile(
+                actualImportPath.c_str(), 
+                actualExportPath.c_str(), 
+                false))
+            {
+                std::cout << "Unable to copy texture file: " 
+                          << path.C_Str() << "!\n";
+
+                system("pause");
+            }
 		}
 		else
 			file << title << "na" << "\n";

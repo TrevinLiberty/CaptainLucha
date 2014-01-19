@@ -1,0 +1,21 @@
+#version 330
+
+/////////////////////////////////////////////////////
+//Uniforms
+uniform mat4x4 modelViewProj;
+
+/////////////////////////////////////////////////////
+//Ins
+in vec3 vertex;
+in vec2 texCoord;
+
+/////////////////////////////////////////////////////
+//Outs
+out vec2 textureCoord;
+
+void main()
+{
+	gl_Position = modelViewProj * vec4(vertex, 1.0);
+
+	textureCoord = texCoord;
+}

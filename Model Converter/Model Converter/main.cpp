@@ -21,6 +21,8 @@ int main()
 	{
 		ConvertFilesInDirectory(g_IMPORT_PATH + allDirectories[i] + "/*");
 	}
+
+    system("pause");
 }	
 
 void OutputErrorAndExit(const char* errorMsg)
@@ -50,7 +52,8 @@ bool HasValidExtension(std::string path)
 
 		for(int i = 0; i < NUM_VALID_EXTENSIONS; ++i)
 		{
-			if(extension.size() > 0 && _strcmpi(extension.c_str(), validExtensions[i].c_str()) == 0)
+			if(extension.size() > 0 && 
+               _strcmpi(extension.c_str(), validExtensions[i].c_str()) == 0)
 			{
 				return true;
 			}
@@ -75,7 +78,7 @@ void ConvertFilesInDirectory(const std::string& path)
 	{
 		if(HasValidExtension(ffd.cFileName))
 		{
-			std::cout << "Converting File: " << ffd.cFileName << std::cout;
+			std::cout << "Converting File: " << ffd.cFileName << std::endl;
 			std::string fullPath = path;
 			fullPath.resize(fullPath.size() - 1);
 			fullPath = fullPath + ffd.cFileName;
@@ -83,7 +86,8 @@ void ConvertFilesInDirectory(const std::string& path)
 		}
 		else if(HasValidExtension(ffd.cAlternateFileName))
 		{
-			std::cout << "Converting File: " << ffd.cAlternateFileName << std::cout;
+			std::cout << "Converting File: " 
+                      << ffd.cAlternateFileName << std::endl;
 			ConvertAndExportFile(ffd.cAlternateFileName, g_EXPORT_PATH);
 		}
 
