@@ -47,9 +47,8 @@ namespace CaptainLucha
 
 	}
 
-	void DeferredLight_Spot::ApplyLight(const Vector3Df& cameraPos, GLTexture* renderTarget0, GLTexture* renderTarget1, GLTexture* renderTarget2, GLTexture* renderTarget3)
+	void DeferredLight_Spot::ApplyLight(const Vector3Df& cameraPos, GLTexture* renderTarget0, GLTexture* renderTarget1, GLTexture* renderTarget2)
 	{
-		UNUSED(renderTarget3)
 		m_glProgram->SetUnifromTexture("renderTarget0", renderTarget0);
 		m_glProgram->SetUnifromTexture("renderTarget1", renderTarget1);
 		m_glProgram->SetUnifromTexture("renderTarget2", renderTarget2);

@@ -33,7 +33,8 @@ namespace CaptainLucha
 {
 	FPSCalc::FPSCalc()
 		: m_frameCount(0),
-		  m_previousTime(0)
+		  m_previousTime(0),
+		  m_runningAverage(60.0)
 	{
 
 	}
@@ -57,6 +58,13 @@ namespace CaptainLucha
 			m_fps = m_frameCount / (delta / 1000.0);
 			m_previousTime = currentTime;
 			m_frameCount = 0;
+
+			m_runningAverage = m_runningAverage * 0.99 + m_fps * 0.01;
+
+			if(m_fps < m_minFPS)
+				m_minFPS = m_fps;
+			if(m_fps > m_maxFPS)
+				m_maxFPS = m_fps;
 		}
 	}
 

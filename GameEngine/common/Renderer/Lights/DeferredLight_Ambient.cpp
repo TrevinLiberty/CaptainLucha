@@ -45,9 +45,8 @@ namespace CaptainLucha
 
 	}
 
-	void DeferredLight_Ambient::ApplyLight(const Vector3Df& cameraPos, GLTexture* renderTarget0, GLTexture* renderTarget1, GLTexture* renderTarget2, GLTexture* renderTarget3)
+	void DeferredLight_Ambient::ApplyLight(const Vector3Df& cameraPos, GLTexture* renderTarget0, GLTexture* renderTarget1, GLTexture* renderTarget2)
 	{
-		UNUSED(renderTarget3)
 		UNUSED(cameraPos)
 
 		g_MVPMatrix->SetProjectionMode(CL_ORTHOGRAPHIC);

@@ -51,17 +51,6 @@ namespace CaptainLucha
 
 		CreateSphereData(depth, vertices);
 
-		//for(size_t i = 0; i < vertices.size(); i += 3)
-		//{
-		//	TangentSpaceVertex& a = vertices[i];
-		//	TangentSpaceVertex& b = vertices[i + 1];
-		//	TangentSpaceVertex& c = vertices[i + 2];
-
-		//	SetTangentSpaceMatrix(a, b, c, false);
-		//	SetTangentSpaceMatrix(b, a, c, false);
-		//	SetTangentSpaceMatrix(c, b, a, false);
-		//}
-
 		glGenBuffers(1, &m_vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(TangentSpaceVertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
@@ -92,12 +81,6 @@ namespace CaptainLucha
 
 		const int tanl  = glProgram.GetAttributeLocation("tangent");
 		const int btanl = glProgram.GetAttributeLocation("bitangent");
-
-		glEnableVertexAttribArray(vl);
-		glEnableVertexAttribArray(nl);
-		glEnableVertexAttribArray(tl);
-		glEnableVertexAttribArray(tanl);
-		glEnableVertexAttribArray(btanl);
 
 		EnableVertexAttrib(vl, 3, GL_FLOAT, GL_FALSE, STRIDE, 0);
 		EnableVertexAttrib(nl, 3, GL_FLOAT, GL_FALSE, STRIDE, reinterpret_cast<const GLvoid* >(offsetof(TangentSpaceVertex, nx_)));

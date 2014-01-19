@@ -44,9 +44,8 @@ namespace CaptainLucha
 
 	}
 
-	void DeferredLight_Directional::ApplyLight(const Vector3Df& cameraPos, GLTexture* renderTarget0, GLTexture* renderTarget1, GLTexture* renderTarget2, GLTexture* renderTarget3)
+	void DeferredLight_Directional::ApplyLight(const Vector3Df& cameraPos, GLTexture* renderTarget0, GLTexture* renderTarget1, GLTexture* renderTarget2)
 	{
-		UNUSED(renderTarget3)
 		UNUSED(cameraPos)
 
 		g_MVPMatrix->SetProjectionMode(CL_ORTHOGRAPHIC);
@@ -56,13 +55,14 @@ namespace CaptainLucha
 
 		SetGLProgram(m_glProgram);
 
+        SetUtilsColor(m_color);
+
 		SetTexture("renderTarget0", renderTarget0);
 		SetTexture("renderTarget1", renderTarget1);
 		SetTexture("renderTarget2", renderTarget2);
 
-		m_glProgram->SetUniform("color", m_color);
-		m_glProgram->SetUniform("intensity", m_intensity);
-		m_glProgram->SetUniform("lightDir", m_lightDir);
+		SetUniform("intensity", m_intensity);
+		SetUniform("lightDir", m_lightDir);
 
 		DrawBegin(CL_QUADS);
 		{

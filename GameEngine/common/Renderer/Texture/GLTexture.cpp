@@ -85,61 +85,19 @@ namespace CaptainLucha
 
 	void GLTexture::LoadFromFile(const char* texturePath, bool createMipMap)
 	{
-		int width = 0;
-		int height = 0;
+        unsigned int* texels;
+        LoadTextureFromFile(texturePath, m_width, m_height, texels);
 
-		CLFileImporter fileImporter;
-		CLFile* file = fileImporter.LoadFile(texturePath);
+        if(texels)
+        {
+            if(!createMipMap)
+                LoadFromMemory(m_width, m_height, (unsigned int*)texels);
+            else
+                LoadFromMemoryMipMap(m_width, m_height, (unsigned int*)texels);
+        }
 
-		if(file != NULL)
-		{
-			fipMemoryIO memIO((BYTE*)file->m_buffer, file->m_bufLength);
-
-			if(memIO.isValid())
-			{
-				BYTE* texels = 0;
-				FIBITMAP* bitmap = 0;
-
-				FREE_IMAGE_FORMAT format = FIF_UNKNOWN;
-				format = memIO.getFileType();
-
-				if(format == FIF_UNKNOWN)
-					format = FreeImage_GetFIFFromFilename(texturePath);
-				if(format == FIF_UNKNOWN) 
-					BadFormatError(texturePath);
-
-				if(FreeImage_FIFSupportsReading(format))
-					bitmap = memIO.load(format);
-				else
-					UnSupportedFormatError(texturePath);
-
-				if(!bitmap)
-					LoadFromFileError(texturePath);
-
-				bitmap = FreeImage_ConvertTo32Bits(bitmap);
-				texels = FreeImage_GetBits(bitmap);
-				width = FreeImage_GetWidth(bitmap);
-				height = FreeImage_GetHeight(bitmap);
-
-				if(texels)
-				{
-					if(!createMipMap)
-						LoadFromMemory(width, height, (unsigned int*)texels);
-					else
-						LoadFromMemoryMipMap(width, height, (unsigned int*)texels);
-
-					FreeImage_Unload(bitmap);
-					delete file;
-					m_isValid = true;
-					return;
-				}
-				else
-					LoadFromFileError(texturePath);
-			}
-		}
-		else
-			LoadFromFileError(texturePath);
-	}
+        CleanPreviousTextureLoad();
+    }
 
 	void GLTexture::SetMinMagFilterNearest()
 	{
@@ -161,7 +119,6 @@ namespace CaptainLucha
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	//Does nothing if texture was obtained through the TextureFactoryGL
 	void GLTexture::DeleteTexture()
 	{
 		if(!m_inFactory)
@@ -169,6 +126,16 @@ namespace CaptainLucha
 			glDeleteTextures(1, &m_glTextureID);
 		}
 	}
+
+    void GLTexture::SetClampedEdges()
+    {
+        glBindTexture(GL_TEXTURE_2D, m_glTextureID);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Protected
@@ -180,8 +147,6 @@ namespace CaptainLucha
 		glGenTextures(1, &m_glTextureID);
 		glBindTexture(GL_TEXTURE_2D, m_glTextureID);
 
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
@@ -196,32 +161,101 @@ namespace CaptainLucha
 		glGenTextures(1, &m_glTextureID);
 		glBindTexture(GL_TEXTURE_2D, m_glTextureID);
 
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
 		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, width, height, GL_BGRA, GL_UNSIGNED_BYTE, texels);
 	}
 
-	void GLTexture::LoadFromFileError(const char* texturePath)
+	void LoadFromFileError(const char* texturePath)
 	{
 		std::stringstream ss;
 		ss << "Unable to Load Texture:\n" << texturePath;
 		MessageBox(NULL, ss.str().c_str(), "TEXTURE LOAD ERROR", MB_OK | MB_ICONERROR);
 	}
 
-	void GLTexture::BadFormatError(const char* texturePath)
+	void BadFormatError(const char* texturePath)
 	{
 		std::stringstream ss;
 		ss << "Unable to Load Texture:\n" << texturePath;
 		MessageBox(NULL, "BAD TEXTURE FORMAT", ss.str().c_str(), MB_OK | MB_ICONERROR);
 	}
 
-	void GLTexture::UnSupportedFormatError(const char* texturePath)
+	void UnSupportedFormatError(const char* texturePath)
 	{
 		std::stringstream ss;
 		ss << "Unable to Load Texture:\n" << texturePath;
 		MessageBox(NULL, "UNSUPPORTED TEXTURE FORMAT", ss.str().c_str(), MB_OK | MB_ICONERROR);
 	}
+
+    static FIBITMAP* g_loadedBitmap = NULL; //I'm not sure about this. But it's probably a bad idea. gg
+    void LoadTextureFromFile(
+        const char* texturePath, 
+        unsigned int& width, 
+        unsigned int& height, 
+        unsigned int*& outTexels)
+    {
+        REQUIRES(g_loadedBitmap == NULL
+            && 
+            "Must Call CleanPreviousTextureLoad before loading another texture!")
+
+        CLFileImporter fileImporter;
+        CLFile* file = fileImporter.LoadFile(texturePath);
+
+        if(file != NULL)
+        {
+            fipMemoryIO memIO((BYTE*)file->m_buffer, file->m_bufLength);
+
+            if(memIO.isValid())
+            {
+                BYTE* texels = 0;
+
+                FREE_IMAGE_FORMAT format = FIF_UNKNOWN;
+                format = memIO.getFileType();
+
+                if(format == FIF_UNKNOWN)
+                    format = FreeImage_GetFIFFromFilename(texturePath);
+                if(format == FIF_UNKNOWN) 
+                    BadFormatError(texturePath);
+
+                if(FreeImage_FIFSupportsReading(format))
+                    g_loadedBitmap = memIO.load(format);
+                else
+                    UnSupportedFormatError(texturePath);
+
+                if(!g_loadedBitmap)
+                    LoadFromFileError(texturePath);
+
+                g_loadedBitmap = FreeImage_ConvertTo32Bits(g_loadedBitmap);
+                texels = FreeImage_GetBits(g_loadedBitmap);
+                width = FreeImage_GetWidth(g_loadedBitmap);
+                height = FreeImage_GetHeight(g_loadedBitmap);
+
+                if(texels)
+                {
+                    outTexels = (unsigned int*)texels;
+                    delete file;
+                    return;
+                }
+                else
+                {
+                    delete file;
+                    g_loadedBitmap = NULL;
+                    LoadFromFileError(texturePath);
+                }
+            }
+        }
+        else
+        {
+            LoadFromFileError(texturePath);
+            delete file;
+            g_loadedBitmap = NULL;
+        }
+    }
+
+    void CleanPreviousTextureLoad()
+    {
+        FreeImage_Unload(g_loadedBitmap);
+        g_loadedBitmap = NULL;
+    }
 }

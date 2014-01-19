@@ -45,7 +45,7 @@ namespace CaptainLucha
 				(*it).second.m_averageFrameTimeSec = (*it).second.m_currentFrameTimeSec;
 			else if((*it).second.m_numReportsCurrentFrame > 0)
 				(*it).second.m_averageFrameTimeSec 
-				= (*it).second.m_averageFrameTimeSec * 0.95 + (*it).second.m_currentFrameTimeSec * 0.05;
+				= (*it).second.m_averageFrameTimeSec * 0.99 + (*it).second.m_currentFrameTimeSec * 0.01;
 
 			(*it).second.m_numReportsCurrentFrame = 0;
 			(*it).second.m_currentFrameTimeSec = 0.0;
@@ -89,37 +89,22 @@ namespace CaptainLucha
 	{
 		std::stringstream ss;
 		ss.precision(5);
-		
-		const double FRAME_TIME = GetAbsoluteTimeSeconds() - m_lastFrameTimeSeconds;
 
 		int currentHeight = WINDOW_HEIGHT - 10;
-		float currentX = WINDOW_WIDTH * 0.225f;
+		float currentX = WINDOW_WIDTH * 0.72f;
 
 		for(auto it = m_reports.begin(); it != m_reports.end(); ++it)
 		{
-// 			if(currentHeight - FONT_HEIGHT < 0.0)
-// 			{
-// 				Draw2DDebugText(Vector2Df(currentX, WINDOW_HEIGHT - 10), ss.str().c_str());
-// 				ss.str("");
-// 
-// 				currentHeight = WINDOW_HEIGHT - 50;
-// 				currentX += 275;
-// 			}
-
-			ss << "<#C0C0C0FF>" << (*it).second.m_id << std::setw(10) << std::setprecision(4)
-				<< "\n<#FFFFFFFF>    Calls F/A: " << std::fixed << (*it).second.m_numReportsCurrentFrame  << " / " << (*it).second.m_numReportsAllTime
-			   << " | " << (*it).second.m_currentFrameTimeSec / FRAME_TIME << "%"
-			   << " | cTime: " << (*it).second.m_currentFrameTimeSec * 1000.0	<< "ms"
-               << " | aTime: " << (*it).second.m_averageFrameTimeSec * 1000.0	<< "ms"
-			   << " | MaxTCF : " << (*it).second.m_maxFrameTimeSec * 1000.0		<< "ms"
-			   << " | MaxTAll: " << (*it).second.m_maxFrameTimeAllTimeSec * 1000.0 << "ms\n\n";
+			ss << "<#C0C0C0FF>" << (*it).second.m_id << std::setw(10) << std::setprecision(2)
+			   << "\n<#FFFFFFFF>    CallsFrame: " << std::fixed << (*it).second.m_numReportsCurrentFrame
+			   << " | CurTime: " << (*it).second.m_currentFrameTimeSec * 1000.0	<< "ms"
+               << " | AvgTime: " << (*it).second.m_averageFrameTimeSec * 1000.0	<< "ms\n\n";
 
 			currentHeight -= FONT_HEIGHT * 8;
 		}
 
 		if(!ss.str().empty())
 			Draw2DDebugText(Vector2Df(currentX, WINDOW_HEIGHT - 10), ss.str().c_str());
-		ss.str("");
 	}
 
 	ProfilingSystem::ProfilingSystem()

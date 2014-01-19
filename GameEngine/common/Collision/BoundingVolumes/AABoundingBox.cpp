@@ -213,7 +213,7 @@ namespace CaptainLucha
 
 	void AABoundingBox::DebugDraw() const
 	{
-		SetColor(Color::White);
+		SetUtilsColor(Color::White);
 		GetCurrentProgram()->SetUniform("emissive", 1.0f);
 
 		DrawBegin(CL_LINES);

@@ -31,6 +31,8 @@
 
 #include "Renderer/Texture/GLTexture.h"
 #include "Renderer/Lights/ForwardRenderLights.h"
+#include "Time/ProfilingSection.h"
+#include "Renderer/RendererUtils.h"
 
 #include <glew.h>
 
@@ -54,7 +56,7 @@ namespace CaptainLucha
 		template <typename T>
 		void SetUniform(const std::string& name, const T& val);
 
-		void SetUnifromTexture(const std::string& name, GLTexture* glTexture);
+		void SetUnifromTexture(const std::string& name, GLTexture* glTexture, bool isCubeMap = false);
 
 		void SetModelViewProjection();
 
@@ -64,14 +66,21 @@ namespace CaptainLucha
 
 		ForwardRenderLights& GetLights() {return m_lights;}
 
-	protected:
-		void CreateProgram(const char* vertPath, const char* fragPath);
+        void AddTesselationShaders(const char* ctrlPath, const char* evalPath);
+        void AddGeometryShader(const char* geoPath);
 
-		template <typename T>
-		UniformBase* CreateNewUniform(const T& val);
+	protected:
+   		template <typename T>
+		UniformBase* CreateNewUniform(const T& val)
+        {
+            return new Uniform<T>(val);
+        }
 
 		void OutputShaderError(int programID, const char* fileName);
 		void OutputProgramError(int programID, const char* vert, const char* frag);
+
+        void CompileAndAttachShader(const char* path, GLenum shaderType);
+        void LinkProgram();
 
 	private:
 		unsigned int m_programID;
@@ -90,18 +99,42 @@ namespace CaptainLucha
 	template <typename T>
 	void GLProgram::SetUniform(const std::string& name, const T& val)
 	{
-		unsigned int hash = ByteHash(name.c_str(), name.size());
-		auto it = m_uniforms.find(hash);
+        ProfilingSection p("Set Uniform");
+        std::map<unsigned int, UniformBase*>::iterator it;
+        unsigned int hash;
+        {
+            ProfilingSection p("find Uniform");
+            {
+                ProfilingSection p("byte hash");
+                hash = ByteHash(name.c_str(), name.size());
+            }
+            it = m_uniforms.find(hash);
+        }
 
 		if(it != m_uniforms.end())
 		{
-			int cachedUniformLoc = it->second->m_uniformLoc;
-			delete it->second;
-			it->second = CreateNewUniform(val);
-			it->second->m_uniformLoc = cachedUniformLoc;
+            ProfilingSection p("Change Uniform");
+            Uniform<T>* uniform = dynamic_cast<Uniform<T>* >(it->second);
+            if(uniform)
+            {
+                ProfilingSection p("Update");
+                if(!uniform->Equals(val))
+                {
+                    uniform->m_value = val;
+                }
+            }
+            else
+            {
+                ProfilingSection p("Replace");
+                int cachedUniformLoc = it->second->m_uniformLoc;
+                delete it->second;
+                it->second = CreateNewUniform(val);
+                it->second->m_uniformLoc = cachedUniformLoc;
+            }
 		}
 		else
 		{
+            ProfilingSection p("New Uniform");
 			UniformBase*& newUniform = m_uniforms[hash];
 			newUniform = CreateNewUniform(val);
 			newUniform->m_uniformLoc = glGetUniformLocation(m_programID, name.c_str());
@@ -118,11 +151,27 @@ namespace CaptainLucha
 	template <typename T>
 	struct Uniform : UniformBase
 	{
-		int m_size;
-		T m_values[4];
+        Uniform(const T& val)
+            : m_value(val) {}
+
+		T m_value;
 
 		void SetUniform();
+
+        bool Equals(const T& val)
+        {
+            return m_value == val;
+        }
 	};
+
+    struct UniformTexture : Uniform<GLTexture*>
+    {
+        UniformTexture(GLTexture* val)
+            : Uniform(val) {};
+
+        int m_textureUnit;
+        bool m_isCubeMap;
+    };
 }
 
 #endif

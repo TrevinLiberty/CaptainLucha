@@ -64,6 +64,8 @@ namespace CaptainLucha
 		template<typename T>
 		PropertiesError Get(const std::string& name, T& valueOut);
 
+        float GetFloatParam(int paramIndex);
+
 		NamedProperties& operator=(const NamedProperties& np);
 
 	private:

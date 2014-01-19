@@ -27,7 +27,6 @@
 /****************************************************************************/
 
 #include "PhysicsSystem.h"
-#include "Time/ProfilingSection.h"
 #include "ContactResolver.h"
 #include "Renderer/RendererUtils.h"
 
@@ -60,7 +59,7 @@ namespace CaptainLucha
 
 		m_collisionSystem.DebugDraw();
 		SetGLProgram(NULL);
-		SetColor(Color::White);
+		SetUtilsColor(Color::White);
 	}
 
 	void PhysicsSystem::AddPhysicsObject(CollisionPhysicsObject* object)
@@ -142,7 +141,6 @@ namespace CaptainLucha
 			//////////////////////////////////////////////////////////////////////////
 			//	Add Forces
 			{
-				ProfilingSection p("Force Update");
 				for(auto forceit = m_customForceGenerators.begin(); forceit != m_customForceGenerators.end(); ++forceit)
 					(*forceit)->UpdateForce(DT);
 
@@ -157,7 +155,6 @@ namespace CaptainLucha
 			////////////////////////////////////////////////////////////////////////
 			//	Update Position
 			{
-				ProfilingSection p("RB Update");
 				for(auto it = m_objects.begin(); it != m_objects.end(); ++it)
 				{
 					(*it)->Update(DT);
@@ -167,14 +164,12 @@ namespace CaptainLucha
 			//////////////////////////////////////////////////////////////////////////
 			//	Update Collisions
 			{
-				ProfilingSection p("Collision Update");
 				m_collisionSystem.Update();
 			}
 
 			//////////////////////////////////////////////////////////////////////////
 			//	Resolve Collisions
 			{
-				ProfilingSection p("Contact Update");
 				CollisionPairs& collisions = m_collisionSystem.GetCollisions();
 				for(size_t i = 0; i < collisions.size(); ++i)
 				{

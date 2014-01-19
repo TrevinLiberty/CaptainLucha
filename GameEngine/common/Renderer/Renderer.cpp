@@ -28,6 +28,7 @@
 
 #include "Renderer.h"
 
+#include "RendererUtils.h"
 #include "Objects/Object.h"
 
 namespace CaptainLucha
@@ -68,6 +69,25 @@ namespace CaptainLucha
 		}
 	}
 
+    void Renderer::AddDrawFunction(DrawFunction func, void* userData)
+    {
+        REQUIRES(func)
+        m_drawFunctions.push_back(DrawPair(func, userData));
+    }
+
+    void Renderer::RemoveDrawFunction(DrawFunction func, void* userData)
+    {
+        REQUIRES(func)
+        for(auto it = m_drawFunctions.begin(); it != m_drawFunctions.end(); ++it)
+        {
+            if(it->first == func && it->second == userData)
+            {
+                m_drawFunctions.erase(it);
+                return;
+            }
+        }
+    }
+
 	void Renderer::DrawScene(GLProgram& program)
 	{		
 		for(size_t i = 0; i < m_renderableObjects.size(); ++i)
@@ -78,5 +98,13 @@ namespace CaptainLucha
 				m_renderableObjects[i]->Draw(program);
 			}
 		}
+
+        if(m_debugDraw && m_debugDrawFunction)
+            m_debugDrawFunction(program, m_debugDrawUserData);
+
+        for(int i = 0; i < m_drawFunctions.size(); ++i)
+        {
+            m_drawFunctions[i].first(program, m_drawFunctions[i].second);
+        }
 	}
 }

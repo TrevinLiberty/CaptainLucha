@@ -42,6 +42,9 @@ namespace CaptainLucha
 	class Object;
 	class GLProgram;
 
+    typedef void (*DrawFunction)(GLProgram& program, void* userData);
+    typedef std::pair<DrawFunction, void*> DrawPair;
+
 	class Renderer
 	{
 	public:
@@ -88,6 +91,15 @@ namespace CaptainLucha
 
 		void SetDebugDrawing(bool t) {m_debugDraw = t;}
 
+        void SetDebugDrawFunction(DrawFunction drawFunc, void* userData = NULL) 
+        {
+            m_debugDrawFunction = drawFunc;
+            m_debugDrawUserData = userData;
+        }
+
+        void AddDrawFunction(DrawFunction func, void* userData = NULL);
+        void RemoveDrawFunction(DrawFunction func, void* userData = NULL);
+
 	protected:
 		virtual void DrawScene(GLProgram& program);
 
@@ -96,6 +108,10 @@ namespace CaptainLucha
 		Matrix4Df m_viewMatrix;
 		Vector3Df m_cameraPos;
 
+        DrawFunction m_debugDrawFunction;
+        void*        m_debugDrawUserData;
+
+        std::vector<DrawPair> m_drawFunctions;
 		std::vector<Object*> m_renderableObjects;
 	};
 }

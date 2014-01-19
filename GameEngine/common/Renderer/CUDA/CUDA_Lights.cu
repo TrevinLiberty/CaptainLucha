@@ -57,6 +57,40 @@ namespace CaptainLucha
 	//	ComputeLightAABB
 	//		performance: spreadBits may be slow
 	//////////////////////////////////////////////////////////////////////////
+	//Found at http://www.cse.chalmers.se/~olaolss/main_frame.php?contents=publication&id=clustered_shading Jan 7th 2014. ClusteredForwardDemo
+	template <int BITS>
+	__host__ __device__ inline 
+		unsigned int spreadBits(unsigned int value, unsigned int stride, unsigned int offset)
+	{
+		unsigned int x = (unsigned int(1) << BITS) - 1;
+		unsigned int v = value & x;
+		unsigned int mask = 1;
+		unsigned int result = 0;
+		for (unsigned int i = 0; i < BITS; ++i)
+		{
+			result |= mask & v;
+			v = v << (stride - 1);
+			mask = mask << stride;
+		}
+		return result << offset;
+	}
+
+	//Found at http://www.cse.chalmers.se/~olaolss/main_frame.php?contents=publication&id=clustered_shading Jan 7th 2014. ClusteredForwardDemo
+	template <int BITS>
+	__host__ __device__ inline 
+		unsigned int unspreadBits(unsigned int value, unsigned int stride, unsigned int offset)
+	{
+		unsigned int v = value >> offset;
+		unsigned int mask = 1;
+		unsigned int result = 0;
+		for (unsigned int i = 0; i < BITS; ++i)
+		{
+			result |= mask & v;
+			v = v >> (stride - 1);
+			mask = mask << 1;
+		}
+		return result;
+	}
 
 	//Given a light's position and the center position of the all encompassing AABB.
 	//	Calculate the direction between the position. 
@@ -108,6 +142,7 @@ namespace CaptainLucha
 			outIndices
 			);
 	}
+
 	//Operators for SetLeafsAndCalculateNodes(...)
 	struct AabbMinOp
 	{
@@ -143,16 +178,17 @@ namespace CaptainLucha
 
 	//Launch Bounds specifies (maxThreadsPerBlock, minBlocksPerRun). Helps compiler optimize kernel.
 	//	threadIdx.x = Current Group's leaf index
-	//	threadIdx.y = Thread Leaf Group Index
+	//	threadIdx.y = Thread Leaf Group (Warp) Index
 	//	blockIdx.x  = Block Leaf Group Index
 	//	
 	//	blockDim	= Number of threads in a block
 	__global__ void __launch_bounds__(32*6,6) 
 	SetLeafsAndCalculateParentNodes(
 		const float4* lightPosRad, 
-		const LightBVH* bvh, 
+		const LightBVH bvh, 
 		const unsigned int* sortedLightIndices)
 	{
+        //Temp buffer for chag::pp
 		struct SharedBuffer
 		{
 			float3 chagReduceBuffer[32 + 32 / 2];
@@ -166,12 +202,13 @@ namespace CaptainLucha
 		const unsigned int LEAF_INDEX  = GROUP_INDEX * blockDim.x + threadIdx.x;
 
 		//Number of non-leaf nodes minus number of parents to leafs. Plus current group number.
-		if(bvh->GetLevelIndex(bvh->GetNumLevels() - 2) + GROUP_INDEX < bvh->GetNumNonLeafNodes())
+		if(bvh.GetLevelIndex(bvh.GetNumLevels() - 2) + GROUP_INDEX < bvh.GetNumNonLeafNodes())
 		{
 			unsigned int lightIndex;
-			float3 lightAABBMin, lightAABBMax;
+			float3 lightAABBMin;
+            float3 lightAABBMax;
 
-			if(LEAF_INDEX < bvh->GetNumLights())
+			if(LEAF_INDEX < bvh.GetNumLights())
 			{
 				lightIndex = sortedLightIndices[LEAF_INDEX];
 				const float4& curPosRad = lightPosRad[lightIndex];
@@ -197,14 +234,80 @@ namespace CaptainLucha
 			typedef chag::pp::Unit<WarpSetup> WarpUnit;
 
 			float3 nodeMinAABB = WarpUnit::reduce(lightAABBMin, AabbMinOp(), currentBuffer.chagReduceBuffer);
-			float3 nodeMaxAABB = WarpUnit::reduce(lightAABBMin, AabbMaxOp(), currentBuffer.chagReduceBuffer);
+			float3 nodeMaxAABB = WarpUnit::reduce(lightAABBMax, AabbMaxOp(), currentBuffer.chagReduceBuffer);
 		
-			bvh->SetLeaf(LEAF_INDEX, lightIndex);
+			bvh.SetLeaf(LEAF_INDEX, lightIndex);
 
 			//numlevels - 2 == level above leafs
-			bvh->SetNode(bvh->GetNumLevels() - 2, GROUP_INDEX, nodeMinAABB, nodeMaxAABB);
+			bvh.SetNode(bvh.GetNumLevels() - 2, GROUP_INDEX, nodeMinAABB, nodeMaxAABB);
 		}
 	}
 
-	const float LightBVH::LOG_BASE_BRANCH = 1 / log((float)BRANCHING_FACTOR);
+    /*
+        Algorithm similar to SetLeafsAndCalculateParentNodes(...) but using nodes
+            instead of leafs
+
+        threads per block dim3(32, 6, 1)
+        num blocks        dim3(numNodesCurrentLevel / 6, 1, 1)
+
+        MAX_NUM_THREADS = 32 * 6 * (numNodesCurLevel / 6) == 32 * numNodesCurLevel
+
+            - 32 threads per node at current level.
+            - each thread represent child node
+            - each warp (32 threads) represents ONE parent node
+            - each warp calculates the min and max AABB for their parent node.
+
+            + parent node id == threadIdx.y + blockIdx.x * blockDim.y
+                -where blockDim.y == threadsPerBlock.y == 6
+                -range 0 -> (numNodesCurrentLevel - 1)
+                -note, id != BVH array index
+
+            + child node can be found doing:
+                -childNodeStartIndex (in BVH array) + parentIndex * blockDim.x + threadIdx.x;
+                -where blockDim.x == threadsPerBlock.x == 32
+                -where theadIdx.x == 0 -> 31
+
+        *note, threadsPerBlock.y is six to fit more warps in a block. Better optimized.
+            -could possibly make 12 (32 * 12 == 384) less than 512 limit on threads per block. TEST
+    */
+    __global__ void __launch_bounds__(32*6,6) 
+    CalculateParentNodes(
+		const LightBVH bvh,
+        int currentLevel)
+	{
+        //Temp buffer for chag::pp
+		struct SharedBuffer
+		{
+			float3 chagReduceBuffer[32 + 32 / 2];
+		};
+
+		__shared__ SharedBuffer sharedBuf[6];
+		SharedBuffer& currentBuffer = sharedBuf[threadIdx.y];
+
+		const unsigned int NODE_INDEX = threadIdx.y + blockIdx.x * blockDim.y;
+
+        if(NODE_INDEX >= bvh.GetNumNodesAtLevel(currentLevel))
+            return;
+
+        const int CHILD_INDEX = bvh.GetLevelIndex(currentLevel + 1) + NODE_INDEX * blockDim.x + threadIdx.x;
+        
+        float3 childMinAABB = make_float3(+FLT_MAX, +FLT_MAX, +FLT_MAX);
+        float3 childMaxAABB = make_float3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+
+        if(CHILD_INDEX < bvh.GetNumNonLeafNodes())
+        {
+            childMinAABB = make_float3(bvh.GetNodeMinAABB(CHILD_INDEX));
+            childMaxAABB = make_float3(bvh.GetNodeMaxAABB(CHILD_INDEX));
+        }
+
+		typedef chag::pp::KernelSetupWarp<> WarpSetup;
+		typedef chag::pp::Unit<WarpSetup> WarpUnit;
+
+		float3 nodeMinAABB = WarpUnit::reduce(childMinAABB, AabbMinOp(), currentBuffer.chagReduceBuffer);
+		float3 nodeMaxAABB = WarpUnit::reduce(childMaxAABB, AabbMaxOp(), currentBuffer.chagReduceBuffer);
+
+        bvh.SetNode(currentLevel, NODE_INDEX, nodeMinAABB, nodeMaxAABB);
+	}
+
+	const float LightBVH::INV_LOG_BRANCH = 1 / log((float)BRANCHING_FACTOR);
 }

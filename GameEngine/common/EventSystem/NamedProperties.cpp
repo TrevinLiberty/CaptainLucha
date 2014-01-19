@@ -35,6 +35,17 @@ namespace CaptainLucha
 		*this = np;
 	}
 
+    float NamedProperties::GetFloatParam(int paramIndex)
+    {
+        std::stringstream ss;
+        ss << "param" << paramIndex;
+
+        std::string val;
+        Get(ss.str(), val);
+
+        return atof(val.c_str());
+    }
+
 	NamedProperties& NamedProperties::operator=(const NamedProperties& np)
 	{
 		for(auto it = m_properties.begin(); it != m_properties.end(); ++it)

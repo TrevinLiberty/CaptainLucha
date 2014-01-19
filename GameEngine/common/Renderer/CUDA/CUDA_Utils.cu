@@ -45,10 +45,9 @@ namespace CaptainLucha
  	int GetMaxGFlopDevice();
 
 	void InitCuda()
-	{
- 		REQUIRES(!g_IsCudaInit)
- 
- 		SetBestCudaDevice();
+	{ 
+		if(!IsCudaInit())
+ 			SetBestCudaDevice();
  
  		g_IsCudaInit = true;
 	}

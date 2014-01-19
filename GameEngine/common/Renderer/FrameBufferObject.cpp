@@ -106,7 +106,7 @@ namespace CaptainLucha
 
 	void FrameBufferObject::DrawBuffer(bool colorBuffer)
 	{
-		SetColor(Vector4Df(1.0f, 1.0f, 1.0f, 1.0f));
+		SetUtilsColor(Vector4Df(1.0f, 1.0f, 1.0f, 1.0f));
 
 		if(colorBuffer)
 			SetTexture("diffuseMap", m_color);

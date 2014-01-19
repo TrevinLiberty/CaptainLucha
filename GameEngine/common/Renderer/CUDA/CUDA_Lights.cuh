@@ -29,11 +29,18 @@ namespace CaptainLucha
 	__global__ void __launch_bounds__(32*6,6) 
 	SetLeafsAndCalculateParentNodes(
 		const float4* lightPosRad, 
-		const LightBVH* bvh, 
+		const LightBVH bvh, 
 		const unsigned int* sortedLightIndices);
+
+    __global__ void __launch_bounds__(32*6,6) 
+    CalculateParentNodes(
+		const LightBVH bvh,
+        int currentLevel);
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Light BVH
+    //
+    //  +Branching Factor set to 32. (b/c 32 threads in a warp)
 	//		change to float3 for AABB?
 	//		Update to be able to change branching factor on the fly
 	//////////////////////////////////////////////////////////////////////////
@@ -46,8 +53,9 @@ namespace CaptainLucha
 			  m_numLevels(0),
 			  m_numNonLeafNodes(0) {}
 		~LightBVH() {};
+
 		static const int BRANCHING_FACTOR = 32;
-		static const float LOG_BASE_BRANCH;
+		static const float INV_LOG_BRANCH;
 
 		inline __host__ void SetNumberOfLights(unsigned int numLights);
 		inline __device__ __host__ unsigned int GetNumLights() const {return m_numLights;}
@@ -76,6 +84,16 @@ namespace CaptainLucha
 			m_maxAABBNodes.get()[NODE_INDEX] = make_float4(AABBmax, 0.0f);
 		}
 
+        inline __device__ const float4& GetNodeMinAABB(int index) const
+        {
+            return m_minAABBNodes.get()[index];
+        }
+
+        inline __device__ const float4& GetNodeMaxAABB(int index) const
+        {
+            return m_maxAABBNodes.get()[index];
+        }
+
 		//returns the index of the BVH level in a 1D array given the BRANCHING_FACTOR and level needed.
 		//Performance. pre cache
 		inline __device__ __host__ int GetLevelIndex(int level) const
@@ -88,7 +106,7 @@ namespace CaptainLucha
 		//	logbase32(numLights) == logbase10(numLights) / logbase10(32);
 		inline __device__ __host__ int GetNumLayersNeeded(int numLights) const
 		{
-			return numLights = 0 ? 1 : (int)std::floor((log((float)numLights) * LOG_BASE_BRANCH) + 1);
+			return numLights == 0 ? 1 : (int)std::ceil((log((float)numLights) / log((float)BRANCHING_FACTOR)) + 1);
 		}
 
 		//Calculates max number of non-leaf nodes to fill numLevels.
@@ -96,8 +114,13 @@ namespace CaptainLucha
 		//		if memory becomes a problem. Other way avoids reallocating memory a lot.
 		inline __device__ __host__ int CalcNumNonLeafNodes(int numLevels) const
 		{
-			return GetLevelIndex(numLevels);
+			return GetLevelIndex(numLevels - 1);
 		}
+
+        inline __device__ __host__ int GetNumNodesAtLevel(int level) const
+        {
+            return powf(BRANCHING_FACTOR, level);
+        }
 
 	//private:
 		thrust::device_ptr<float4>	     m_minAABBNodes;

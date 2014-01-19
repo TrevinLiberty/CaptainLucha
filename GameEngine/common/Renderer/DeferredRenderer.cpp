@@ -32,11 +32,14 @@
 #include "Lights/DeferredLight_Ambient.h"
 #include "Lights/DeferredLight_Directional.h"
 #include "Lights/DeferredLight_Spot.h"
+#include "Time/ProfilingSection.h"
 
 #include "RendererUtils.h"
+
 #include "Renderer/FrameBufferObject.h"
 #include <glew.h>
 #include <iomanip>
+#include <nvToolsExt.h>
 
 namespace CaptainLucha
 {
@@ -52,12 +55,33 @@ namespace CaptainLucha
 
 	void DeferredRenderer::Draw()
 	{
-		PopulateGBuffers();
+        glMemoryBarrier(GL_ALL_BARRIER_BITS);
+        nvtxRangePushA("Deferred Draw");
+        {
+            nvtxRangePushA("Populate GBuffers");
+            {
+                PopulateGBuffers();
+                glMemoryBarrier(GL_ALL_BARRIER_BITS);
+            }
+            nvtxRangePop();
 
-		BeginLightPass();
-		LightPass();
-		EndLightPass();
-		RenderAccumulator();
+            nvtxRangePushA("Light Pass");
+            {
+                BeginLightPass();
+                LightPass();
+                EndLightPass();
+                glMemoryBarrier(GL_ALL_BARRIER_BITS);
+            }
+            nvtxRangePop();
+
+            nvtxRangePushA("Render Accumulator");
+            {
+                RenderAccumulator();
+                glMemoryBarrier(GL_ALL_BARRIER_BITS);
+            }
+            nvtxRangePop();
+        }
+        nvtxRangePop();
 
 		if(m_debugDraw)
 			DebugRenderGBuffer();
@@ -89,21 +113,6 @@ namespace CaptainLucha
 		DeferredLight_Spot* newLight = new DeferredLight_Spot();
 		AddNewLight(newLight);
 		return newLight;
-	}
-
-	int DeferredRenderer::GetObjectIDFromRT() const
-	{
-		int objectID[3];
-
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_fbo0);
-		glReadBuffer(GL_COLOR_ATTACHMENT3);
-
-		glReadPixels(WINDOW_WIDTH >> 1, WINDOW_HEIGHT >> 1, 1, 1, GL_RGB_INTEGER, GL_UNSIGNED_INT, &objectID);
-
-		glReadBuffer(GL_NONE);
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-
-		return objectID[0];
 	}
 
 	void DeferredRenderer::RemoveLight(Light* light)
@@ -168,15 +177,16 @@ namespace CaptainLucha
 
 	void DeferredRenderer::PopulateGBuffers()
 	{
+#ifdef PROFILE_DEFERRED
+		ProfilingSection section("Populate GBuffers");
+#endif
 		glBlendFunc(GL_ONE, GL_ZERO);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, m_fbo0);
 		{
 			ClearFBO();
-
-			GLenum buffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
-			glDrawBuffers(4, buffers);
-
+			GLenum buffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
+			glDrawBuffers(3, buffers);
 			g_MVPMatrix->SetViewMatrix(m_viewMatrix);
 			DrawScene(*m_graphicsBufferProgram);
 		}
@@ -185,6 +195,9 @@ namespace CaptainLucha
 
 	void DeferredRenderer::RenderAccumulator()
 	{
+#ifdef PROFILE_DEFERRED
+		ProfilingSection section("Render Accumulator");
+#endif
 		g_MVPMatrix->SetProjectionMode(CL_ORTHOGRAPHIC);
 
 		SetGLProgram(m_finalPassProgram);
@@ -192,7 +205,6 @@ namespace CaptainLucha
 		SetTexture("renderTarget0", m_rt0);
 		SetTexture("renderTarget1", m_rt1);
 		SetTexture("renderTarget2", m_rt2);
-		SetTexture("renderTarget3", m_rt3);
 		SetTexture("depth", m_depth);
 		SetTexture("accumulatorDiffuse", m_accumDiffuseLightTexture);
 		SetTexture("accumulatorSpecular", m_accumSpecularLightTexture);
@@ -205,24 +217,25 @@ namespace CaptainLucha
 
 	void DeferredRenderer::LightPass()
 	{
+#ifdef PROFILE_DEFERRED
+		ProfilingSection section("Light Pass");
+#endif
+
 		glBindFramebuffer(GL_FRAMEBUFFER, m_fbo1);
 		{
 			GLenum buffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
 			glDrawBuffers(2, buffers);
-
 			ClearFBO();
-
 			glEnable(GL_STENCIL_TEST);
 			for(size_t i = 0; i < m_deferredLights.size(); ++i)
 			{
 				m_deferredLights[i]->StencilPass();
-				m_deferredLights[i]->ApplyLight(m_cameraPos, m_rt0, m_rt1, m_rt2, m_rt3);
+				m_deferredLights[i]->ApplyLight(m_cameraPos, m_rt0, m_rt1, m_rt2);
 			}
 			glDisable(GL_STENCIL_TEST);
-
 			for(size_t i = 0; i < m_fullscreenLights.size(); ++i)
 			{
-				m_fullscreenLights[i]->ApplyLight(m_cameraPos, m_rt0, m_rt1, m_rt2, m_rt3);
+				m_fullscreenLights[i]->ApplyLight(m_cameraPos, m_rt0, m_rt1, m_rt2);
 			}
 		}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -284,7 +297,6 @@ namespace CaptainLucha
 		unsigned int rt0 = 0;
 		unsigned int rt1 = 0;
 		unsigned int rt2 = 0;
-		unsigned int rt3 = 0;
 		unsigned int depth = 0;
 
 		//Diffuse Target
@@ -314,15 +326,6 @@ namespace CaptainLucha
 		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F, WINDOW_WIDTH, WINDOW_HEIGHT,
 			0,	GL_RGBA, GL_FLOAT, NULL);
 
-		//Object IDs
-		//
-		glGenTextures(1, &rt3);
-		glBindTexture(GL_TEXTURE_2D, rt3);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16UI, WINDOW_WIDTH, WINDOW_HEIGHT,
-			0,	GL_RGBA_INTEGER, GL_UNSIGNED_INT, NULL);
-
 		glGenTextures(1, &depth);
 		glBindTexture(GL_TEXTURE_2D, depth);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -336,13 +339,11 @@ namespace CaptainLucha
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, rt0, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, rt1, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, rt2, 0);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, rt3, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depth, 0);
 
 		m_rt0 = new GLTexture(rt0, WINDOW_WIDTH, WINDOW_HEIGHT);
 		m_rt1 = new GLTexture(rt1, WINDOW_WIDTH, WINDOW_HEIGHT);
 		m_rt2 = new GLTexture(rt2, WINDOW_WIDTH, WINDOW_HEIGHT);
-		m_rt3 = new GLTexture(rt3, WINDOW_WIDTH, WINDOW_HEIGHT);
 		m_depth = new GLTexture(depth, WINDOW_WIDTH, WINDOW_HEIGHT);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -426,22 +427,6 @@ namespace CaptainLucha
 
 		g_MVPMatrix->Translate(WINDOW_WIDTH / 10.0f, 0.0f, 0.0f);
 		SetTexture("diffuseMap", m_rt2);
-		DrawBegin(CL_QUADS);
-		{
-			clVertex3(0.0f, 0.0f, 0.1f);
-			clVertex3(WINDOW_WIDTH / 10.0f, 0.0f, 0.1f);
-			clVertex3(WINDOW_WIDTH / 10.0f, WINDOW_HEIGHT / 10.0f, 0.1f);
-			clVertex3(0.0f, WINDOW_HEIGHT / 10.0f, 0.1f);
-
-			clTexCoord(0, 0);
-			clTexCoord(1, 0);
-			clTexCoord(1, 1);
-			clTexCoord(0, 1);
-		}
-		DrawEnd();
-
-		g_MVPMatrix->Translate(WINDOW_WIDTH / 10.0f, 0.0f, 0.0f);
-		SetTexture("diffuseMap", m_rt3);
 		DrawBegin(CL_QUADS);
 		{
 			clVertex3(0.0f, 0.0f, 0.1f);

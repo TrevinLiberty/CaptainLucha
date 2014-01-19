@@ -68,6 +68,7 @@ namespace CaptainLucha
 		glProgram.SetUniform("hasEmissiveMap", false);
 
 		g_MVPMatrix->Translate(0.0f, -1.0f, 0.0f);
+
 		m_vbo->Draw(glProgram);
 	}
 }

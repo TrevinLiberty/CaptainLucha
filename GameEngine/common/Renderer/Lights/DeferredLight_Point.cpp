@@ -26,6 +26,8 @@
  *
 /****************************************************************************/
 
+#include <nvToolsExt.h>
+
 #include "DeferredLight_Point.h"
 #include "Renderer/Texture/GLTexture.h"
 
@@ -50,31 +52,34 @@ namespace CaptainLucha
 
 	}
 
-	void DeferredLight_Point::ApplyLight(const Vector3Df& cameraPos, GLTexture* renderTarget0, GLTexture* renderTarget1, GLTexture* renderTarget2, GLTexture* renderTarget3)
+	void DeferredLight_Point::ApplyLight(const Vector3Df& cameraPos, GLTexture* renderTarget0, GLTexture* renderTarget1, GLTexture* renderTarget2)
 	{
-		UNUSED(renderTarget3)
+        {
+            nvtxRangePushA("Set Uniforms");
+            m_glProgram->SetUnifromTexture("renderTarget0", renderTarget0);
+            m_glProgram->SetUnifromTexture("renderTarget1", renderTarget1);
+            m_glProgram->SetUnifromTexture("renderTarget2", renderTarget2);
 
-		m_glProgram->SetUnifromTexture("renderTarget0", renderTarget0);
-		m_glProgram->SetUnifromTexture("renderTarget1", renderTarget1);
-		m_glProgram->SetUnifromTexture("renderTarget2", renderTarget2);
+            m_glProgram->SetUniform("color", m_color);
+            m_glProgram->SetUniform("camPos", cameraPos);
+            m_glProgram->SetUniform("lightPos", m_position);
+            m_glProgram->SetUniform("intensity", m_intensity);
+            m_glProgram->SetUniform("radius", m_radius);
+            nvtxRangePop();
+        }
 
-		m_glProgram->SetUniform("color", m_color);
+        nvtxRangePushA("Light Sphere Draw");
+        {
+            glStencilFunc(GL_NOTEQUAL, 0, 0xFF);
+            glDisable(GL_DEPTH_TEST);
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_FRONT);
 
-		m_glProgram->SetUniform("camPos", cameraPos);
-		m_glProgram->SetUniform("lightPos", m_position);
+            DrawBSphere(*m_glProgram);
 
-		m_glProgram->SetUniform("intensity", m_intensity);
-		m_glProgram->SetUniform("radius", m_radius);
-
-		glStencilFunc(GL_NOTEQUAL, 0, 0xFF);
-		glDisable(GL_DEPTH_TEST);
-
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_FRONT);
-
-		DrawBSphere(*m_glProgram);
-
-		glCullFace(GL_BACK);
+            glCullFace(GL_BACK);
+        }
+        nvtxRangePop();
 	}
 
 	void DeferredLight_Point::StencilPass()
@@ -86,9 +91,7 @@ namespace CaptainLucha
 		glStencilFunc(GL_ALWAYS, 0, 0);
 		glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP);
 		glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
-
 		DrawBSphere(*m_nullProgram);
-
 		glEnable(GL_CULL_FACE);
 	}
 
@@ -98,8 +101,8 @@ namespace CaptainLucha
 		g_MVPMatrix->PushMatrix();
 		g_MVPMatrix->LoadIdentity();
 		g_MVPMatrix->Translate(pos);
-		g_MVPMatrix->Scale(m_radius, m_radius, m_radius);
-		m_sphere->Draw(glProgram);
+        g_MVPMatrix->Scale(m_radius, m_radius, m_radius);
+        m_sphere->Draw(glProgram);
 		g_MVPMatrix->PopMatrix();
 	}
 

@@ -69,24 +69,12 @@ namespace CaptainLucha
 
 		void SetViewMatrix(const Matrix4Df& view) {m_view = view;}
 
-		const Matrix4Df& GetModelMatrix() const {return m_stack.top();}
-		Matrix4Df GetModelMatrix() {return m_stack.top();}  
-
-		const Matrix4Df& GetViewMatrix() const 
-			{return m_currentProjectionMode == CL_PROJECTION ? m_view : Matrix4Df::IDENTITY;}
-		Matrix4Df GetViewMatrix()
-			{return m_currentProjectionMode == CL_PROJECTION ? m_view : Matrix4Df::IDENTITY;}
-
-		const Matrix4Df& GetProjectionMatrix() const 
-			{return m_currentProjectionMode == CL_PROJECTION ? m_projectionMatrix : m_orthoMatrix;}
-		Matrix4Df GetProjectionMatrix() 
-			{return m_currentProjectionMode == CL_PROJECTION ? m_projectionMatrix : m_orthoMatrix;}
+		const Matrix4Df& GetModelMatrix() const;
+		const Matrix4Df& GetViewMatrix() const;
+		const Matrix4Df& GetProjectionMatrix() const;
 	
-		Matrix4Df GetModelViewMatrix() const {return m_view * m_stack.top();}
-		Matrix4Df GetModelViewProjectionMatrix() 
-		{
-			return (m_currentProjectionMode == CL_PROJECTION ? m_stack.top() * m_view * m_projectionMatrix : m_stack.top() * m_view * m_orthoMatrix);
-		}
+		Matrix4Df GetModelViewMatrix() const;
+		Matrix4Df GetModelViewProjectionMatrix() const;
 
 		void Perspective(float fov, float aspect, float zNear, float zFar);
 		void Othographic(int left, int right, int bottom, int top, int zFar, int zNear);

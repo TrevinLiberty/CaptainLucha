@@ -45,10 +45,6 @@
 #include "Console/CLConsole_Interface.h"
 #include "Console/CLConsole.h"
 
-#include <glew.h>
-#include <glfw3.h>
-#include <math.h>
-
 namespace CaptainLucha
 {
 	int CL_VERSION_NUMBER = 1000;
@@ -194,21 +190,15 @@ namespace CaptainLucha
 
 		while(!m_gameOver && !glfwWindowShouldClose(glfwGetCurrentContext()))
 		{
-			ProfilingSection p("Frame");
 			const double NEW_TIME = GetAbsoluteTimeSeconds();
 			double frameTime = NEW_TIME - currentFrameTime;
 			currentFrameTime = NEW_TIME;
 
 			frameTimeAccumulator += frameTime;
 
-			{
-				ProfilingSection p("Network Update");
-			}
-
 			int numUpdates = 0;
 			while(m_enableFrameLimiting && frameTimeAccumulator >= DT && numUpdates <= MAX_FRAME_SKIP)
 			{
-				ProfilingSection p("Update Loop");
 				m_masterFrameClock.Update(DT);
 				m_masterAbsClock.Update(frameTime);
 
@@ -218,33 +208,30 @@ namespace CaptainLucha
 			}
 
 			{
-				{
-					ProfilingSection p("Draw Update1");
-					EngineDraw();
-				}
-				{
-					EngineDrawHUD();
-					DrawDebugUIWidgets();
-					ProfilingSection p("Draw Update2");
-				}
+
+				EngineDraw();
+				EngineDrawHUD();
+				DrawDebugUIWidgets();
+
 				glfwSwapBuffers(glfwGetCurrentContext());
 			}
 
 			{
-				ProfilingSection pp("Pool Events");
 				glfwPollEvents();
 			}
 
 			ProfilingSystem::GetInstance()->InitNewFrame();
 
 			std::stringstream ss;
-			ss.precision(4);
-			ss << std::fixed << "Game FPS: " << m_fpsCalc.GetFPS();
+			ss.precision(1);
+			ss << std::fixed << "FPS: " << m_fpsCalc.GetFPS();
+			ss << std::fixed << " | AvgFPS: " << m_fpsCalc.GetRunningAverage();
 
 #ifdef NEW_NEW_LOL
-			const int NUM_ALLOCATED_MB = static_cast<int>((MemoryManager::GetInstance().GetNumAllocatedBytes() / 1024.0f) / 1024.0f);
-			const float NUM_FREE_MB = (MemoryManager::GetInstance().GetNumFreeBytes() / 1024.0f) / 1024.0f;
-			ss << ", Aloc: " << NUM_ALLOCATED_MB << "MB, Used: " << NUM_ALLOCATED_MB - NUM_FREE_MB << "MB";
+			static const double DIVIDE = (1 / 1024.0f) / 1024.0f;
+			const int NUM_ALLOCATED_MB = static_cast<int>(MemoryManager::GetInstance().GetNumAllocatedBytes() * DIVIDE);
+			const double NUM_FREE_MB = MemoryManager::GetInstance().GetNumFreeBytes() * DIVIDE;
+			ss << " | Aloc: " << NUM_ALLOCATED_MB << "MB, Used: " << NUM_ALLOCATED_MB - NUM_FREE_MB << "MB";
 #endif
 
 			SetWindowTitle(ss.str());
@@ -294,7 +281,6 @@ namespace CaptainLucha
 			return;
 		}
 
-		ProfilingSection p("HUD Draw");
 		DrawHUD();
 
 		HUDMode(true);

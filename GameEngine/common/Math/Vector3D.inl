@@ -147,6 +147,16 @@ void Vector3D<Real>::Normalize()
 }
 
 template<class Real>
+Vector3D<Real> Vector3D<Real>::GetNormalized() const
+{
+    Real l = Length();
+
+    if(abs(l) > 0.0001)
+        return *this / l;
+    return Vector3Df();
+}
+
+template<class Real>
 Vector3D<Real> Vector3D<Real>::CrossProduct(const Vector3D& rhs) const
 {
 	return Vector3D<Real>(

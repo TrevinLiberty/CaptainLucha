@@ -42,6 +42,7 @@
 #include <cmath>
 #include <vector>
 #include <FreeImage.h>
+#include <glew.h>
 #include <glfw3.h>
 #include <gl/GLU.h>
 
@@ -123,11 +124,11 @@ namespace CaptainLucha
 
 		glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glDepthFunc(GL_LEQUAL);
+		glDepthFunc(GL_LESS);
 
 		g_MVPMatrix = new MatrixStack();
-		g_MVPMatrix->Othographic(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, 1, -1);
-		g_MVPMatrix->Perspective(45.0f, WINDOW_ASPECT_RATIO, 0.1f, 10000.0f);
+		g_MVPMatrix->Othographic(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT,1, -1);
+		g_MVPMatrix->Perspective(45.0f, WINDOW_ASPECT_RATIO, 1.0f, 10000.0f);
 
 		g_DebugFont = new Font("Data/Font/Anonymous Pro.ttf", DEBUG_FONT_HEIGHT);
 
@@ -242,7 +243,8 @@ namespace CaptainLucha
 		{
 			const GLubyte* errorString = gluErrorString(errorCode);
 
-			errorSS << file << "(" << line << ")" << " GL ERROR " << errorCode << ": " << "(" << errorString << ")\n";
+			errorSS << file << "(" << line << ")" << std::endl
+                    << "    " << " GL ERROR " << errorCode << ": " << "(" << errorString << ")\n";
 
 			errorCode = glGetError();
 		}
@@ -531,22 +533,22 @@ namespace CaptainLucha
 		g_CurrentProgram->ClearTextureUnits();
 	}
 
-	void SetColor(float r, float g, float b, float a)
+	void SetUtilsColor(float r, float g, float b, float a)
 	{
 		g_CurrentColor = Vector4Df(r, g, b, a);
 	}
 
-	void SetColor(const Vector4Df& color)
+	void SetUtilsColor(const Vector4Df& color)
 	{
 		g_CurrentColor = color;
 	}
 
-	void SetColor(const Color& color)
+	void SetUtilsColor(const Color& color)
 	{
 		g_CurrentColor = color;
 	}
 
-	void SetColor(const Color& color, float alphaOverride)
+	void SetUtilsColor(const Color& color, float alphaOverride)
 	{
 		g_CurrentColor = Color(color.r, color.g, color.b, alphaOverride);
 	}
@@ -654,7 +656,7 @@ namespace CaptainLucha
 
 	void DrawArrow(const Vector3Df& from, const Vector3Df& to)
 	{
-		SetColor(1.0f, 1.0f, 1.0f, g_CurrentColor.a);
+		SetUtilsColor(1.0f, 1.0f, 1.0f, g_CurrentColor.a);
 
 		DrawBegin(CL_LINES);
 		clColor4(1.0f, 0.0f, 0.0f, g_CurrentColor.a);
@@ -663,7 +665,7 @@ namespace CaptainLucha
 		clVertex3(to.x, to.y, to.z);
 		DrawEnd();
 
-		SetColor(0.0f, 1.0f, 0.0f, g_CurrentColor.a);
+		SetUtilsColor(0.0f, 1.0f, 0.0f, g_CurrentColor.a);
 		DrawPlus(to, 0.1f);
 	}
 
@@ -672,19 +674,19 @@ namespace CaptainLucha
 		glLineWidth(5.0f);
 		g_MVPMatrix->PushMatrix();
 
-		SetColor(1.0f, 0.0f, 0.0f, 1.0f);
+		SetUtilsColor(1.0f, 0.0f, 0.0f, 1.0f);
 		DrawBegin(CL_LINES);
 		clVertex3(0.0f, 0.0f, 0.0f);
 		clVertex3(size, 0.0f, 0.0f);
 		DrawEnd();
 
-		SetColor(0.0f, 1.0f, 0.0f, 1.0f);
+		SetUtilsColor(0.0f, 1.0f, 0.0f, 1.0f);
 		DrawBegin(CL_LINES);
 		clVertex3(0.0f, 0.0f, 0.0f);
 		clVertex3(0.0f, size, 0.0f);
 		DrawEnd();
 
-		SetColor(0.0f, 0.0f, 1.0f, 1.0f);
+		SetUtilsColor(0.0f, 0.0f, 1.0f, 1.0f);
 		DrawBegin(CL_LINES);
 		clVertex3(0.0f, 0.0f, 0.0f);
 		clVertex3(0.0f, 0.0f, size);
@@ -777,6 +779,16 @@ namespace CaptainLucha
 	{
 		g_CurrentProgram->SetUniform(name, val);
 	}
+
+    void SetUniform(const char* name, const Color& val)
+    {
+        g_CurrentProgram->SetUniform(name, val);
+    }
+
+    void SetUniform(const char* name, const Vector3Df& val)
+    {
+        g_CurrentProgram->SetUniform(name, val);
+    }
 
 	void SetGLProgram(GLProgram* program)
 	{

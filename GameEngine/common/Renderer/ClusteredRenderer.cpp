@@ -116,7 +116,7 @@ namespace CaptainLucha
 
 		Matrix4Df toWorldSpace1 = (m_debugView * g_MVPMatrix->GetProjectionMatrix()).GetInverse();
 
-		SetColor(Color::White, 0.1f);
+		SetUtilsColor(Color::White, 0.1f);
 		SetUniform("useAlpha", true);
 		g_MVPMatrix->LoadIdentity();
 		g_MVPMatrix->LoadMatrix(toWorldSpace1);
@@ -157,12 +157,10 @@ namespace CaptainLucha
 		unsigned int flagTex;
 		glGenTextures(1, &flagTex);
 
-		GL_ERROR()
-
 		//Create Buffers
 		//
 		m_clusterBufferSize = m_numTilesX * m_numTilesY * m_numTilesZ;
-
+		
 		glGenBuffers(1, &m_clusterFlagBuffer);
 		glBindBuffer(GL_ARRAY_BUFFER, m_clusterFlagBuffer);
 		glBufferData(GL_ARRAY_BUFFER, m_clusterBufferSize * sizeof(unsigned int), NULL, GL_DYNAMIC_COPY);
@@ -193,6 +191,8 @@ namespace CaptainLucha
 		m_cudaClustered->Init(
 			m_clusterFlagBuffer,
 			m_numTilesX, m_numTilesY, m_numTilesZ);
+
+        GL_ERROR()
 	}
 
 	void ClusteredRenderer::AssignClusters()
@@ -239,7 +239,7 @@ namespace CaptainLucha
 		for(size_t i = 0; i < m_lights.size(); ++i)
 		{
 			const int INDEX = i * 4;
-			Vector3Df pos = m_viewMatrix.TransformPosition(m_lights[i]->GetPosition());
+			Vector3Df pos = m_lights[i]->GetPosition();//m_viewMatrix.TransformPosition(m_lights[i]->GetPosition());
 			lightPosRad[INDEX]	   = pos.x;
 			lightPosRad[INDEX + 1] = pos.y;
 			lightPosRad[INDEX + 2] = pos.z;

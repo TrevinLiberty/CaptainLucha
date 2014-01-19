@@ -38,6 +38,12 @@
 
 namespace CaptainLucha
 {
+    static const char* WHITE_COLOR     = "<#FFFFFFFF>";
+    static const char* SUCCESS_COLOR   = "<#04B404FF>";
+    static const char* ERROR_COLOR     = "<#DF0101FF>";
+    static const char* DEFAULT_COLOR   = "<#C0C0C0FF>";
+    static const char* HELP_INFO_COLOR = "<#AEB404FF>";
+
 	CLConsole::CLConsole()
 		: CLConsole_Interface(),
 		InputListener(1000),
@@ -56,7 +62,7 @@ namespace CaptainLucha
 	{
 		if(m_isOpen)
 		{
-			SetColor(Color(0.25f, 0.25f, 0.25f, 0.5f));
+			SetUtilsColor(Color(0.25f, 0.25f, 0.25f, 0.5f));
 			DrawBegin(CL_QUADS);
 			{
 				clVertex3(0.0f, 0.0f, 0.25f);
@@ -65,12 +71,12 @@ namespace CaptainLucha
 				clVertex3(0.0f, (float)CONSOLE_HEIGHT, 0.25f);
 			}
 			DrawEnd();
-			SetColor(Color::White);
+			SetUtilsColor(Color::White);
 
 			std::stringstream ss;
 			std::string userInput(m_currentInput);
 			userInput.insert(m_cursorPos, "|");
-			ss << "<#FFFFFFFF>>>> " << userInput;
+			ss << WHITE_COLOR << ">>> " << userInput;
 			Draw2DDebugText(Vector2Df(0.0f, 5.0f), ss.str().c_str());
 
 			float y = DEBUG_FONT_HEIGHT * (float)m_history.size() + DEBUG_FONT_HEIGHT;
@@ -80,9 +86,9 @@ namespace CaptainLucha
 			for(auto it = m_history.begin(); it != m_history.end(); ++it)
 			{
 				if((*it).first)
-					ss << "<#C0C0C0FF><<< ";
+					ss << DEFAULT_COLOR << "<<< ";
 				else
-					ss << "<#C0C0C0FF>>>> ";
+					ss << DEFAULT_COLOR << ">>> ";
 
 				ss << (*it).second << "\n";
 			}
@@ -98,18 +104,16 @@ namespace CaptainLucha
 		{
 			m_isOpen = !m_isOpen;
 
-			//if(m_isOpen)
-			//	InputSystem::GetInstance()->DisableInput();
-			//else
-			//	InputSystem::GetInstance()->EnableInput();
+// 			if(m_isOpen)
+// 				InputSystem::GetInstance()->DisableInput();
+// 			else
+// 				InputSystem::GetInstance()->EnableInput();
 
 			return;
 		}
 
 		if(m_isOpen)
 		{
-			//InputSystem::GetInstance()->SilenceInputForCurrentKey();
-
 			if(key == GLFW_KEY_ENTER)
 			{
 				ProcessInput(m_currentInput);
@@ -191,14 +195,14 @@ namespace CaptainLucha
 	void CLConsole::AddErrorText(const char* text)
 	{
 		std::stringstream ss;
-		ss << "<#DF0101FF>" << text;
+		ss << ERROR_COLOR << text;
 		AddTextToHistory(false, ss.str());
 	}
 
 	void CLConsole::AddSuccessText(const char* text)
 	{
 		std::stringstream ss;
-		ss << "<#04B404FF>" << text;
+		ss << SUCCESS_COLOR << text;
 		AddTextToHistory(false, ss.str());
 	}
 
@@ -208,13 +212,29 @@ namespace CaptainLucha
 		{
 			AddTextToHistory(true, input);
 
+            AddSuccessText("Help: Info");
+
 			for(size_t i = 0; i < m_helpInfo.size(); ++i)
 			{
 				std::stringstream ss;
-				ss << "<#AEB404FF>" << m_helpInfo[i].first << ": " << m_helpInfo[i].second;
+				ss << HELP_INFO_COLOR << m_helpInfo[i].first << ": " << m_helpInfo[i].second;
 				AddTextToHistory(false, ss.str());
 			}
 		}
+        else if(_strcmpi("help -e", input.c_str()) == 0)
+        {
+            AddTextToHistory(true, input);
+
+            AddSuccessText("Help: Events");
+
+            const SubscribersMap& subs = EventSystem::GetInstance()->GetSubscribers();
+            for(auto it = subs.begin(); it != subs.end(); ++it)
+            {
+                std::stringstream ss;
+                ss << HELP_INFO_COLOR << it->first;
+                AddTextToHistory(false, ss.str());
+            }
+        }
 		else
 		{
 			AddTextToHistory(true, input);
@@ -226,7 +246,7 @@ namespace CaptainLucha
 
 			for(size_t i = 1; i < tokens.size(); ++i)
 			{
-				ss << "param" << i;
+				ss << "param" << i - 1;
 				np.Set(ss.str(), tokens[i]);
 				ss.str("");
 			}

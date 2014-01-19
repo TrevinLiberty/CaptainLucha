@@ -191,8 +191,7 @@ void InputSystem::DeleteInstance()
 //			Protected
 ////////////////////////////////////////////////////////////////////////
 InputSystem::InputSystem()
-	: m_silenceKeyPress(false),
-	  m_isEnabled(true),
+	: m_isEnabled(true),
 	  m_debugMode(false),
 	  m_hideMouseNotDebug(true),
 	  m_debugToggleKey(GLFW_KEY_F1)
@@ -219,12 +218,7 @@ void InputSystem::AlertAllListenersKeyboard(Key key, bool isDown)
 			(*it)->KeyDown(key);
 		else
 			(*it)->KeyUp(key);
-
-		if(m_silenceKeyPress)
-			break;
 	}
-
-	m_silenceKeyPress = false;
 }
 
 void InputSystem::AlertAllListenersMouse(int mouseButton, bool isDown)

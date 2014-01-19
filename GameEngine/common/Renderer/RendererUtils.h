@@ -87,10 +87,10 @@ namespace CaptainLucha
 	void DrawBegin(DrawType type);
 	void DrawEnd();
 
-	void SetColor(float r, float g, float b, float a);
-	void SetColor(const Vector4Df& color);
-	void SetColor(const Color& color);
-	void SetColor(const Color& color, float alphaOverride);
+	void SetUtilsColor(float r, float g, float b, float a);
+	void SetUtilsColor(const Vector4Df& color);
+	void SetUtilsColor(const Color& color);
+	void SetUtilsColor(const Color& color, float alphaOverride);
 	void clSetPointSize(float size);
 
 	void clVertex3f(float x, float y, float z);
@@ -128,7 +128,8 @@ namespace CaptainLucha
 	void SetUniform(const char* name, bool val);
 	void SetUniform(const char* name, int val);
 	void SetUniform(const char* name, float val);
-	void SetUniform(const char* name, Color val);
+	void SetUniform(const char* name, const Color& val);
+    void SetUniform(const char* name, const Vector3Df& val);
 
 	//Setting to NULL reverts to the default shader
 	void SetGLProgram(GLProgram* program);

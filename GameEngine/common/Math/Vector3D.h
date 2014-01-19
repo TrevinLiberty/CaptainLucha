@@ -91,6 +91,7 @@ namespace CaptainLucha
 		Real Dot(const Vector3D& rhs) const;
 
 		void Normalize();
+        Vector3D GetNormalized() const;
 
 		Vector3D CrossProduct(const Vector3D& rhs) const;
 

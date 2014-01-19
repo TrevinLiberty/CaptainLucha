@@ -43,6 +43,7 @@
 typedef double Real;
 
 #define MULTITHREADED_APP
+#define PROFILE_DEFERRED
 
 #include <Utils/Memory/MemoryOverride.h>
 

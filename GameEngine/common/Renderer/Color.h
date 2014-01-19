@@ -56,6 +56,8 @@ namespace CaptainLucha
 		float& operator[] (int i);
 		float operator[] (int i) const;
 
+        bool operator==(const Color& color) const;
+
 		float r;
 		float g;
 		float b;

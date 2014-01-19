@@ -51,7 +51,7 @@ namespace CaptainLucha
 
 	void StaticPlane::Draw(GLProgram& glProgram)
 	{
-		SetColor(m_color);
+		SetUtilsColor(m_color);
 
 		glProgram.SetUniform("emissive", 0.0f);
 		glProgram.SetUniform("color", m_color);

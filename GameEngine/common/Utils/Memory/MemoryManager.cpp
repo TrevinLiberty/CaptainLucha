@@ -169,7 +169,7 @@ namespace CaptainLucha
 		g_MVPMatrix->PushMatrix();
 		g_MVPMatrix->LoadIdentity();
 
-		SetColor(Color::White);
+		SetUtilsColor(Color::White);
 
 		DrawBegin(CL_TRIANGLES);
 		while(currentHeader != NULL)
@@ -212,7 +212,7 @@ namespace CaptainLucha
 		DrawEnd();
 
 		g_MVPMatrix->Translate(0.0f, 0.0f, 0.9f);
-		SetColor(Color::Black);
+		SetUtilsColor(Color::Black);
 		DrawLine(
 			Vector2Df((float)WINDOW_WIDTH - (float)WIDTH, 0.0f), 
 			Vector2Df((float)WINDOW_WIDTH - WIDTH, (float)WINDOW_HEIGHT));
@@ -225,7 +225,7 @@ namespace CaptainLucha
 		float x = WINDOW_WIDTH * 0.825f;
 		float y = WINDOW_HEIGHT - 15.0f;
 
-		SetColor(.2f, .2f, .2f, .75f);
+		SetUtilsColor(.2f, .2f, .2f, .75f);
 		DrawBegin(CL_QUADS);
 		clVertex3(x - 10.0f, (float)WINDOW_HEIGHT, 0.9f);
 		clVertex3(x + 250.0f, (float)WINDOW_HEIGHT, 0.9f);

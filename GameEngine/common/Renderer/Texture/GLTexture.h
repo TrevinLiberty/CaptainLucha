@@ -59,15 +59,13 @@ namespace CaptainLucha
 		//Does nothing if texture was obtained through the TextureFactoryGL
 		void DeleteTexture();
 
+        void SetClampedEdges();
+
 	protected:
 		inline bool IsPowerOfTwo(int val) const {return (val % 2) == 0;}
 
 		void LoadFromMemory(int width, int height, unsigned int* texels);
 		void LoadFromMemoryMipMap(int width, int height, unsigned int* texels);
-
-		void LoadFromFileError(const char* texturePath);
-		void BadFormatError(const char* texturePath);
-		void UnSupportedFormatError(const char* texturePath);
 
 	private:
 		unsigned int m_glTextureID;
@@ -79,6 +77,16 @@ namespace CaptainLucha
 
 		friend class GLTextureManager;
 	};
+
+    void LoadTextureFromFile(
+        const char* path, 
+        unsigned int& outWidth, 
+        unsigned int& outHeight, 
+        unsigned int*& texels);
+
+    //Will make texels, from the previous call to LoadTextureFromFile, undefined.
+    //  Must be called inbetween calls to LoadTextureFromFile
+    void CleanPreviousTextureLoad();
 }
 
 #endif

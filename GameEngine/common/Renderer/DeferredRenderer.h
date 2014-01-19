@@ -78,12 +78,6 @@ namespace CaptainLucha
 		 */
 		virtual void RemoveLight(Light* light);
 
-		/**
-		 * @brief     Samples the last drawn scene to find the objectID of the center of the screen. The object ID is unique for every Object.
-		 * @see		  Object.h
-		 */
-		int GetObjectIDFromRT() const;
-
 	protected:
 		/**
 		 * @brief     Adds a light created by CreateNewPointLight and CreateNewSpotLight.
@@ -154,7 +148,6 @@ namespace CaptainLucha
 		GLTexture* m_rt0;
 		GLTexture* m_rt1;
 		GLTexture* m_rt2;
-		GLTexture* m_rt3;
 		GLTexture* m_accumDiffuseLightTexture;
 		GLTexture* m_accumSpecularLightTexture;
 		GLTexture* m_depth;

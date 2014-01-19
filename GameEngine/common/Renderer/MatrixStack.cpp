@@ -120,6 +120,31 @@ namespace CaptainLucha
 			 0.0f, 0.0f, 0.0f, 1.0f));
 	}
 
+	const Matrix4Df& MatrixStack::GetModelMatrix() const
+	{
+		return m_stack.top();
+	}
+
+	const Matrix4Df& MatrixStack::GetViewMatrix() const 
+	{
+		return m_currentProjectionMode == CL_PROJECTION ? m_view : Matrix4Df::IDENTITY;
+	}
+
+	const Matrix4Df& MatrixStack::GetProjectionMatrix() const 
+	{
+		return m_currentProjectionMode == CL_PROJECTION ? m_projectionMatrix : m_orthoMatrix;
+	}
+
+	Matrix4Df MatrixStack::GetModelViewMatrix() const
+	{
+		return m_view * m_stack.top();
+	}
+
+	Matrix4Df MatrixStack::GetModelViewProjectionMatrix() const
+	{
+		return (m_currentProjectionMode == CL_PROJECTION ? m_stack.top() * m_view * m_projectionMatrix : m_stack.top() * m_orthoMatrix);
+	}
+
 	void MatrixStack::Perspective(float fov, float aspect, float zNear, float zFar)
 	{
 		float maxY = zNear * tanf(fov * (float)M_PI / 360.0f);

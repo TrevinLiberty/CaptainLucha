@@ -40,6 +40,8 @@
 
 namespace CaptainLucha
 {
+    typedef std::map<std::string, std::vector<EventSubscriberBase*> > SubscribersMap;
+
 	class EventSystem
 	{
 	public:
@@ -91,6 +93,8 @@ namespace CaptainLucha
 		template<typename T_Obj>
 		void UnRegisterObjectForAllEvents(const T_Obj& object);
 
+        const SubscribersMap& GetSubscribers() const {return m_subscribers;}
+
 		static void DeleteInstance()
 		{
 			delete m_eventSystem;
@@ -110,7 +114,7 @@ namespace CaptainLucha
 	private:
 		static EventSystem* m_eventSystem;
 
-		std::map<std::string, std::vector<EventSubscriberBase*> > m_subscribers;
+		SubscribersMap m_subscribers;
 		ThreadMutex m_subscribersMutex;
 	};
 

@@ -43,7 +43,7 @@ namespace CaptainLucha
 		DeferredLight_Spot();
 		~DeferredLight_Spot();
 
-		void ApplyLight(const Vector3Df& cameraPos, GLTexture* renderTarget0, GLTexture* renderTarget1, GLTexture* renderTarget2, GLTexture* renderTarget3);
+		void ApplyLight(const Vector3Df& cameraPos, GLTexture* renderTarget0, GLTexture* renderTarget1, GLTexture* renderTarget2);
 		void StencilPass();
 
 	protected:

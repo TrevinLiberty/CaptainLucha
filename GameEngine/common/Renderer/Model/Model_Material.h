@@ -55,7 +55,7 @@ namespace CaptainLucha
 		void EmissiveColor(const Color& val) {m_emissiveColor = val;}
 
 		void Opacity(const float& val) {m_opacity = val;}
-		void SpecIntensity(const float& val) {m_specIntensity = val;}
+		void SpecIntensity(const int& val) {m_specIntensity = val;}
 
 	protected:
 
@@ -71,7 +71,8 @@ namespace CaptainLucha
 		Color m_emissiveColor;
 
 		float m_opacity;
-		float m_specIntensity;
+
+		int m_specIntensity;
 	};
 }
 

@@ -27,6 +27,7 @@
 /****************************************************************************/
 
 #include "Color.h"
+#include "Math/Math.h"
 
 namespace CaptainLucha
 {
@@ -64,6 +65,14 @@ namespace CaptainLucha
 	{
 		return (&r)[i];
 	}
+
+    bool Color::operator==(const Color& color) const
+    {
+        return FloatEquality(r, color.r) 
+            && FloatEquality(g, color.g) 
+            && FloatEquality(b, color.b) 
+            && FloatEquality(a, color.a);
+    }
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Static

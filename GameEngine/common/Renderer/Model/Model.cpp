@@ -59,7 +59,6 @@ namespace CaptainLucha
 
 	Model::~Model()
 	{
-		trace(m_baseTranslation)
 		std::fstream file(m_filePath);
 		file.seekp(-3 * 4, std::ios_base::end);
 		file.write((char*)&m_baseTranslation, 3 * 4);
@@ -67,6 +66,7 @@ namespace CaptainLucha
 
 	void Model::Draw(GLProgram& glProgram)
 	{
+        glProgram.UseProgram();
 		glProgram.SetUniform("emissive", 0.0);
 
 		g_MVPMatrix->PushMatrix();
@@ -119,7 +119,7 @@ namespace CaptainLucha
 			ss >> word;
 			m_materials[i].Opacity(LoadFloat(ss));
 			ss >> word;
-			m_materials[i].SpecIntensity(LoadFloat(ss));
+			m_materials[i].SpecIntensity((int)LoadFloat(ss));
 		}
 	}
 

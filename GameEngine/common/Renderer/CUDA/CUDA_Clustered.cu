@@ -26,7 +26,6 @@
  *
 /****************************************************************************/
 
-#include "Utils/UtilDebug.h"
 #include "CUDA_Clustered.h"
 #include "CUDA_Utils.h"
 #include "CudaHelpers\helper_cuda.h"
@@ -267,6 +266,7 @@ namespace CaptainLucha
 		
 			//Using the AABB, calculate the Morton Code for all lights.
 			//	- allows us to quickly sort the lights based on position. Getting ready to create the BVH
+            //morton code - https://www.marcusbannerman.co.uk/index.php/home/39-websitepages/108-morton-ordering.html
 			ComputeLightMortonCodes(
 				m_dlightPosRadData.get(), m_dminAABB.get(), m_dmaxAABB.get(), 
 				numLights, m_dmortonLightKeys.get(), m_dlightIndices.get());
@@ -278,16 +278,30 @@ namespace CaptainLucha
 			/**********************************/
 			//Create Rest of BVH
 			/**********************************/
+            cudaMemset(m_lightBVH->m_minAABBNodes.get(), 0, 128 * sizeof(unsigned int));
+
+            //Start with leaf nodes and create bottom parents of tree first
 			const int CURRENT_BRANCHING_FACTOR = LightBVH::BRANCHING_FACTOR;//todo update this when factor can change
 			dim3 threadsPerBlock = dim3(CURRENT_BRANCHING_FACTOR, 6, 1);
-			dim3 blocks = dim3(std::ceil(numLights / (float)CURRENT_BRANCHING_FACTOR), 1, 1);
-			//SetLeafsAndCalculateParentNodes<<<blocks, threadsPerBlock>>>(m_dlightPosRadData.get(), m_lightBVH, m_dlightIndices.get());
+			dim3 blocks = dim3((int)std::ceil(numLights / 6.0f), 1, 1);
+			SetLeafsAndCalculateParentNodes<<<blocks, threadsPerBlock>>>(m_dlightPosRadData.get(), *m_lightBVH, m_dlightIndices.get());
 
-			//float4* temp = new float4[m_lightBVH->GetNumNonLeafNodes()];
-			//cudaMemcpy(temp, m_lightBVH->m_minAABBNodes.get(), m_lightBVH->GetNumNonLeafNodes() * sizeof(float4), cudaMemcpyDeviceToHost);
-			//delete temp;
+            //fill in the rest of the tree starting from the bottom and moving up.
+            //  levels index starts at 0 -> root node
+            //  level for leaf -> numLevels - 1
+            //we filled in the parent nodes above leafs (numLevels - 2)
+            //now fill in the parent nodes above that (numLevels - 3) until root
+            for(int i = m_lightBVH->GetNumLevels() - 3; i >= 0; --i)
+            {
+                const unsigned int NUM_NODES_ON_LEVEL = powf(CURRENT_BRANCHING_FACTOR, i);
+                dim3 threadsPerBlock = dim3(CURRENT_BRANCHING_FACTOR, 6, 1);
+			    dim3 blocks = dim3((int)std::ceil(NUM_NODES_ON_LEVEL / 6.0f), 1, 1);
+                CalculateParentNodes<<<blocks, threadsPerBlock>>>(*m_lightBVH, i);
+            }
 
-			float k = 4;
+			float4* temp = new float4[m_lightBVH->GetNumNonLeafNodes()];
+			cudaMemcpy(temp, m_lightBVH->m_maxAABBNodes.get(), m_lightBVH->GetNumNonLeafNodes() * sizeof(float4), cudaMemcpyDeviceToHost);
+ 			delete temp;
 		}
 	}
 }

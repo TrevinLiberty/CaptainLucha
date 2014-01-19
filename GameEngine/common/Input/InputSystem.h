@@ -77,8 +77,6 @@ namespace CaptainLucha
 
 		void DeleteInstance();
 
-		void SilenceInputForCurrentKey() {m_silenceKeyPress = true;}
-
 		void EnableInput() {m_isEnabled = true;}
 		void DisableInput() {m_isEnabled = false;}
 
@@ -100,7 +98,6 @@ namespace CaptainLucha
 	private:
 		static InputSystem* m_system;
 
-		bool m_silenceKeyPress;
 		bool m_isEnabled;
 
 		std::list<InputListener*> m_inputListeners;

@@ -48,7 +48,6 @@
 
 #include <glew.h>
 
-
 namespace CaptainLucha
 {
 	enum CL_BaseTypes

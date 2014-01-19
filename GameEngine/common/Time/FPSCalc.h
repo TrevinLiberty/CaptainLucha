@@ -40,9 +40,16 @@ namespace CaptainLucha
 		void Update();
 
 		double GetFPS() const {return m_fps;}
+		double GetRunningAverage() const {return m_runningAverage;}
+		double GetMinFPS() const {return m_minFPS;}
+		double GetMaxFPS() const {return m_maxFPS;}
 
 	private:
 		double m_fps;
+		double m_runningAverage;
+		double m_minFPS;
+		double m_maxFPS;
+
 		double m_previousTime;
 		int m_frameCount;
 	};

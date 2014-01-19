@@ -31,7 +31,6 @@
 #include "Renderer/Geometry/Mesh.h"
 #include "Renderer/RendererUtils.h"
 #include "BoundingVolumes/AABoundingBox.h"
-#include "Time/ProfilingSection.h"
 #include "Math/Math.h"
 #include "Physics/RigidBody.h"
 
@@ -86,8 +85,6 @@ namespace CaptainLucha
 
 	void CollisionSystem::Update()
 	{
-		ProfilingSection p("Collision Update");
-
 		m_collisions.clear();
 		DestroyTree(m_dynamicRootNode);
 		delete m_dynamicRootNode;

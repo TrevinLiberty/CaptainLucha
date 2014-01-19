@@ -42,7 +42,7 @@ namespace CaptainLucha
 		DeferredLight();
 		virtual ~DeferredLight() {};
 
-		virtual void ApplyLight(const Vector3Df& cameraPos, GLTexture* renderTarget0, GLTexture* renderTarget1, GLTexture* renderTarget2, GLTexture* renderTarget3) = 0;
+		virtual void ApplyLight(const Vector3Df& cameraPos, GLTexture* renderTarget0, GLTexture* renderTarget1, GLTexture* renderTarget2) = 0;
 		virtual void StencilPass() {}
 
 	protected:
