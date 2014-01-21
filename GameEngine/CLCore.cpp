@@ -116,7 +116,7 @@ namespace CaptainLucha
 		return m_masterFrameClock.CreateNewClock();
 	}
 
-	void CLCore::InjectConsole(CLConsole_Interface* consoleInterface)
+	void CLCore::SetConsole(CLConsole_Interface* consoleInterface)
 	{
 		REQUIRES(consoleInterface)
 		delete m_console;

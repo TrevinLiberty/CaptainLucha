@@ -25,50 +25,65 @@
  *	@brief	
  *
 /****************************************************************************/
-#include "StaticPlane.h"
 
-#include "BoundingVolumes/AABoundingBox.h"
-#include "Physics/Primitives/Primitive_Plane.h"
-#include "Renderer/RendererUtils.h"
-#include "Renderer/Shader/GLProgram.h"
+
+
+#ifndef GAMEWORLD_H_CL
+#define GAMEWORLD_H_CL
+
+#include <Collision/CollisionPhysicsObject.h>
+#include <Physics/PhysicsSystem.h>
+#include <Collision/StaticPlane.h>
+#include <Renderer/Debug/DebugGrid.h>
+#include <EventSystem/EventSystem.h>
+
+#include "PlayerController.h"
 
 namespace CaptainLucha
 {
-	StaticPlane::StaticPlane(const Vector3Df& pos, const Vector3Df& normal, const Vector3Df& extent)
-		: CollisionStatic(),
-		  m_extent(extent)
+	class Light;
+	class PhysicsObject;
+	class Game;
+
+	class GameWorld
 	{
-		SetPosition(pos);
-		AABoundingBox* aabb = new AABoundingBox(pos, extent);
-		Primitive_Plane* plane = new Primitive_Plane(normal, 0.0f);
-		InitListener(aabb, plane);
-	}
+	public:
+		GameWorld(Game& game);
+		~GameWorld();
 
-	StaticPlane::~StaticPlane()
-	{
+		void Draw();
+		void Update();
 
-	}
+		Game& GetCore() {return m_game;}
 
-	void StaticPlane::Draw(GLProgram& glProgram)
-	{
-		SetGLProgram(&glProgram);
+		CollisionPhysicsObject* CreateNewSphere();
+		CollisionPhysicsObject* CreateNewCube();
 
-        SetUniform("emissive", 0.0f);
-        SetUniform("specularIntensity", 32);
-        SetUniform("hasDiffuseMap", false);
-        SetUniform("hasNormalMap", false);
-        SetUniform("hasSpecularMap", false);
-        SetUniform("hasMaskMap", false);
-        SetUniform("hasEmissiveMap", false);
+		CollisionPhysicsObject* GetPhysicsObject(int id);
 
-        SetUtilsColor(m_color);
+		int GetNumRigidBodies() const {return m_objects.size();}
+		int GetNumLights() const {return m_lights.size();}
 
-		DrawBegin(CL_QUADS);
-		clVertex3(-m_extent.x, 0.0f, -m_extent.z); clNormal3(0.0f, 1.0f, 0.0f);
-		clVertex3(-m_extent.x, 0.0f, m_extent.z); clNormal3(0.0f, 1.0f, 0.0f);
-		clVertex3(m_extent.x, 0.0f, m_extent.z); clNormal3(0.0f, 1.0f, 0.0f);
-		clVertex3(m_extent.x, 0.0f, -m_extent.z); clNormal3(0.0f, 1.0f, 0.0f);
-		DrawEnd();
-		SetGLProgram(NULL);
-	}
+		void DebugCollision(NamedProperties& np);
+
+	protected:
+		void CreateLightPos(const Vector3Df& position);
+
+	private:
+		Game& m_game;
+
+		PhysicsSystem m_physicsSystem;
+
+		std::vector<CollisionPhysicsObject*> m_objects;
+		std::vector<Light*> m_lights;
+
+		StaticPlane m_ground;
+		DebugGrid m_grid;
+
+		PlayerController* m_player;
+
+		PREVENT_COPYING(GameWorld)
+	};
 }
+
+#endif

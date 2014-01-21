@@ -45,12 +45,6 @@ namespace CaptainLucha
 	class GLProgram;
 	class GLTexture;
 	class DeferredLight;
-	class DeferredLight_Point;
-	class DeferredLight_Ambient;
-	class DeferredLight_Directional;
-	class DeferredLight_Spot;
-	class FrameBufferObject;
-	class GBuffer;
 
 	/**
 	* @brief     Draw the whole scene.
@@ -151,8 +145,6 @@ namespace CaptainLucha
 		GLTexture* m_accumDiffuseLightTexture;
 		GLTexture* m_accumSpecularLightTexture;
 		GLTexture* m_depth;
-
-		FrameBufferObject* m_depthBuffer;
 
 		GLProgram* m_depthProgram;
 		GLProgram* m_debugDepthProgram;

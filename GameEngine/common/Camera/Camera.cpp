@@ -56,6 +56,14 @@ Camera::~Camera()
 
 }
 
+Vector3Df Camera::GetForwardDirection() const
+{
+    return (
+        Matrix4Df((float)m_rotation.x, 1.0f, 0.0f, 0.0f)
+      * Matrix4Df((float)m_rotation.y, 0.0f, 1.0f, 0.0f)
+      ).TransformRotation(Vector3Df(0.0f, 0.0f, -1.0f));
+}
+
 Matrix4Df Camera::GetGLViewMatrix() const
 {
 	return Matrix4Df(-(float)m_position.x, -(float)m_position.y, -(float)m_position.z)

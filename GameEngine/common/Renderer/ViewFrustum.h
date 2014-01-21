@@ -21,54 +21,53 @@
 /****************************************************************************/
 /*
  *	@author Trevin Liberty
- *	@file	
+ *	@file	ViewFrustum.h
  *	@brief	
  *
 /****************************************************************************/
-#include "StaticPlane.h"
 
-#include "BoundingVolumes/AABoundingBox.h"
-#include "Physics/Primitives/Primitive_Plane.h"
-#include "Renderer/RendererUtils.h"
-#include "Renderer/Shader/GLProgram.h"
+#ifndef VIEWFRUSTUM_H_CL
+#define VIEWFRUSTUM_H_CL
+
+#include "Math/Plane.h"
 
 namespace CaptainLucha
 {
-	StaticPlane::StaticPlane(const Vector3Df& pos, const Vector3Df& normal, const Vector3Df& extent)
-		: CollisionStatic(),
-		  m_extent(extent)
+	class ViewFrustum
 	{
-		SetPosition(pos);
-		AABoundingBox* aabb = new AABoundingBox(pos, extent);
-		Primitive_Plane* plane = new Primitive_Plane(normal, 0.0f);
-		InitListener(aabb, plane);
-	}
+	public:
+        ViewFrustum() {};
+        ~ViewFrustum() {};
 
-	StaticPlane::~StaticPlane()
-	{
+        enum PlaneDirec{
+            TOP = 0, BOTTOM, LEFT,
+            RIGHT, NEARP, FARP
+        };
 
-	}
+        const Plane& GetPlane(int index) const {return m_frustumPlanes[index];}
 
-	void StaticPlane::Draw(GLProgram& glProgram)
-	{
-		SetGLProgram(&glProgram);
+        void UpdateData(float fovDegree, float aspectRatio, float zNear, float zFar);
 
-        SetUniform("emissive", 0.0f);
-        SetUniform("specularIntensity", 32);
-        SetUniform("hasDiffuseMap", false);
-        SetUniform("hasNormalMap", false);
-        SetUniform("hasSpecularMap", false);
-        SetUniform("hasMaskMap", false);
-        SetUniform("hasEmissiveMap", false);
+        void UpdateFrustum(const Vector3Df& cameraPos, const Vector3Df& cameraDir);
 
-        SetUtilsColor(m_color);
+        bool PointInFrustum(const Vector3Df& point) const;
+        bool SphereInFrustum(const Vector3Df& point, float radius) const;
+        bool AABBInFrustum(const Vector3Df& min, const Vector3Df& max) const;
 
-		DrawBegin(CL_QUADS);
-		clVertex3(-m_extent.x, 0.0f, -m_extent.z); clNormal3(0.0f, 1.0f, 0.0f);
-		clVertex3(-m_extent.x, 0.0f, m_extent.z); clNormal3(0.0f, 1.0f, 0.0f);
-		clVertex3(m_extent.x, 0.0f, m_extent.z); clNormal3(0.0f, 1.0f, 0.0f);
-		clVertex3(m_extent.x, 0.0f, -m_extent.z); clNormal3(0.0f, 1.0f, 0.0f);
-		DrawEnd();
-		SetGLProgram(NULL);
-	}
+        //outPoints must be an array of atlease size 8
+        void GetFrustumPoints(
+            const Vector3Df& cameraPos, 
+            const Vector3Df& cameraDir,
+            Vector3Df* outPoints);
+
+	private:
+        Plane m_frustumPlanes[6];
+
+        float m_zNear;
+        float m_zFar;
+        float m_fov;
+        float m_aspectRatio;
+	};
 }
+
+#endif

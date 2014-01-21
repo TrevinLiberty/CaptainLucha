@@ -168,7 +168,7 @@ namespace CaptainLucha
 		 * @param	  CLConsole_Interface * consoleInterface
 
 		 */
-		void InjectConsole(CLConsole_Interface* consoleInterface);
+		void SetConsole(CLConsole_Interface* consoleInterface);
 
 		/**
 		 * @brief     Update

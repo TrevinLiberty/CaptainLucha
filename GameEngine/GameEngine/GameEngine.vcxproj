@@ -88,6 +88,7 @@
     <ClCompile Include="..\common\Renderer\Texture\GLTextureManager.cpp" />
     <ClCompile Include="..\common\Renderer\Texture\GLTexture.cpp" />
     <ClCompile Include="..\common\Renderer\VertexBufferObject.cpp" />
+    <ClCompile Include="..\common\Renderer\ViewFrustum.cpp" />
     <ClCompile Include="..\common\Threads\Thread.cpp" />
     <ClCompile Include="..\common\Threads\JobManager.cpp" />
     <ClCompile Include="..\common\Threads\ThreadJob.cpp" />
@@ -140,6 +141,7 @@
     <ClInclude Include="..\common\Math\Matrix2D.h" />
     <ClInclude Include="..\common\Math\Matrix3D.h" />
     <ClInclude Include="..\common\Math\Matrix4D.h" />
+    <ClInclude Include="..\common\Math\Plane.h" />
     <ClInclude Include="..\common\Math\Quaternion.h" />
     <ClInclude Include="..\common\Math\Rectangle.h" />
     <ClInclude Include="..\common\Math\Transformation.h" />
@@ -247,6 +249,7 @@
     <ClInclude Include="..\common\Renderer\Texture\GLTextureManager.h" />
     <ClInclude Include="..\common\Renderer\Texture\GLTexture.h" />
     <ClInclude Include="..\common\Renderer\VertexBufferObject.h" />
+    <ClInclude Include="..\common\Renderer\ViewFrustum.h" />
     <ClInclude Include="..\common\Threads\Thread.h" />
     <ClInclude Include="..\common\Threads\fast_mutex.h" />
     <ClInclude Include="..\common\Threads\JobManager.h" />
@@ -411,9 +414,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <ImportGroup Label="ExtensionSettings">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 5.5.props" />
-  </ImportGroup>
+  <ImportGroup Label="ExtensionSettings" />
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugInline|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\..\..\..\..\..\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\extras\visual_studio_integration\MSBuildExtensions\CUDA 5.5.props" />
@@ -449,7 +450,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../libs/AntTweakBar/include;../../libs/FreeType/include;../../libs/ZLib/include;../../libs/glfw/include/GLFW;../../libs/freeimage/include;../../libs/glew-1.9.0/include/GL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(NVTOOLSEXT_PATH)/include;../../libs/AntTweakBar/include;../../libs/FreeType/include;../../libs/ZLib/include;../../libs/glfw/include/GLFW;../../libs/freeimage/include;../../libs/glew-1.9.0/include/GL</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -461,9 +462,8 @@
       <AdditionalDependencies>FreeImage.lib;glew32.lib;freeglut.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>glu32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>
-      </AdditionalLibraryDirectories>
+      <AdditionalDependencies>glu32.lib;nvToolsExt32_1.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>;$(NVTOOLSEXT_PATH)/lib/Win32;</AdditionalLibraryDirectories>
     </Lib>
     <CudaLink>
       <GPUDebugInfo>true</GPUDebugInfo>
@@ -477,7 +477,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(CUDA_PATH_V5_5)/include;../../libs/AntTweakBar/include;../../libs/FreeType/include;../../libs/ZLib/include;../../libs/glfw/include/GLFW;../../libs/freeimage/include;../../libs/glew-1.9.0/include/GL;$(CUDA_PATH)/include/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(NVTOOLSEXT_PATH)/include;$(CUDA_PATH_V5_5)/include;../../libs/AntTweakBar/include;../../libs/FreeType/include;../../libs/ZLib/include;../../libs/glfw/include/GLFW;../../libs/freeimage/include;../../libs/glew-1.9.0/include/GL;$(CUDA_PATH)/include/</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -489,8 +489,8 @@
       <AdditionalDependencies>FreeImage.lib;glew32.lib;freeglut.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>cudart.lib;glu32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(CUDA_PATH)\lib\Win32\;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cudart.lib;glu32.lib;nvToolsExt32_1.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(CUDA_PATH)\lib\Win32\;;$(NVTOOLSEXT_PATH)/lib/Win32;</AdditionalLibraryDirectories>
     </Lib>
     <CudaLink>
       <GPUDebugInfo>true</GPUDebugInfo>
@@ -498,6 +498,7 @@
     <CudaCompile>
       <Warning>W3</Warning>
       <CodeGeneration>compute_20,sm_20</CodeGeneration>
+      <GPUDebugInfo>true</GPUDebugInfo>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -506,7 +507,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../../libs/AntTweakBar/include;../../libs/FreeType/include;../../libs/ZLib/include;../../libs/glfw/include/GLFW;../../libs/freeimage/include;../../libs/glew-1.9.0/include/GL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(NVTOOLSEXT_PATH)/include;../../libs/AntTweakBar/include;../../libs/FreeType/include;../../libs/ZLib/include;../../libs/glfw/include/GLFW;../../libs/freeimage/include;../../libs/glew-1.9.0/include/GL</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
@@ -518,9 +519,8 @@
       <AdditionalDependencies>FreeImage.lib;glew32.lib;freeglut.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>glu32.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>
-      </AdditionalLibraryDirectories>
+      <AdditionalDependencies>glu32.lib;;nvToolsExt32_1.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>;$(NVTOOLSEXT_PATH)/lib/Win32;</AdditionalLibraryDirectories>
     </Lib>
     <CudaCompile>
       <CudaRuntime>Shared</CudaRuntime>
@@ -537,7 +537,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(CUDA_PATH_V5_5)/include;../../libs/AntTweakBar/include;../../libs/FreeType/include;../../libs/ZLib/include;../../libs/glfw/include/GLFW;../../libs/freeimage/include;../../libs/glew-1.9.0/include/GL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(NVTOOLSEXT_PATH)/include;$(CUDA_PATH_V5_5)/include;../../libs/AntTweakBar/include;../../libs/FreeType/include;../../libs/ZLib/include;../../libs/glfw/include/GLFW;../../libs/freeimage/include;../../libs/glew-1.9.0/include/GL</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
@@ -549,20 +549,19 @@
       <AdditionalDependencies>FreeImage.lib;glew32.lib;freeglut.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>glu32.lib;cudart.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(CUDA_PATH_V5_5)/lib/Win32</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glu32.lib;cudart.lib;nvToolsExt32_1.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(CUDA_PATH_V5_5)/lib/Win32;$(NVTOOLSEXT_PATH)/lib/Win32;</AdditionalLibraryDirectories>
     </Lib>
     <CudaCompile>
       <CudaRuntime>Shared</CudaRuntime>
       <Runtime>MD</Runtime>
       <Warning>W3</Warning>
+      <CodeGeneration>compute_20,sm_20</CodeGeneration>
     </CudaCompile>
     <CudaLink>
       <GPUDebugInfo>false</GPUDebugInfo>
     </CudaLink>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 5.5.targets" />
-  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets" />
 </Project>

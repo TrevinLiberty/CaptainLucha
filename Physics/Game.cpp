@@ -1,4 +1,4 @@
-/****************************************************************************/
+﻿/****************************************************************************/
 /* Copyright (c) 2013, Trevin Liberty
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,50 +25,59 @@
  *	@brief	
  *
 /****************************************************************************/
-#include "StaticPlane.h"
 
-#include "BoundingVolumes/AABoundingBox.h"
-#include "Physics/Primitives/Primitive_Plane.h"
-#include "Renderer/RendererUtils.h"
-#include "Renderer/Shader/GLProgram.h"
+#include "Game.h"
+
+#include <Renderer/DeferredRenderer.h>
+#include <Console/CLConsole.h>
+#include <Input/InputSystem.h>
 
 namespace CaptainLucha
 {
-	StaticPlane::StaticPlane(const Vector3Df& pos, const Vector3Df& normal, const Vector3Df& extent)
-		: CollisionStatic(),
-		  m_extent(extent)
+	//////////////////////////////////////////////////////////////////////////
+	//	Public
+	//////////////////////////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////////////////////////
+	//	Protected
+	//////////////////////////////////////////////////////////////////////////
+	Game::Game(int argc, char** argv)
+		: CLCore(argc, argv)
 	{
-		SetPosition(pos);
-		AABoundingBox* aabb = new AABoundingBox(pos, extent);
-		Primitive_Plane* plane = new Primitive_Plane(normal, 0.0f);
-		InitListener(aabb, plane);
+        SetConsole(new CLConsole());
+        SetRenderer(new DeferredRenderer());
+
+		m_gameAbsClock = GetNewAbsoluteClockFromMaster();
+		m_gameFrameClock = GetNewFrameClockFromMaster();
+
+		m_gameWorld = new GameWorld(*this);
 	}
 
-	StaticPlane::~StaticPlane()
+	Game::~Game()
 	{
-
+		delete m_gameAbsClock;
+		delete m_gameFrameClock;
 	}
 
-	void StaticPlane::Draw(GLProgram& glProgram)
+	void Game::Update()
 	{
-		SetGLProgram(&glProgram);
+		if(InputSystem::GetInstance()->IsKeyDown(GLFW_KEY_ESCAPE))
+			SetGameOver();
 
-        SetUniform("emissive", 0.0f);
-        SetUniform("specularIntensity", 32);
-        SetUniform("hasDiffuseMap", false);
-        SetUniform("hasNormalMap", false);
-        SetUniform("hasSpecularMap", false);
-        SetUniform("hasMaskMap", false);
-        SetUniform("hasEmissiveMap", false);
-
-        SetUtilsColor(m_color);
-
-		DrawBegin(CL_QUADS);
-		clVertex3(-m_extent.x, 0.0f, -m_extent.z); clNormal3(0.0f, 1.0f, 0.0f);
-		clVertex3(-m_extent.x, 0.0f, m_extent.z); clNormal3(0.0f, 1.0f, 0.0f);
-		clVertex3(m_extent.x, 0.0f, m_extent.z); clNormal3(0.0f, 1.0f, 0.0f);
-		clVertex3(m_extent.x, 0.0f, -m_extent.z); clNormal3(0.0f, 1.0f, 0.0f);
-		DrawEnd();
-		SetGLProgram(NULL);
+		m_gameWorld->Update();
 	}
+
+    void Game::PreDraw()
+    {
+        m_gameWorld->Draw();
+    }
+
+    void Game::PostDraw()
+    {
+
+    }
+
+	//////////////////////////////////////////////////////////////////////////
+	//	Private
+	//////////////////////////////////////////////////////////////////////////
 }

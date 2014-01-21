@@ -150,7 +150,7 @@ namespace CaptainLucha
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height,
+		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F, width, height,
 			0,	GL_BGRA, GL_UNSIGNED_BYTE, texels);
 	}
 
@@ -164,7 +164,7 @@ namespace CaptainLucha
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
-		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, width, height, GL_BGRA, GL_UNSIGNED_BYTE, texels);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA32F, width, height, GL_BGRA, GL_UNSIGNED_BYTE, texels);
 	}
 
 	void LoadFromFileError(const char* texturePath)

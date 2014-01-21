@@ -128,12 +128,11 @@ namespace CaptainLucha
 
 		g_MVPMatrix = new MatrixStack();
 		g_MVPMatrix->Othographic(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT,1, -1);
-		g_MVPMatrix->Perspective(45.0f, WINDOW_ASPECT_RATIO, 1.0f, 10000.0f);
+		g_MVPMatrix->Perspective(45.0f, WINDOW_ASPECT_RATIO, 0.1f, 10000.0f);
 
 		g_DebugFont = new Font("Data/Font/Anonymous Pro.ttf", DEBUG_FONT_HEIGHT);
 
 		g_CurrentColor = Vector4Df(1.0f, 1.0f, 1.0f, 1.0f);
-
 		glfwSwapInterval(0);
 
 		g_IsInitialized = true;

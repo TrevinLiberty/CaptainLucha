@@ -21,54 +21,43 @@
 /****************************************************************************/
 /*
  *	@author Trevin Liberty
- *	@file	
+ *	@file	Plane.h
  *	@brief	
  *
 /****************************************************************************/
-#include "StaticPlane.h"
 
-#include "BoundingVolumes/AABoundingBox.h"
-#include "Physics/Primitives/Primitive_Plane.h"
-#include "Renderer/RendererUtils.h"
-#include "Renderer/Shader/GLProgram.h"
+#ifndef PLANE_H_CL
+#define PLANE_H_CL
+
+#include "Vector3D.h"
 
 namespace CaptainLucha
 {
-	StaticPlane::StaticPlane(const Vector3Df& pos, const Vector3Df& normal, const Vector3Df& extent)
-		: CollisionStatic(),
-		  m_extent(extent)
+	struct Plane
 	{
-		SetPosition(pos);
-		AABoundingBox* aabb = new AABoundingBox(pos, extent);
-		Primitive_Plane* plane = new Primitive_Plane(normal, 0.0f);
-		InitListener(aabb, plane);
-	}
+        Plane() {};
+        Plane(
+            const Vector3Df& point, 
+            const Vector3Df& normal) 
+        {SetNormalAndPoint(normal, point);}
+        ~Plane() {};
 
-	StaticPlane::~StaticPlane()
-	{
+        inline void SetNormalAndPoint(
+            const Vector3Df& normal, 
+            const Vector3Df& point)
+        {
+            m_normal = normal;
+            m_d = (-normal).Dot(point);
+        }
 
-	}
+        inline float Distance(const Vector3Df& point) const
+        {
+            return m_normal.Dot(point) + m_d;
+        }
 
-	void StaticPlane::Draw(GLProgram& glProgram)
-	{
-		SetGLProgram(&glProgram);
-
-        SetUniform("emissive", 0.0f);
-        SetUniform("specularIntensity", 32);
-        SetUniform("hasDiffuseMap", false);
-        SetUniform("hasNormalMap", false);
-        SetUniform("hasSpecularMap", false);
-        SetUniform("hasMaskMap", false);
-        SetUniform("hasEmissiveMap", false);
-
-        SetUtilsColor(m_color);
-
-		DrawBegin(CL_QUADS);
-		clVertex3(-m_extent.x, 0.0f, -m_extent.z); clNormal3(0.0f, 1.0f, 0.0f);
-		clVertex3(-m_extent.x, 0.0f, m_extent.z); clNormal3(0.0f, 1.0f, 0.0f);
-		clVertex3(m_extent.x, 0.0f, m_extent.z); clNormal3(0.0f, 1.0f, 0.0f);
-		clVertex3(m_extent.x, 0.0f, -m_extent.z); clNormal3(0.0f, 1.0f, 0.0f);
-		DrawEnd();
-		SetGLProgram(NULL);
-	}
+        float m_d;
+        Vector3Df m_normal;
+	};
 }
+
+#endif

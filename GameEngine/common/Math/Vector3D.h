@@ -73,6 +73,11 @@ namespace CaptainLucha
 		template<typename J>
 		friend std::ostream& operator<<(std::ostream& out, const Vector3D<J>& vect);
 
+        Vector3D operator-() const
+        {
+            return Vector3D(-x, -y, -z);
+        }
+
 		//operator Vector3D<int>() const;
 	//	operator Vector3D<float>() const;
 		//operator Vector3D<double>() const;

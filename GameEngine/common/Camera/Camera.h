@@ -54,6 +54,8 @@ namespace CaptainLucha
 		const Vector3Df& GetPosition() const {return m_position;}
 		Vector3Df& GetPosition() {return m_position;}
 
+        Vector3Df GetForwardDirection() const;
+
 		void SetVelocity(const Vector3Df& vel) {m_velocity = vel;}
 
 		/**

@@ -375,6 +375,9 @@
     <ClCompile Include="..\common\Renderer\Renderer.cpp">
       <Filter>common\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="..\common\Renderer\ViewFrustum.cpp">
+      <Filter>common\Renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\common\Utils\UtilDebug.h">
@@ -775,6 +778,12 @@
     </ClInclude>
     <ClInclude Include="..\common\Renderer\CUDA\CUDA_Lights.cuh">
       <Filter>common\Renderer\Cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Math\Plane.h">
+      <Filter>common\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Renderer\ViewFrustum.h">
+      <Filter>common\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

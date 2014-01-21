@@ -30,6 +30,8 @@
 #define MATRIX_STACK_H_CL
 
 #include "Math/Matrix4D.h"
+#include "Math/Vector2D.h"
+#include "ViewFrustum.h"
 #include "Utils/UtilMacros.h"
 
 #include <stack>
@@ -83,6 +85,14 @@ namespace CaptainLucha
 		void SetProjectionMode(ProjectionMode mode) {m_currentProjectionMode = mode;}
 		ProjectionMode GetCurrentProjectionMode() const {return m_currentProjectionMode;}
 
+        void UpdateFrustum(const Vector3Df& viewPos, const Vector3Df& viewDir) 
+        {
+            m_frustum.UpdateFrustum(viewPos, viewDir);
+        }
+
+        const ViewFrustum& GetViewFrustum() const {return m_frustum;}    
+        ViewFrustum& GetViewFrustum() {return m_frustum;} 
+
 	protected:
 		void Frustum(float left, float right, float bottom, float top, float zNear, float zFar);
 
@@ -93,6 +103,8 @@ namespace CaptainLucha
 		Matrix4Df m_projectionMatrix;
 
 		Matrix4Df m_view;
+
+        ViewFrustum m_frustum;
 
 		std::stack<Matrix4Df> m_stack;
 

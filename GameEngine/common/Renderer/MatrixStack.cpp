@@ -29,6 +29,7 @@
 #include "MatrixStack.h"
 
 #include "Utils/UtilDebug.h"
+#include "Utils/Utils.h"
 
 #define _USE_MATH_DEFINES
 #include <Math.h>
@@ -147,9 +148,13 @@ namespace CaptainLucha
 
 	void MatrixStack::Perspective(float fov, float aspect, float zNear, float zFar)
 	{
-		float maxY = zNear * tanf(fov * (float)M_PI / 360.0f);
+        const float FOVRadians = DegreesToRadians(fov * 0.5f);
+		float maxY = zNear * tanf(FOVRadians);
 		float maxX = maxY * aspect;
 		Frustum(-maxX, maxX, -maxY, maxY, zNear, zFar);
+
+        m_frustum.UpdateData(fov, aspect, zNear, zFar);
+        m_frustum.UpdateFrustum(Vector3Df(), Vector3Df(0.0f, 0.0f, -1.0f));
 	}
 
 	void MatrixStack::Othographic(int left, int right, int bottom, int top, int zFar, int zNear)

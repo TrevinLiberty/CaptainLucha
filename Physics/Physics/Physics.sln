@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Physics", "Physics.vcxproj", "{A03E789C-3F2A-45D8-9033-73F7F5380932}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B16A13D6-B052-45E8-8EB7-86F8DA5AEEC4} = {B16A13D6-B052-45E8-8EB7-86F8DA5AEEC4}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameEngine", "..\..\GameEngine\GameEngine\GameEngine.vcxproj", "{B16A13D6-B052-45E8-8EB7-86F8DA5AEEC4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		DebugInline|Win32 = DebugInline|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A03E789C-3F2A-45D8-9033-73F7F5380932}.DebugInline|Win32.ActiveCfg = DebugInline|Win32
+		{A03E789C-3F2A-45D8-9033-73F7F5380932}.DebugInline|Win32.Build.0 = DebugInline|Win32
+		{A03E789C-3F2A-45D8-9033-73F7F5380932}.Release|Win32.ActiveCfg = Release|Win32
+		{A03E789C-3F2A-45D8-9033-73F7F5380932}.Release|Win32.Build.0 = Release|Win32
+		{B16A13D6-B052-45E8-8EB7-86F8DA5AEEC4}.DebugInline|Win32.ActiveCfg = DebugInline|Win32
+		{B16A13D6-B052-45E8-8EB7-86F8DA5AEEC4}.DebugInline|Win32.Build.0 = DebugInline|Win32
+		{B16A13D6-B052-45E8-8EB7-86F8DA5AEEC4}.Release|Win32.ActiveCfg = Release|Win32
+		{B16A13D6-B052-45E8-8EB7-86F8DA5AEEC4}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

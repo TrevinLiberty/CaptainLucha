@@ -81,9 +81,11 @@ namespace CaptainLucha
 		glProgram.SetUniform("hasDiffuseMap", false);
 		glProgram.SetUniform("hasNormalMap", false);
 		glProgram.SetUniform("hasSpecularMap", false);
+        glProgram.SetUniform("hasMaskMap", false);
+        glProgram.SetUniform("hasEmissiveMap", false);
 
 		glProgram.SetUniform("emissive", 1.0f);
-		glProgram.SetUniform("hasEmissiveMap", false);
+        glProgram.SetUniform("specularIntensity", 32);
 
 		if(m_primitive->GetType() == CL_Primitive_Sphere)
 		{
