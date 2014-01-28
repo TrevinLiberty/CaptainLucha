@@ -38,14 +38,17 @@ namespace CaptainLucha
 	class GLTexture;
 	class Sphere;
 
-	class DeferredLight_Point : public DeferredLight, public Light
+	class DeferredLight_Point : public Light
 	{
 	public:
 		DeferredLight_Point();
 		~DeferredLight_Point();
 
-		void ApplyLight(const Vector3Df& cameraPos, GLTexture* renderTarget0, GLTexture* renderTarget1, GLTexture* renderTarget2);
-		void StencilPass();
+		void ApplyLight(
+            const Vector3Df& cameraPos,
+            GLTexture* renderTarget0, 
+            GLTexture* renderTarget1, 
+            GLTexture* renderTarget2);
 
 	protected:
 		void DrawBSphere(GLProgram& glProgram);

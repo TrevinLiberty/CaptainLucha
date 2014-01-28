@@ -27,8 +27,8 @@
  *
 /****************************************************************************/
 
-#ifndef CAMERA_H_CL
-#define CAMERA_H_CL
+#ifndef CAMERA_OLD_H_CL
+#define CAMERA_OLD_H_CL
 
 #include "Math/Vector3D.h"
 #include "Math/Matrix4D.h"
@@ -44,17 +44,19 @@ namespace CaptainLucha
 	* @brief    Holds position and rotation for a player camera. Has functionality for movement. 
 	*  @todo	Move camera movement to different file.
 	*/
-	class Camera : public InputListener
+	class Camera_OLD : public InputListener
 	{
 	public:
-		Camera();
-		~Camera();
+		Camera_OLD();
+		~Camera_OLD();
 
 		void SetPosition(const Vector3Df& val) {m_position = val;}
 		const Vector3Df& GetPosition() const {return m_position;}
 		Vector3Df& GetPosition() {return m_position;}
 
         Vector3Df GetForwardDirection() const;
+
+		void SetVelocity(const Vector3Df& vel) {m_velocity = vel;}
 
 		/**
 		 * @brief     Returns (Yaw, Pitch, Roll)
@@ -68,6 +70,13 @@ namespace CaptainLucha
 		 * @todo	  Create DX version
 		 */
 		Matrix4Df GetGLViewMatrix() const;
+
+		/**
+		 * @brief     Applies an impulse to the camera
+		 * @param	  const Vector3Dd & impulse
+
+		 */
+		void ApplyImpulse(const Vector3Dd& impulse);
 
 		/**
 		 * @brief     Updates Position, Velocity, and input
@@ -84,6 +93,13 @@ namespace CaptainLucha
 		void MouseMove(float x, float y);
 
 		/**
+		 * @brief     Enables or Disables keyboard input.
+		 * @param	  bool t
+
+		 */
+		void SetEnableKeyboard(bool t) {m_enableKeyboard = t;}
+
+		/**
 		 * @brief     Enables or Disables mouse input.
 		 * @param	  bool t
 
@@ -95,10 +111,18 @@ namespace CaptainLucha
 		void UpdateInput();
 
 	private:
-        Vector3Df m_rotation;
-        Vector3Df m_position;
+		Vector3Df m_rotation;
+		Vector3Df m_position;
+		Vector3Df m_velocity;
 
+		float m_drag;
+
+		bool m_enableKeyboard;
 		bool m_enableMouse;
+
+		const float CAMERA_IMPULSE;
+
+		PREVENT_COPYING(Camera_OLD)
 	};
 }
 

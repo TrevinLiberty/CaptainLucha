@@ -49,7 +49,7 @@ namespace CaptainLucha
 		}
 
 		m_vbo = new VertexBufferObject(m_verts, false, false, CL_LINES);
-		SetObjectColor(Color::Blue);
+        SetColor(Color::Blue);
 	}
 
 	DebugGrid::~DebugGrid()
@@ -57,9 +57,10 @@ namespace CaptainLucha
 		delete m_vbo;
 	}
 
-	void DebugGrid::Draw(GLProgram& glProgram)
+	void DebugGrid::Draw(GLProgram& glProgram, Renderer& renderer)
 	{
-		glProgram.SetUniform("emissive", 1.0);
+        g_MVPMatrix->PushMatrix();
+        glProgram.SetUniform("emissive", 1.0);
 		glProgram.SetUniform("color", GetColor());
 
 		glProgram.SetUniform("hasDiffuseMap", false);
@@ -70,5 +71,6 @@ namespace CaptainLucha
 		g_MVPMatrix->Translate(0.0f, -1.0f, 0.0f);
 
 		m_vbo->Draw(glProgram);
+        g_MVPMatrix->PopMatrix();
 	}
 }

@@ -33,11 +33,16 @@ namespace CaptainLucha
 	Light::Light(LightType type)
 		: m_type(type)
 	{
-
+        if(!m_nullProgram)
+        {
+            m_nullProgram = new GLProgram("Data/Shaders/SimpleShader.vert", "Data/Shaders/Null.frag");
+        }
 	}
 
 	Light::~Light()
 	{
 
 	}
+
+    GLProgram* Light::m_nullProgram = NULL;
 }

@@ -37,13 +37,17 @@ namespace CaptainLucha
 	class GLProgram;
 	class GLTexture;
 
-	class DeferredLight_Ambient : public DeferredLight, public Light
+	class DeferredLight_Ambient : public Light
 	{
 	public:
 		DeferredLight_Ambient();
 		~DeferredLight_Ambient();
 
-		void ApplyLight(const Vector3Df& cameraPos, GLTexture* renderTarget0, GLTexture* renderTarget1, GLTexture* renderTarget2);
+		void ApplyLight(
+            const Vector3Df& cameraPos, 
+            GLTexture* renderTarget0, 
+            GLTexture* renderTarget1, 
+            GLTexture* renderTarget2);
 
 	protected:
 

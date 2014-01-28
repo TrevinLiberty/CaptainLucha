@@ -122,7 +122,7 @@ namespace CaptainLucha
 		glEnable(GL_PROGRAM_POINT_SIZE);
 		glEnable(GL_POINT_SMOOTH);
 
-		glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+		//glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glDepthFunc(GL_LESS);
 
@@ -296,7 +296,7 @@ namespace CaptainLucha
 		vect.push_back(vert.w);
 	}
 
-	void DrawTriangles(std::vector<float>& pos, std::vector<float>& texCoords, std::vector<float>& color, std::vector<float>& normals)
+	void DrawTriangles(std::vector<float>& pos, std::vector<float>& texCoords, std::vector<float>& normals)
 	{
 		GetAttributeLocations();
 		if(!texCoords.empty() && texCoords.size() / 2 == pos.size() / 3)
@@ -313,14 +313,6 @@ namespace CaptainLucha
 		{
 			EnableVertexAttrib(g_NormalLocation, 3, GL_FLOAT, GL_FALSE, 0, normals.data());
 		}
-
-		if(!color.empty() && color.size() / 4 == pos.size() / 3)
-		{
-			EnableVertexAttrib(g_ColorLocation, 4, GL_FLOAT, GL_FALSE, 0, color.data());
-			g_CurrentProgram->SetUniform("useVertColor", true);
-		}
-		else
-			g_CurrentProgram->SetUniform("useVertColor", false);
 
 		if(!pos.empty())
 		{
@@ -398,27 +390,7 @@ namespace CaptainLucha
 			}
 		}
 
-		std::vector<float> color;
-		//Create tex coords to draw triangle
-		if(g_DrawColor->size() >= 4 * 4) //4 verts * 2 uv
-		{
-			for(size_t i = 0; i < g_DrawColor->size(); i += 16)
-			{
-				Vector4Df one((*g_DrawColor)[i], (*g_DrawColor)[i + 1], (*g_DrawColor)[i + 2], (*g_DrawColor)[i + 3]);
-				Vector4Df two((*g_DrawColor)[i + 4], (*g_DrawColor)[i + 5], (*g_DrawColor)[i + 6], (*g_DrawColor)[i + 7]);
-				Vector4Df three((*g_DrawColor)[i + 8], (*g_DrawColor)[i + 9], (*g_DrawColor)[i + 10], (*g_DrawColor)[i + 11]);
-				Vector4Df four((*g_DrawColor)[i + 12], (*g_DrawColor)[i + 13], (*g_DrawColor)[i + 14], (*g_DrawColor)[i + 15]);
-
-				AddToVector(color, one);
-				AddToVector(color, two);
-				AddToVector(color, three);
-				AddToVector(color, one);
-				AddToVector(color, three);
-				AddToVector(color, four);
-			}
-		}
-
-		DrawTriangles(vertices, texCoord, color, normals);
+		DrawTriangles(vertices, texCoord, normals);
 	}
 
 	void DrawPoints()
@@ -511,7 +483,7 @@ namespace CaptainLucha
 				DrawQuads();
 				break;
 			case CL_TRIANGLES:
-				DrawTriangles(*g_DrawVertices, *g_DrawTextureCoords, *g_DrawColor, *g_DrawNormals);
+				DrawTriangles(*g_DrawVertices, *g_DrawTextureCoords, *g_DrawNormals);
 				break;
 			case CL_POINTS:
 				DrawPoints();
@@ -524,7 +496,6 @@ namespace CaptainLucha
 
 		g_DrawVertices->clear();
 		g_DrawTextureCoords->clear();
-		g_DrawColor->clear();
 		g_DrawNormals->clear();
 
 		g_HasDrawBegun = false;
@@ -612,17 +583,17 @@ namespace CaptainLucha
 		clColor4(color.r, color.g, color.b, color.a);
 	}
 
-	void FullScreenPass()
+	void FullScreenPass(int width, int height)
 	{
 		g_MVPMatrix->PushMatrix();
 		g_MVPMatrix->LoadIdentity();
 		g_MVPMatrix->SetProjectionMode(CL_ORTHOGRAPHIC);
 		DrawBegin(CL_QUADS);
 		{
-			clVertex3(0.0f, 0.0f, 0.0f);
-			clVertex3(WINDOW_WIDTHf, 0.0f, 0.0f);
-			clVertex3(WINDOW_WIDTHf, WINDOW_HEIGHTf, 0.0f);
-			clVertex3(0.0f, WINDOW_HEIGHTf, 0.0f);
+			clVertex3(0.0f,  0.0f, 0.0f);
+			clVertex3((float)width, 0.0f, 0.0f);
+			clVertex3((float)width, (float)height, 0.0f);
+			clVertex3(0.0f,  (float)height, 0.0f);
 
 			clTexCoord(0, 0);
 			clTexCoord(1, 0);

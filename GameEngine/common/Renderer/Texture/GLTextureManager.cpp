@@ -36,7 +36,7 @@ namespace CaptainLucha
 	{
 		GLTexture& texture = m_textures[ByteHash(texturePath.c_str(), texturePath.size())];
 
-		if(!texture.IsValid())
+		if(!texture.IsInFactory())
 		{
 			texture.LoadFromFile(texturePath.c_str(), useMipMap);
 			texture.m_inFactory = true;

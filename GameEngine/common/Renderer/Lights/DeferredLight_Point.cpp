@@ -42,7 +42,6 @@ namespace CaptainLucha
 		if(!m_glProgram)
 		{
 			m_glProgram = new GLProgram("Data/Shaders/DeferredVertShader.vert", "Data/Shaders/DeferredPointLightShader.frag");
-			m_nullProgram = new GLProgram("Data/Shaders/SimpleShader.vert", "Data/Shaders/Null.frag");
 			m_sphere = new Sphere(1.0f, 2);
 		}
 	}
@@ -52,49 +51,30 @@ namespace CaptainLucha
 
 	}
 
-	void DeferredLight_Point::ApplyLight(const Vector3Df& cameraPos, GLTexture* renderTarget0, GLTexture* renderTarget1, GLTexture* renderTarget2)
+	void DeferredLight_Point::ApplyLight(
+        const Vector3Df& cameraPos, 
+        GLTexture* renderTarget0, 
+        GLTexture* renderTarget1, 
+        GLTexture* renderTarget2)
 	{
-        {
-            nvtxRangePushA("Set Uniforms");
-            m_glProgram->SetUnifromTexture("renderTarget0", renderTarget0);
-            m_glProgram->SetUnifromTexture("renderTarget1", renderTarget1);
-            m_glProgram->SetUnifromTexture("renderTarget2", renderTarget2);
+        m_glProgram->SetUnifromTexture("renderTarget0", renderTarget0);
+        m_glProgram->SetUnifromTexture("renderTarget1", renderTarget1);
+        m_glProgram->SetUnifromTexture("renderTarget2", renderTarget2);
 
-            m_glProgram->SetUniform("color", m_color);
-            m_glProgram->SetUniform("camPos", cameraPos);
-            m_glProgram->SetUniform("lightPos", m_position);
-            m_glProgram->SetUniform("intensity", m_intensity);
-            m_glProgram->SetUniform("radius", m_radius);
-            nvtxRangePop();
-        }
+        m_glProgram->SetUniform("color", m_color);
+        m_glProgram->SetUniform("camPos", cameraPos);
+        m_glProgram->SetUniform("lightPos", m_position);
+        m_glProgram->SetUniform("intensity", m_intensity);
+        m_glProgram->SetUniform("radius", m_radius);
 
-        nvtxRangePushA("Light Sphere Draw");
-        {
-            glStencilFunc(GL_NOTEQUAL, 0, 0xFF);
-            glDisable(GL_DEPTH_TEST);
-            glEnable(GL_CULL_FACE);
-            glCullFace(GL_FRONT);
+        glDisable(GL_DEPTH_TEST);
+        glCullFace(GL_FRONT);
 
-            DrawBSphere(*m_glProgram);
+        DrawBSphere(*m_glProgram);
 
-            glCullFace(GL_BACK);
-        }
-        nvtxRangePop();
+        glCullFace(GL_BACK);
+        glEnable(GL_DEPTH_TEST);
 	}
-
-	void DeferredLight_Point::StencilPass()
-	{
-		glEnable(GL_DEPTH_TEST);
-		glDisable(GL_CULL_FACE);
-
-		glClear(GL_STENCIL_BUFFER_BIT);
-		glStencilFunc(GL_ALWAYS, 0, 0);
-		glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP);
-		glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
-		DrawBSphere(*m_nullProgram);
-		glEnable(GL_CULL_FACE);
-	}
-
 	void DeferredLight_Point::DrawBSphere(GLProgram& glProgram)
 	{
 		const Vector3Df& pos = GetPosition();

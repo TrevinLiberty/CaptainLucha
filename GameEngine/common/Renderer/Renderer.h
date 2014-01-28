@@ -35,15 +35,25 @@
 #include "Lights/Light.h"
 #include "Lights/Light_Spot.h"
 
+#include "Geometry/SkyBox.h"
+
 #include "Utils/CommonIncludes.h"
 
 namespace CaptainLucha
 {
-	class Object;
+	class Renderable;
 	class GLProgram;
 
     typedef void (*DrawFunction)(GLProgram& program, void* userData);
     typedef std::pair<DrawFunction, void*> DrawPair;
+
+    enum CLCurrentPass
+    {
+        CL_DRAW_PASS,
+        CL_REFLECT_PASS,
+        CL_SHADOW_PASS,
+        CL_ALPHA_PASS
+    };
 
 	class Renderer
 	{
@@ -53,17 +63,23 @@ namespace CaptainLucha
 
 		virtual void Draw() = 0;
 
+        /**
+         * @brief     Draws the skybox if it exists. 
+                        Assumes camera position is set.
+         */
+        void DrawSkybox();
+
 		/**
 		 * @brief     Adds object to the renderer to enable drawing.
 		 * @param	  Object * object
 		 */
-		void AddObjectToRender(Object* object);
+		void AddObjectToRender(Renderable* object);
 
 		/**
 		 * @brief     Removes the object from renderer.
 		 * @param	  Object * object
 		 */
-		void RemoveObject(Object* object);
+		void RemoveObject(Renderable* object);
 
 		/**
 		 * @brief     Sets the view matrix for the next call to DeferredRenderer:Draw();
@@ -76,6 +92,7 @@ namespace CaptainLucha
 		 * @param	  const Vector3Df & camPos
 		 */
 		void SetCameraPos(const Vector3Df& camPos) {m_cameraPos = camPos;}
+        void SetCameraDir(const Vector3Df& camDir) {m_cameraDir = camDir;}
 
 		virtual Light*				CreateNewPointLight() = 0;
 		virtual Light*				CreateNewAmbientLight() = 0;
@@ -100,19 +117,59 @@ namespace CaptainLucha
         void AddDrawFunction(DrawFunction func, void* userData = NULL);
         void RemoveDrawFunction(DrawFunction func, void* userData = NULL);
 
-	protected:
-		virtual void DrawScene(GLProgram& program);
+        const SkyBox* GetSkyBox() const {return m_skyBox;}
+        void SetSkyBox(SkyBox* val) {m_skyBox = val;}
 
-		bool m_debugDraw;
+        //Valid at the end of CL_DRAW_PASS. 
+        //Used for reflective surface to sample from, 
+        //  since the reflective surface is drawn last.
+        //
+        //TODO: can be used for post processing passes.  
+        GLTexture* GetFinalSceneTexture() {return m_finalRenderSceneTex;}
+
+        virtual void SetReflectiveSurface(Renderable* surfaceObject, int width, int height);
+        void SetRefelctiveInfo(const Vector3Df& normal, const Vector3Df& pos);
+
+        //Only a valid texture during CL_DRAW_PASS and when a reflective 
+        //  surface is set.
+        GLTexture* GetReflectiveTexture() {return m_reflectionTexture;}
+        bool HasReflectiveObject() {return m_reflectiveObject != NULL;}
+
+        Vector4Df GetReflectiveClipPlane() const;
+
+        CLCurrentPass GetCurrentPass() const {return m_currentPass;}
+
+	protected:
+		virtual void DrawScene(GLProgram& program, bool isAlphaPass);
 
 		Matrix4Df m_viewMatrix;
 		Vector3Df m_cameraPos;
+        Vector3Df m_cameraDir;
 
         DrawFunction m_debugDrawFunction;
         void*        m_debugDrawUserData;
 
+        GLTexture* m_finalRenderSceneTex;
+        SkyBox* m_skyBox;
+    
         std::vector<DrawPair> m_drawFunctions;
-		std::vector<Object*> m_renderableObjects;
+        std::vector<Renderable*> m_renderableObjects;
+
+        CLCurrentPass m_currentPass;
+
+        bool m_debugDraw;
+
+        //Reflective Variables
+        //
+        unsigned int m_reflectiveFBO;
+        Renderable* m_reflectiveObject;
+        GLTexture*  m_reflectionTexture;
+
+        int m_reflectiveWidth;
+        int m_reflectiveHeight;
+
+        Vector3Df   m_reflectiveNormal;
+        Vector3Df   m_reflectivePos;
 	};
 }
 

@@ -40,7 +40,8 @@ namespace CaptainLucha
 	Model::Model(CLCore& clCore, const char* filePath)
 		: m_clCore(clCore),
 		  m_numNodes(0),
-		  m_filePath(filePath)
+		  m_filePath(filePath),
+          m_scale(1.0f)
 	{
 		CLFileImporter fileImporter;
 		CLFile* file = fileImporter.LoadFile(filePath);
@@ -53,8 +54,6 @@ namespace CaptainLucha
 
 		LoadMaterials(ss);
 		LoadNodes(ss);
-
-		CalculateAABB();
 	}
 
 	Model::~Model()
@@ -64,13 +63,14 @@ namespace CaptainLucha
 		file.write((char*)&m_baseTranslation, 3 * 4);
 	}
 
-	void Model::Draw(GLProgram& glProgram)
+	void Model::Draw(GLProgram& glProgram, Renderer& renderer)
 	{
         glProgram.UseProgram();
 		glProgram.SetUniform("emissive", 0.0);
 
 		g_MVPMatrix->PushMatrix();
 		g_MVPMatrix->Translate(m_baseTranslation);
+        g_MVPMatrix->Scale(m_scale, m_scale, m_scale);
 
 		if(m_root)
 			m_root->Draw(glProgram, this);
@@ -272,11 +272,5 @@ namespace CaptainLucha
 	{
 		if(!quotedName.empty())
 			quotedName = quotedName.substr(1, quotedName.size() - 2);
-	}
-
-	void Model::CalculateAABB()
-	{
-		m_root->GetAABB(m_AABB);
-		m_AABB.Transform(m_baseTranslation);
 	}
 }

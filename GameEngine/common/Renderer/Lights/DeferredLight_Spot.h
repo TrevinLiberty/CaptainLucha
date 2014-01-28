@@ -37,14 +37,17 @@ namespace CaptainLucha
 	class GLProgram;
 	class GLTexture;
 
-	class DeferredLight_Spot : public DeferredLight, public Light_Spot
+	class DeferredLight_Spot : public Light_Spot
 	{
 	public:
 		DeferredLight_Spot();
 		~DeferredLight_Spot();
 
-		void ApplyLight(const Vector3Df& cameraPos, GLTexture* renderTarget0, GLTexture* renderTarget1, GLTexture* renderTarget2);
-		void StencilPass();
+		void ApplyLight(
+            const Vector3Df& cameraPos, 
+            GLTexture* renderTarget0, 
+            GLTexture* renderTarget1, 
+            GLTexture* renderTarget2);
 
 	protected:
 		void DrawCone();

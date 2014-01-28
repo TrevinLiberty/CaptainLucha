@@ -21,62 +21,64 @@
 /****************************************************************************/
 /*
  *	@author Trevin Liberty
- *	@file	CLConsole_Interface.h
- *	@brief	Interface for a Console
- *  @see	CLConsole CLConsole_NULL
- *  @code 
-		//Set to initially be the NULL interface. Allowing console functions to be called with no effect.
-		CLConsole_Interface* myConsole = new CLConsole_NULL();
-
-		//If console is desired
-		delete myConsole;
-		myConsole = new CLConsole();
-
-		//Continue to use normally.
-	@endcode
- *	@see	CLConsole CLConsole_NULL
- *  @todo	Change CONSOLE_WIDTH to percentage of screenwidth?
- *  @todo	Change CONSOLE_HEIGHT to be screenheight
+ *	@file	Renderable.h
+ *	@brief	
+ *
 /****************************************************************************/
 
-#ifndef CONSOLE_INTERFACE_H_CL
-#define CONSOLE_INTERFACE_H_CL
+#ifndef RENDERABLE_H_CL
+#define RENDERABLE_H_CL
 
-#include "Input/InputListener.h"
-#include "Utils/UtilDebug.h"
+#include "Color.h"
+#include "Shader/GLProgram.h"
 #include "Utils/CommonIncludes.h"
-#include "Threads/ThreadMutex.h"
 
 namespace CaptainLucha
 {
-	class CLConsole_Interface
+    class GLProgram;
+    class Renderer;
+
+	class Renderable
 	{
 	public:
-		CLConsole_Interface() : m_isOpen(false) {};
-		virtual ~CLConsole_Interface() {};
+        Renderable()
+            : m_color(Color::White),
+              m_isVisible(true),
+              m_renderedOnAlphaPass(false),
+              m_reflectable(true),
+              m_castsShadows(true) {};
+        ~Renderable() {};
 
-		virtual void Draw() = 0;
+        virtual void Draw(GLProgram& glProgram, Renderer& renderer) = 0;
 
-		virtual void AddHelpInfo(const char* command, const char* info) = 0;
+        bool IsVisible() const {return m_isVisible;}
+        void SetVisible(bool val) {m_isVisible = val;}
 
-		virtual void AddText(const char* text) = 0;
-		virtual void AddErrorText(const char* text) = 0;
-		virtual void AddSuccessText(const char* text) = 0;
+        bool IsRenderedOnAlphaPass() const {return m_renderedOnAlphaPass;}
+        void SetRenderedOnAlphaPass(bool val) {m_renderedOnAlphaPass = val;}
 
-        virtual void AddText(const std::string& text) = 0;
-        virtual void AddErrorText(const std::string& text) = 0;
-        virtual void AddSuccessText(const std::string& text) = 0;
+        const Color& GetColor() const {return m_color;}
+        void SetColor(const Color& val) {m_color = val;}
 
-		virtual void Open() {}
-		virtual void Close() {}
+        const Vector3Df& GetPosition() const {return m_position;}
+        void SetPosition(const Vector3Df& val) {m_position = val;}
 
-		static const int CONSOLE_WIDTH = 750;
-		static const int CONSOLE_HEIGHT = 920;
+        bool IsReflectable() const {return m_reflectable;}
+        void SetReflectable(bool val) {m_reflectable = val;}
+
+        bool CastsShadows() const {return m_castsShadows;}
+        void SetCastsShadows(bool val) {m_castsShadows = val;}
 
 	protected:
-		bool m_isOpen;
 
-	private:
+    private:
+        bool m_isVisible;
+        bool m_renderedOnAlphaPass;
+        bool m_reflectable;
+        bool m_castsShadows;
+
+        Color m_color;
+        Vector3Df m_position;
 	};
 }
 

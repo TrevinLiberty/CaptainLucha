@@ -40,7 +40,6 @@ namespace CaptainLucha
 		: m_glTextureID(0),
 		  m_width(0),
 		  m_height(0),
-		  m_isValid(false),
 		  m_inFactory(false)
 	{}
 
@@ -48,7 +47,6 @@ namespace CaptainLucha
 		: m_glTextureID(textureID),
 		m_width(width),
 		m_height(height),
-		m_isValid(true),
 		m_inFactory(false)
 	{
 
@@ -63,7 +61,6 @@ namespace CaptainLucha
 		: m_glTextureID(0),
 		  m_width(0),
 		  m_height(0),
-		  m_isValid(false),
 		  m_inFactory(false)
 	{
 		LoadFromFile(texturePath, genMipMaps);
@@ -74,7 +71,6 @@ namespace CaptainLucha
 		m_glTextureID = rhs.m_glTextureID;
 		m_width = rhs.m_width;
 		m_height = rhs.m_height;
-		m_isValid = rhs.m_isValid;
 		m_inFactory = rhs.m_inFactory;
 	}
 

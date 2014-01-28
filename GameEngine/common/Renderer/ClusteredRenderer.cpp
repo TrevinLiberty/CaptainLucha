@@ -38,7 +38,7 @@ namespace CaptainLucha
 		  m_isClusterInit(false),
 		  m_debugTime(0.0f)
 	{
-		InitRenderer();
+		ClusteredRenderer::InitRenderer();
 	}
 
 	ClusteredRenderer::~ClusteredRenderer()
@@ -50,39 +50,8 @@ namespace CaptainLucha
 	{
 		m_debugTime -= 1 / 60.0f;
 
-		PopulateGBuffers();
-		AssignClusters();
-
-		if(m_debugDraw)
-			DebugRenderGBuffer();
-	}
-
-	Light* ClusteredRenderer::CreateNewPointLight()
-	{
-		Light* newLight = DeferredRenderer::CreateNewPointLight();
-		m_lights.push_back(newLight);
-		return newLight;
-	}
-
-	Light_Spot* ClusteredRenderer::CreateNewSpotLight()
-	{
-		Light_Spot* newLight = DeferredRenderer::CreateNewSpotLight();
-		m_lights.push_back(newLight);
-		return newLight;
-	}
-
-	void ClusteredRenderer::RemoveLight(Light* light)
-	{
-		DeferredRenderer::RemoveLight(light);
-		
-		for(auto it = m_lights.begin(); it != m_lights.end(); ++it)
-		{
-			if((*it) == light)
-			{
-				m_lights.erase(it);
-				return;
-			}
-		}
+        PopulateGBuffers();
+        AssignClusters();
 	}
 
 	void ClusteredRenderer::UpdateScreenDimensions()
@@ -105,19 +74,18 @@ namespace CaptainLucha
 
 	void ClusteredRenderer::DebugDraw()
 	{
-		SetGLProgram(NULL);
-		SetUniform("useAlpha", false);
-		SetUniform("useTexture", false);
-		glDepthMask(GL_FALSE);
-		glDisable(GL_DEPTH_TEST);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+        SetGLProgram(NULL);
+        glDisable(GL_DEPTH_TEST);
+        glDepthMask(GL_FALSE);
+        
 		g_MVPMatrix->SetProjectionMode(CL_PROJECTION);
 		g_MVPMatrix->PushMatrix();
 
 		Matrix4Df toWorldSpace1 = (m_debugView * g_MVPMatrix->GetProjectionMatrix()).GetInverse();
 
 		SetUtilsColor(Color::White, 0.1f);
-		SetUniform("useAlpha", true);
 		g_MVPMatrix->LoadIdentity();
 		g_MVPMatrix->LoadMatrix(toWorldSpace1);
 		DrawBegin(CL_QUADS);
@@ -128,8 +96,7 @@ namespace CaptainLucha
 		DrawEnd();
 
 		glEnable(GL_DEPTH_TEST);
-		glDepthMask(GL_TRUE);
-		SetUniform("useAlpha", false);
+        glDepthMask(GL_TRUE);
 		g_MVPMatrix->PopMatrix();
 	}
 
@@ -196,7 +163,7 @@ namespace CaptainLucha
 	}
 
 	void ClusteredRenderer::AssignClusters()
-	{
+    {
 		//Disable Color Writing
 		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
@@ -234,19 +201,19 @@ namespace CaptainLucha
 	void ClusteredRenderer::FillLightBuffers()
 	{
 		std::vector<float> lightPosRad;
-		lightPosRad.resize(m_lights.size() * 4);
+		lightPosRad.resize(m_deferredLights.size() * 4);
 
-		for(size_t i = 0; i < m_lights.size(); ++i)
+		for(size_t i = 0; i < m_deferredLights.size(); ++i)
 		{
 			const int INDEX = i * 4;
-			Vector3Df pos = m_lights[i]->GetPosition();//m_viewMatrix.TransformPosition(m_lights[i]->GetPosition());
+			Vector3Df pos = m_deferredLights[i]->GetPosition();//m_viewMatrix.TransformPosition(m_lights[i]->GetPosition());
 			lightPosRad[INDEX]	   = pos.x;
 			lightPosRad[INDEX + 1] = pos.y;
 			lightPosRad[INDEX + 2] = pos.z;
-			lightPosRad[INDEX + 3] = m_lights[i]->GetRadius();
+			lightPosRad[INDEX + 3] = m_deferredLights[i]->GetRadius();
 		}
 
-		m_cudaClustered->CreateLightBVH(m_lights.size(), lightPosRad.data());
+		m_cudaClustered->CreateLightBVH(m_deferredLights.size(), lightPosRad.data());
 	}
 
 	void ClusteredRenderer::TakeDebugSnapshot()

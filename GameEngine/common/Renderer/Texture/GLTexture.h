@@ -51,10 +51,10 @@ namespace CaptainLucha
 		unsigned int GetWidth() const {return m_width;}
 		unsigned int GetHeight() const {return m_height;}
 
-		bool IsValid() const {return m_isValid;}
-
 		void SetMinMagFilterNearest();
 		void SetMinMagFilterLinear();
+
+        bool IsInFactory() const {return m_inFactory;}
 
 		//Does nothing if texture was obtained through the TextureFactoryGL
 		void DeleteTexture();
@@ -72,7 +72,6 @@ namespace CaptainLucha
 		unsigned int m_width;
 		unsigned int m_height;
 
-		bool m_isValid;
 		bool m_inFactory;
 
 		friend class GLTextureManager;

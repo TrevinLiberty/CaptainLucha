@@ -85,10 +85,7 @@ namespace CaptainLucha
 		void SetProjectionMode(ProjectionMode mode) {m_currentProjectionMode = mode;}
 		ProjectionMode GetCurrentProjectionMode() const {return m_currentProjectionMode;}
 
-        void UpdateFrustum(const Vector3Df& viewPos, const Vector3Df& viewDir) 
-        {
-            m_frustum.UpdateFrustum(viewPos, viewDir);
-        }
+        void UpdateFrustum(const Vector3Df& viewPos, const Vector3Df& viewDir);
 
         const ViewFrustum& GetViewFrustum() const {return m_frustum;}    
         ViewFrustum& GetViewFrustum() {return m_frustum;} 

@@ -278,7 +278,7 @@ namespace CaptainLucha
 			/**********************************/
 			//Create Rest of BVH
 			/**********************************/
-            cudaMemset(m_lightBVH->m_minAABBNodes.get(), 0, 128 * sizeof(unsigned int));
+            cudaMemset(m_lightBVH->m_minAABBNodes.get(), 0, 1024 * sizeof(unsigned int));
 
             //Start with leaf nodes and create bottom parents of tree first
 			const int CURRENT_BRANCHING_FACTOR = LightBVH::BRANCHING_FACTOR;//todo update this when factor can change

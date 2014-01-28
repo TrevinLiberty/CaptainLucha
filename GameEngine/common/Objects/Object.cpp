@@ -35,7 +35,8 @@ namespace CaptainLucha
 	///////////////////////////////////////////////////////////////////////
 	Object::Object()
 		: m_color(Color::White),
-		  m_isVisible(true)
+		  m_isVisible(true),
+          m_renderedOnAlphaPass(false)
 	{
 		SetID();
 	}

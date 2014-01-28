@@ -45,6 +45,10 @@ namespace CaptainLucha
 		virtual void AddErrorText(const char* text) {UNUSED(text)};
 		virtual void AddSuccessText(const char* text) {UNUSED(text)};
 
+        virtual void AddText(const std::string& text) {UNUSED(text)};
+        virtual void AddErrorText(const std::string& text) {UNUSED(text)};
+        virtual void AddSuccessText(const std::string& text) {UNUSED(text)};
+
 	protected:
 
 	private:

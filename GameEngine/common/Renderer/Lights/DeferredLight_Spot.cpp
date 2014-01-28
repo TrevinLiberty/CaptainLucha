@@ -66,21 +66,6 @@ namespace CaptainLucha
 		DrawCone();
 	}
 
-	void DeferredLight_Spot::StencilPass()
-	{
-		glEnable(GL_DEPTH_TEST);
-		glDisable(GL_CULL_FACE);
-
-		glClear(GL_STENCIL_BUFFER_BIT);
-		glStencilFunc(GL_ALWAYS, 0, 0);
-		glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP);
-		glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
-
-		DrawCone();
-
-		glEnable(GL_CULL_FACE);
-	}
-
 	//////////////////////////////////////////////////////////////////////////
 	//	Protected
 	//////////////////////////////////////////////////////////////////////////

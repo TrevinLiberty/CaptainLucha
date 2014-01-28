@@ -1,5 +1,7 @@
 #version 330
 
+/////////////////////////////////////////////////////
+//Uniforms
 uniform sampler2D diffuseMap;
 uniform sampler2D normalMap;
 uniform sampler2D specularMap;
@@ -25,16 +27,11 @@ in vec2 textureCoord;
 in vec3 vertTangent;
 in vec3 vertbiTangent;
 
-out vec4 FragColor;
-
+/////////////////////////////////////////////////////
+//Outs
 layout(location=0) out vec4 RT0;
 layout(location=1) out vec4 RT1;
 layout(location=2) out vec4 RT2;
-
-float Luminance(in vec3 rgb)
-{
-	return (0.2126*rgb.r) + (0.7152*rgb.g) + (0.0722*rgb.b);
-}
 
 void main()
 {
@@ -43,11 +40,7 @@ void main()
 	if(hasDiffuseMap)//non-divergent
 		texelColor *= texture(diffuseMap, textureCoord);
 
-	float alpha = texelColor.a;
-	if(hasMaskMap)//non-divergent
-		alpha = texture(maskMap, textureCoord).r;
-
-	if(alpha < 0.5)
+	if(hasMaskMap && texture(maskMap, textureCoord).r < 0.25)//divergent
 		discard;
 
 	//Normal Mapping
@@ -65,12 +58,29 @@ void main()
 		specVal = texture(specularMap, textureCoord).r;
 	
 	//Emissive
-	float emissiveVal = 0.0f;
+	float emissiveVal = emissive;
 	if(hasEmissiveMap)//non-divergent
 		emissiveVal = texture(emissiveMap, textureCoord).r;
 
-	//Render Target out
-	RT0 = vec4(texelColor.rgb, specVal);
+	//Render Target out projection
+	RT0 = vec4(texelColor.rgb, 1.0);
 	RT1 = vec4(normal, emissiveVal);
-	RT2 = vec4(worldPosition, specularIntensity);
+	RT2 = vec4(gl_FragCoord.z, specVal, 0.0, specularIntensity);
 }
+
+//	modelposition
+
+//modelmatrix
+//	world space
+
+//viematrix
+//	view space
+
+//projection
+//	clip space
+
+//w divide
+//	ndc	[-1, 1]
+
+//scaled
+//	window coords

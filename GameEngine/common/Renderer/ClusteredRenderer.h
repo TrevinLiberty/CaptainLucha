@@ -44,11 +44,6 @@ namespace CaptainLucha
 
 		void Draw();
 
-		virtual Light* CreateNewPointLight();
-		virtual Light_Spot* CreateNewSpotLight();
-
-		virtual void RemoveLight(Light* light);
-
 		//TODO. Need to update when FOV changes.
 		void UpdateScreenDimensions();
 
@@ -98,8 +93,6 @@ namespace CaptainLucha
 
 		unsigned int m_clusterBufferSize;
 
-		//I don't like this since deferred already has a list of all lights.
-		std::vector<Light*>	   m_lights;
 		std::vector<Vector3Df> m_debugQuadVerts;
 
 		Matrix4Df m_debugView;

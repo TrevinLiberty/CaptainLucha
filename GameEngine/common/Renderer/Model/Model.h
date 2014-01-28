@@ -30,11 +30,10 @@
 #define MODEL_H_CL
 
 #include "CLCore.h"
-#include "Objects/Object.h"
+#include "Renderer/Renderable.h"
 #include "Renderer/Model/Model_Material.h"
 #include "Renderer/Color.h"
 #include "Renderer/RendererUtils.h"
-#include "Collision/BoundingVolumes/AABoundingBox.h"
 
 #include <Utils/CommonIncludes.h>
 
@@ -45,13 +44,13 @@ namespace CaptainLucha
 	class GLTexture;
 	class Mesh;
 
-	class Model : public Object
+	class Model : public Renderable
 	{
 	public:
 		Model(CLCore& clCore, const char* filePath);
 		~Model();
 
-		void Draw(GLProgram& glProgram);
+		void Draw(GLProgram& glProgram, Renderer& renderer);
 
 		int GetNumMaterials() const {return m_materials.size();}
 		int GetNumNodes() const {return m_numNodes;}
@@ -62,9 +61,9 @@ namespace CaptainLucha
 		const Vector3Df& GetBaseTranslation() const {return m_baseTranslation;}
 		void SetBaseTranslation(const Vector3Df& val) {m_baseTranslation = val;}
 
-		const std::string& GetName() const {return m_name;}
+        void SetScale(float scale) {m_scale = scale;}
 
-		const AABoundingBox& GetAABB() const {return m_AABB;}
+		const std::string& GetName() const {return m_name;}
 
 	protected:
 		void LoadMaterials(std::stringstream& ss);
@@ -76,15 +75,12 @@ namespace CaptainLucha
 		float LoadFloat(std::stringstream& ss);
 
 		void RemoveQuotes(std::string& word);
-
-		void CalculateAABB();
 		
 	private:
 		Model_Node* m_root;
 
 		Vector3Df m_baseTranslation;
-
-		AABoundingBox m_AABB;
+        float m_scale;
 
 		std::vector<Model_Material> m_materials;
 		int m_numNodes;

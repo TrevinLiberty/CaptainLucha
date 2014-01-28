@@ -22,9 +22,8 @@
 /*
  *	@author Trevin Liberty
  *	@file	DeferredRenderer.h
- *	@brief	Deferred renderer responsible for drawing all objects added 
-                by DeferredRenderer::AddObjectToRender(Object* object),
- 				and applying all DeferredLights.
+ *	@brief	Deferred renderer responsible for drawing all objects added by DeferredRenderer::AddObjectToRender(Object* object),
+ *				and applying all DeferredLight.
  *  @see	DeferredLight
  *	@todo	Need a better setup for lights.
  *
@@ -46,12 +45,6 @@ namespace CaptainLucha
 	class GLProgram;
 	class GLTexture;
 	class DeferredLight;
-	class DeferredLight_Point;
-	class DeferredLight_Ambient;
-	class DeferredLight_Directional;
-	class DeferredLight_Spot;
-	class FrameBufferObject;
-	class GBuffer;
 
 	/**
 	* @brief     Draw the whole scene.
@@ -81,15 +74,13 @@ namespace CaptainLucha
 
 	protected:
 		/**
-		 * @brief     Adds a light created by 
-                        CreateNewPointLight and CreateNewSpotLight.
+		 * @brief     Adds a light created by CreateNewPointLight and CreateNewSpotLight.
 		 * @param	  DeferredLight * newLight
 		 */
 		void AddNewLight(Light* newLight);
 
 		/**
-		 * @brief     Adds a light created by 
-                        CreateNewAmbientLight and CreateNewDirectionalLight.
+		 * @brief     Adds a light created by CreateNewAmbientLight and CreateNewDirectionalLight.
 		 * @param	  DeferredLight * newLight
 		 */
 		void AddNewFullscreenLight(Light* newLight);
@@ -97,63 +88,24 @@ namespace CaptainLucha
 		/**
 		 * @brief     DrawScene onto the render targets 0 - 4. 
 		 */
-		void PopulateGBuffers();
+		void PopulateGBuffers(bool isAlphaPass);
 
-        /**
-         * @brief     ReflectivePass
-         */
-        void ReflectivePass();
-
-        /**
-         * @brief     Basic deferred pass. Fills GBuffers, 
-                        applies lights, and renders to the screen.
-         *
-         */
-        void DrawPass();
+        void BlendBackgroundTextureToAccum();
 
 		/**
-		 * @brief     Draws the final shaded scene to the screen. 
-                        This include material color, diffuse light, 
-                        and specular light.
-		 */
-		void RenderAccumulator();
-
-		/**
-		 * @brief     Iterates through all lights, accumulating their 
-                        effect on the scene.
+		 * @brief     Iterates through all lights, accumulating their effect on the scene.
 		 * @attention Should call BeginLightPass before and EndLightPass after.
 		 */
-		void DeferredLightPass();
-
-        /**
-         * @brief   Renders final deferred data, skybox, and alpha pass data. 
-                        In that order.
-         * todo:  Forward pass data not flipped during reflective pass!
-         */
-        void FinalPass();
-
-
-        /**
-         * @brief     Renders diffuseTex to the screen. screenWidth and 
-                        screenHeight can be specified if the target 
-                        (FBO/Texture/viewport) is not the size of the current 
-                        window.
-         * @return    void
-         */
-        void RenderToScreen(
-            GLTexture* diffuseTex,
-            int screenWidth = WINDOW_WIDTH, 
-            int screenHeight = WINDOW_HEIGHT);
+		void LightPass();
 
 		/**
 		 * @brief     FBO Validation check
 		 */
-		bool ValidateFBO();
+		bool ValidateFBO(unsigned int fbo);
 
-		/**
-		 * @brief     Clears the FBO
-		 */
-		void ClearColorDepth();
+        void ClearGBuffer();
+
+        void ClearLightAccumBufferWithStencil();
 
 		/**
 		 * @brief     Generates all render targets and FBOs needed.
@@ -161,23 +113,27 @@ namespace CaptainLucha
 		 */
 		void InitRenderer();
 
+        void CreateGBufferFBO();
+
 		///////////////////////////////////////////////////////
 		// Variables
 		std::vector<Light*> m_deferredLights;
 		std::vector<Light*> m_fullscreenLights;
 
 		//Deferred Shading
-		unsigned int m_deferredFBO;
+        unsigned int m_GBufferFBO;
+        //unsigned int m_fbo1;
 
-		GLTexture* m_colorRT;
-		GLTexture* m_normalRT;
-		GLTexture* m_worldPosRT;
+		GLTexture* m_rtColor;
+		GLTexture* m_rtNormalEmissive;
+		GLTexture* m_rtPosSpecIntensity;
 		GLTexture* m_accumDiffuseLightTexture;
-		GLTexture* m_accumSpecularLightTexture;
 		GLTexture* m_depth;
 
 		GLProgram* m_depthProgram;
+		GLProgram* m_debugDepthProgram;
 		GLProgram* m_graphicsBufferProgram;
+        GLProgram* m_graphicsBufferProgramAlpha;
 		GLProgram* m_finalPassProgram;
 	};
 }

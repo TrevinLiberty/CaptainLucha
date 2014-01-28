@@ -195,6 +195,11 @@ namespace CaptainLucha
 		m_projectionMatrix[14] = (-t1 * zFar) / t4;
 	}
 
+    void MatrixStack::UpdateFrustum(const Vector3Df& viewPos, const Vector3Df& viewDir)
+    {
+        m_frustum.UpdateFrustum(viewPos, viewDir);
+    }
+
 	//////////////////////////////////////////////////////////////////////////
 	//	Private
 	//////////////////////////////////////////////////////////////////////////

@@ -61,6 +61,9 @@ namespace CaptainLucha
 		bool IsVisible() const {return m_isVisible;}
 		void SetVisible(bool val) {m_isVisible = val;}
 
+        bool ShouldRenderDuringAlphaPass() const {return m_renderedOnAlphaPass;}
+        void SetShouldRenderAlphaPass(bool val) {m_renderedOnAlphaPass = val;}
+            
 		inline unsigned int GetID() const {return m_id;}
 
 	protected:
@@ -71,6 +74,7 @@ namespace CaptainLucha
 
 	private:
 		bool m_isVisible;
+        bool m_renderedOnAlphaPass;
 
 		unsigned int m_id;
 

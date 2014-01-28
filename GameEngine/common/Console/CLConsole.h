@@ -77,6 +77,13 @@ namespace CaptainLucha
 		 */
 		void AddSuccessText(const char* text);
 
+        		/**
+		 * @brief     Adds white text to the console
+		 */
+        void AddText(const std::string& text) {AddText(text.c_str());}
+		void AddErrorText(const std::string& text) {AddErrorText(text.c_str());}
+		void AddSuccessText(const std::string& text) {AddSuccessText(text.c_str());}
+
 		void Open() {m_isOpen = true;}
 		void Close() {m_isOpen = false;}
 

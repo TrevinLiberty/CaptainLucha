@@ -29,20 +29,20 @@
 #ifndef DEBUGGRID_H_CL
 #define DEBUGGRID_H_CL
 
-#include "Objects/Object.h"
+#include "Renderer/Renderable.h"
 #include "Utils/CommonIncludes.h"
 
 namespace CaptainLucha
 {
 	class VertexBufferObject;
 
-	class DebugGrid : public Object
+	class DebugGrid : public Renderable
 	{
 	public:
 		DebugGrid(int size, int padding);
 		virtual ~DebugGrid();
 
-		void Draw(GLProgram& glProgram);
+		void Draw(GLProgram& glProgram, Renderer& renderer);
 
 	protected:
 

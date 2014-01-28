@@ -31,6 +31,7 @@
 
 #include "Renderer/Color.h"
 #include "Math/Vector3D.h"
+#include "Renderer/Shader/GLProgram.h"
 
 #include "Utils/CommonIncludes.h"
 
@@ -44,11 +45,13 @@ namespace CaptainLucha
 		CL_SPOT_LIGHT
 	};
 
+    class GLTexture;
+
 	class Light
 	{
 	public:
-		Light(LightType type) : m_type(type) {};
-		virtual ~Light() {};
+		Light(LightType type);
+		virtual ~Light();
 
 		void SetRadius(float radius) {m_radius = radius;}
 		float GetRadius() const {return m_radius;}
@@ -64,6 +67,18 @@ namespace CaptainLucha
 
 		LightType GetType() const {return m_type;}
 
+        
+        /**
+         * @brief     Virtual function for deferred lights
+         */
+        virtual void ApplyLight(
+            const Vector3Df& cameraPos, 
+            GLTexture* renderTarget0, 
+            GLTexture* renderTarget1, 
+            GLTexture* renderTarget2) 
+        {UNUSED(cameraPos) UNUSED(renderTarget0) 
+        UNUSED(renderTarget1) UNUSED(renderTarget2)};
+
 	protected:
 		LightType m_type;
 
@@ -71,6 +86,8 @@ namespace CaptainLucha
 		float	  m_intensity;
 		Vector3Df m_position;
 		Color	  m_color;
+
+        static GLProgram* m_nullProgram;
 	};
 }
 

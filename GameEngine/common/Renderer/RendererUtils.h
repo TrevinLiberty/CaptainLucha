@@ -107,7 +107,7 @@ namespace CaptainLucha
 	void clColor4(float r, float g, float b, float a);
 	void clColor4(const Color& color);
 
-	void FullScreenPass();
+	void FullScreenPass(int width = WINDOW_WIDTH, int height = WINDOW_HEIGHT);
 
 	void DrawPlus(const Vector3Df& pos, float size);
 	void DrawPlus(float x, float y, float z, float size);
@@ -120,6 +120,8 @@ namespace CaptainLucha
 	void DrawLineCircle(const Vector2Df& pos, float spaceing, float radius);
 	void DrawLine(const Vector2Df& l1, const Vector2Df& l2);
 	void DrawLine(const Vector3Df& l1, const Vector3Df& l2);
+
+    void DrawCube();
 
 	void SetWindowTitle(const std::string& title);
 

@@ -21,62 +21,46 @@
 /****************************************************************************/
 /*
  *	@author Trevin Liberty
- *	@file	CLConsole_Interface.h
- *	@brief	Interface for a Console
- *  @see	CLConsole CLConsole_NULL
- *  @code 
-		//Set to initially be the NULL interface. Allowing console functions to be called with no effect.
-		CLConsole_Interface* myConsole = new CLConsole_NULL();
-
-		//If console is desired
-		delete myConsole;
-		myConsole = new CLConsole();
-
-		//Continue to use normally.
-	@endcode
- *	@see	CLConsole CLConsole_NULL
- *  @todo	Change CONSOLE_WIDTH to percentage of screenwidth?
- *  @todo	Change CONSOLE_HEIGHT to be screenheight
+ *	@file	SkyBox.h
+ *	@brief	
+ *
 /****************************************************************************/
 
-#ifndef CONSOLE_INTERFACE_H_CL
-#define CONSOLE_INTERFACE_H_CL
+#ifndef SKYBOX_H_CL
+#define SKYBOX_H_CL
 
-#include "Input/InputListener.h"
-#include "Utils/UtilDebug.h"
-#include "Utils/CommonIncludes.h"
-#include "Threads/ThreadMutex.h"
+#include "Renderer/Geometry/Sphere.h"
 
 namespace CaptainLucha
 {
-	class CLConsole_Interface
+    class GLProgram;
+    class Renderer;
+
+	class SkyBox
 	{
 	public:
-		CLConsole_Interface() : m_isOpen(false) {};
-		virtual ~CLConsole_Interface() {};
+		SkyBox(
+            const char* x1Path,
+            const char* x2Path,
+            const char* y1Path,
+            const char* y2Path,
+            const char* z1Path,
+            const char* z2Path);
+		~SkyBox();
 
-		virtual void Draw() = 0;
-
-		virtual void AddHelpInfo(const char* command, const char* info) = 0;
-
-		virtual void AddText(const char* text) = 0;
-		virtual void AddErrorText(const char* text) = 0;
-		virtual void AddSuccessText(const char* text) = 0;
-
-        virtual void AddText(const std::string& text) = 0;
-        virtual void AddErrorText(const std::string& text) = 0;
-        virtual void AddSuccessText(const std::string& text) = 0;
-
-		virtual void Open() {}
-		virtual void Close() {}
-
-		static const int CONSOLE_WIDTH = 750;
-		static const int CONSOLE_HEIGHT = 920;
+        void SetCameraPosition(const Vector3Df& pos) {m_camPos = pos;}
+        void Draw(Renderer& renderer);
 
 	protected:
-		bool m_isOpen;
 
 	private:
+        GLProgram* m_program;
+        GLTexture* m_cubeMap;
+
+        Sphere m_sphere;
+        Vector3Df m_camPos;
+
+        unsigned int m_textureID;
 	};
 }
 

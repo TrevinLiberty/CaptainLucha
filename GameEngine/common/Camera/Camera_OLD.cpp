@@ -26,7 +26,7 @@
  *
 /****************************************************************************/
 
-#include "Camera.h"
+#include "Camera_OLD.h"
 
 #include <glew.h>
 #include <Renderer/RendererUtils.h>
@@ -42,18 +42,21 @@ using namespace CaptainLucha;
 //	Public
 //////////////////////////////////////////////////////////////////////////
 
-Camera::Camera()
+Camera_OLD::Camera_OLD()
 	: m_rotation(0.0f, 0.0f, 0.0f),
 	  m_position(0.0f, 0.0f, 0.0f),
+	  m_drag(.1f),
+	  CAMERA_IMPULSE(.050f),
+	  m_enableKeyboard(true),
 	  m_enableMouse(true)
 {}
 
-Camera::~Camera()
+Camera_OLD::~Camera_OLD()
 {
 
 }
 
-Vector3Df Camera::GetForwardDirection() const
+Vector3Df Camera_OLD::GetForwardDirection() const
 {
     return (
         Matrix4Df((float)m_rotation.x, 1.0f, 0.0f, 0.0f)
@@ -61,19 +64,33 @@ Vector3Df Camera::GetForwardDirection() const
       ).TransformRotation(Vector3Df(0.0f, 0.0f, -1.0f));
 }
 
-Matrix4Df Camera::GetGLViewMatrix() const
+Matrix4Df Camera_OLD::GetGLViewMatrix() const
 {
 	return Matrix4Df(-(float)m_position.x, -(float)m_position.y, -(float)m_position.z)
 			* Matrix4Df(-(float)m_rotation.y, 0.0f, 1.0f, 0.0f)
 			* Matrix4Df(-(float)m_rotation.x, 1.0f, 0.0f, 0.0f);
 }
 
-void Camera::Update()
+void Camera_OLD::ApplyImpulse(const Vector3Dd& impulse)
 {
+	Matrix3Dd rotationMatrix;
+	rotationMatrix.MakeRotation(m_rotation.x, m_rotation.y, m_rotation.z); //Convert to radians
+	m_velocity += rotationMatrix * impulse;
 }
 
+void Camera_OLD::Update()
+{
+	m_velocity -= m_velocity * m_drag;
+	m_position += m_velocity;
+	UpdateInput();
+}
 
-void Camera::MouseMove(float x, float y)
+void Camera_OLD::UpdateInput()
+{
+	UpdateKeyboard();
+}
+
+void Camera_OLD::MouseMove(float x, float y)
 {
 	static const float cx = WINDOW_WIDTH * 0.5f;
 	static const float cy = WINDOW_HEIGHT * 0.5f;
@@ -99,5 +116,56 @@ void Camera::MouseMove(float x, float y)
 		m_rotation.x = clamp(m_rotation.x, -MAX, MAX);
 
 		InputSystem::GetInstance()->SetMousePos(cx, cy);
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+//	Protected
+//////////////////////////////////////////////////////////////////////////
+
+void Camera_OLD::UpdateKeyboard()
+{
+	const float SPEED_INC_MULT = 50.0f;
+
+	if(m_enableKeyboard)
+	{
+		Vector3Dd impulse;
+		float speed = CAMERA_IMPULSE;
+
+		if(InputSystem::GetInstance()->IsKeyDown(GLFW_KEY_LEFT_SHIFT))
+			speed *= SPEED_INC_MULT;
+
+		if(InputSystem::GetInstance()->IsKeyDown(GLFW_KEY_W))
+		{
+			impulse.z -= 1.0f;
+		}
+		if(InputSystem::GetInstance()->IsKeyDown(GLFW_KEY_S))
+		{
+			impulse.z += 1.0f;
+		}
+
+		if(InputSystem::GetInstance()->IsKeyDown(GLFW_KEY_A))
+		{
+			impulse.x -= 1.0;
+		}
+		if(InputSystem::GetInstance()->IsKeyDown(GLFW_KEY_D))
+		{
+			impulse.x += 1.0;
+		}
+
+		if(InputSystem::GetInstance()->IsKeyDown(GLFW_KEY_LEFT_CONTROL))
+		{
+			m_velocity.y -= speed * 2;
+		}
+
+		if(InputSystem::GetInstance()->IsKeyDown(GLFW_KEY_SPACE))
+		{
+			m_velocity.y += speed * 2;
+		}
+
+		impulse.Normalize();
+		impulse *= speed;
+
+		ApplyImpulse(impulse);
 	}
 }

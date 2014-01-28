@@ -48,6 +48,9 @@ namespace CaptainLucha
 	void DeferredLight_Ambient::ApplyLight(const Vector3Df& cameraPos, GLTexture* renderTarget0, GLTexture* renderTarget1, GLTexture* renderTarget2)
 	{
 		UNUSED(cameraPos)
+        UNUSED(renderTarget0)
+        UNUSED(renderTarget1)
+        UNUSED(renderTarget2)
 
 		g_MVPMatrix->SetProjectionMode(CL_ORTHOGRAPHIC);
 
@@ -55,10 +58,6 @@ namespace CaptainLucha
 		g_MVPMatrix->LoadIdentity();
 
 		SetGLProgram(m_glProgram);
-
-		SetTexture("renderTarget0", renderTarget0);
-		SetTexture("renderTarget1", renderTarget1);
-		SetTexture("renderTarget2", renderTarget2);
 
 		SetUniform("lightColor", m_color);
 		SetUniform("intensity", m_intensity);
