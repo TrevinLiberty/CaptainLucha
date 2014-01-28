@@ -61,8 +61,9 @@ namespace CaptainLucha
             GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
         };
 
-        unsigned int width, height;
-        unsigned int* texels;
+        unsigned int width = 0;
+        unsigned int height = 0;
+        unsigned int* texels = NULL;
 
         for(int i = 0; i < 6; ++i)
         {

@@ -28,6 +28,7 @@
 
 #include "DebugGrid.h"
 
+#include "Renderer/Renderer.h"
 #include "Renderer/RendererUtils.h"
 #include "Renderer/VertexBufferObject.h"
 
@@ -59,6 +60,7 @@ namespace CaptainLucha
 
 	void DebugGrid::Draw(GLProgram& glProgram, Renderer& renderer)
 	{
+        UNUSED(renderer)
         g_MVPMatrix->PushMatrix();
         glProgram.SetUniform("emissive", 1.0);
 		glProgram.SetUniform("color", GetColor());

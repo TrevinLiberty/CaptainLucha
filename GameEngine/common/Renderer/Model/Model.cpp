@@ -65,6 +65,7 @@ namespace CaptainLucha
 
 	void Model::Draw(GLProgram& glProgram, Renderer& renderer)
 	{
+        UNUSED(renderer)
         glProgram.UseProgram();
 		glProgram.SetUniform("emissive", 0.0);
 

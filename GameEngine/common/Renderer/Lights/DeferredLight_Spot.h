@@ -53,7 +53,7 @@ namespace CaptainLucha
 		void DrawCone();
 
 	private:
-		static GLProgram* m_glProgram;
+        static GLProgram* m_glProgram;
 	};
 }
 

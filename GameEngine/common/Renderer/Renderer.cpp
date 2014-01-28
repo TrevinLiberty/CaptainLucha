@@ -114,7 +114,7 @@ namespace CaptainLucha
         if(m_debugDraw && m_debugDrawFunction)
             m_debugDrawFunction(program, m_debugDrawUserData);
 
-        for(int i = 0; i < m_drawFunctions.size(); ++i)
+        for(size_t i = 0; i < m_drawFunctions.size(); ++i)
         {
             m_drawFunctions[i].first(program, m_drawFunctions[i].second);
         }

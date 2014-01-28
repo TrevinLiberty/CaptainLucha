@@ -43,7 +43,7 @@ namespace CaptainLucha
         std::string val;
         Get(ss.str(), val);
 
-        return atof(val.c_str());
+        return (float)atof(val.c_str());
     }
 
 	NamedProperties& NamedProperties::operator=(const NamedProperties& np)

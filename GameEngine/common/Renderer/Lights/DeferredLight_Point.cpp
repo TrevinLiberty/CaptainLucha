@@ -87,6 +87,5 @@ namespace CaptainLucha
 	}
 
 	GLProgram* DeferredLight_Point::m_glProgram = NULL;
-	GLProgram* DeferredLight_Point::m_nullProgram = NULL;
 	Sphere* DeferredLight_Point::m_sphere = NULL;
 }

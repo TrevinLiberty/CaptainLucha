@@ -55,7 +55,6 @@ namespace CaptainLucha
 
 	private:
 		static GLProgram* m_glProgram;
-		static GLProgram* m_nullProgram;
 		static Sphere* m_sphere;
 	};
 }

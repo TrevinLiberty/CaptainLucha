@@ -86,8 +86,6 @@ namespace CaptainLucha
 		float	  m_intensity;
 		Vector3Df m_position;
 		Color	  m_color;
-
-        static GLProgram* m_nullProgram;
 	};
 }
 
