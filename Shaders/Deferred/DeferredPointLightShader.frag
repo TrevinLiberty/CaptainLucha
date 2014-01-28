@@ -63,10 +63,10 @@ void main()
 {
 	vec2 textureCoord	= gl_FragCoord.xy * vec2(INV_SCREEN_W, INV_SCREEN_H);
 
-	vec3 fragNormal	   = texture(renderTarget1, textureCoord).xyz;
-	vec4 renderTarget2 = texture(renderTarget2, textureCoord).xyzw;
+	vec3 fragNormal		= texture(renderTarget1, textureCoord).xyz;
+	vec4 renderTarget2	= texture(renderTarget2, textureCoord).xyzw;
 
-	int specExponent    = int(renderTarget2.w);
+	int specExponent	= int(renderTarget2.w);
 	float spec			= renderTarget2.y;
 
 	vec3 worldPos		= GetWorldPositionFromDepth(renderTarget2.x);
